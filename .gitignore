@@ -1,0 +1,15 @@
+serverMES/node_modules/
+serverMES/.vscode/
+serverMES/log.txt
+serverMES/servermes.exe
+serverSup/node_modules/
+serverSup/.vccode/
+serverSup/serversup.exe
+viewer/node_modules/
+viewer/.vscode
+viewer/dist/
+*.vscode
+serverMES.rar
+serverSup.rar
+viewer.rar
+

@@ -1,0 +1,296 @@
+<template>
+  <div class="Principal">
+    <!-- FAIXA DE TÍTULO (FIXA )-->
+    <div class="Titulo">
+      <div class="logo">
+        <img src="../public/logoMagius.png" style="width: auto; height: auto; max-width: 300px; max-height: 300px" />
+      </div>
+
+      <h2>Andon {{ $route.name }} &nbsp;</h2>
+      <div>{{ isConnected ? "" : " *** Servidor Desconectado ***" }}</div>
+
+      <div class="botaoinicio">
+        <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+        <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+      </div>
+    </div>
+    <!-- CORPO DA PÁGINA -->
+    <div class="RouterView">
+      <router-view :dadosServer="dadosServer" :dadosRecebidos="dadosRecebidos" :corOntem="corOntem" :corHoje="corHoje"
+        :fdoOntem="fdoOntem" :fdoHoje="fdoHoje" :txtOntem="txtOntem" :txtHoje="txtHoje" :tamTxtO="tamTxtO"
+        :tamTxtH="tamTxtH" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" />
+    </div>
+
+    <!-- RODAPÉ -->
+    <!-- <div class="Rodape">
+      {{ valores }}
+    </div> -->
+  </div>
+</template>
+
+<script>
+import { ref } from "vue";
+import packageJson from '../package.json'
+
+export default {
+  name: "",
+  components: {
+  },
+
+  mounted() {
+    setInterval(this.solicitaAtualiz, 5000);
+    this.versaoViewer = packageJson.version
+    console.log("Versão do Viewer: ", this.versaoViewer)
+
+  },
+  data: function () {
+    return {
+      id:'',
+      listaCTs: [], // Lista completa de MGrps consultadas no BD do MES
+      listaRecReceb: false, // Sinaliza se os dados dos MGrps foram recebidos para mostrar o formulário
+      versaoViewer: '',
+      dadosServer: {},
+      dadosRecebidos: false,
+      socketMessage: "Valor inicial",
+      FalhaConexao: "", // Sinalização de falha de conexão
+      tmpWD: 500, // Configuração do tempo de watchdog para monitorar o server
+      isConnected: false, // sinalização de viewer conectado
+      corOntem: "var(--surface-200)",
+      corHoje: "var(--surface-300)",
+      txtOntem: "var(--surface-700)",
+      txtHoje: "var(--surface-900)",
+      tamTxtO: 2.5,
+      tamTxtH: 2.7,
+      fdoOntem: "var(--surface-50)",
+      fdoHoje: "var(--surface-0)",
+    };
+  },
+  methods: {
+    msgToServer: function () {
+      this.$socket.emit("msgFromViewer", [
+        "Primeira informação",
+        "Segunda Informação",
+      ]);
+    },
+
+
+  },
+  events: {
+    teste(){
+      alert("Mensagem recebida")
+    }
+  },
+  sockets: {
+    id(val) {
+      if (this.id === 0) {
+        this.id = val
+      }
+
+    },
+
+    sListaCTs(lista) {
+      this.listaCTs = lista;
+      this.listaCTs.unshift({ CT: "*Enganchamento E-coat (Apont. Bastidor)" , IDResource: "EE", CC: 'ENGANCHAMENTO E-COAT', IDSector: 5000, Depto: 'ENGANCHAMENTO E-COAT', IDArea: 5000 })
+      this.listaCTs.unshift({ CT: "*Linha E-coat (Supervisório)", IDResource: "ecoat", CC: 'E-COAT (SUPERVISORIO)', IDSector: 5001, Depto: 'E-COAT (SUPERVISORIO)', IDArea: 5001 })
+
+      
+      this.listaRecReceb = true;
+    },
+
+    connect() {
+      // Fired when the socket connects.
+      this.id = 0
+      this.isConnected = true;
+      this.varWD = setTimeout(this.FalhaConexao, this.tmpWD);
+    },
+
+    disconnect() {
+      this.isConnected = false;
+    },
+
+    watchdog() {
+      console.log("MENSAGEM DO WATCHDOG", this.varWD);
+      this.isConnected = true;
+      clearTimeout(this.varWD);
+      //this.varWD = setInterval(this.FalhaConexao, this.tmpWD);
+    },
+
+    // Fired when the server sends something on the "messageChannel" channel.
+    messageChannel(data) {
+      this.socketMessage = data;
+      this.msgToServer();
+    },
+    Versoes([versaoMES, versaoSUP]) {
+      console.log("VersãoMES: ", versaoMES, "VersãoSup: ", versaoSUP, "Versão Viewer: ", this.versaoViewer)
+      this.versaoMES = versaoMES
+      this.versaoSUP = versaoSUP
+
+
+    },
+    AtualizaDados(dados) {
+      try {
+        if (dados !== undefined) {
+          this.dadosServer = dados;
+
+          this.dadosRecebidos = true;
+        }
+      } catch (err) {
+        console.log("FALHA AO ATUALIZAR DADOS: ", err);
+      }
+    },
+  },
+  setup() {
+    const menu = ref();
+
+    const items = ref([
+      {
+        label: "Mosaico",
+        to: "/",
+      },
+      {
+        label: "Telas",
+        items: [
+          {
+            label: "Enganchamento",
+            to: "/enganchamento",
+          },
+          {
+            label: "E-coat",
+            to: "/ecoat",
+          },
+          {
+            label: "Pintura Pó",
+            to: "/pinturapo",
+          },
+          {
+            label: "Pintura líquida",
+            to: "/pinturaliq",
+          },
+          {
+            label: "Formação Kits",
+            to: "/formacaokit",
+          },
+        ],
+      },
+      {
+        label: "Relatorios",
+        items: [
+          {
+            label: "Grafico",
+            to: "/graficos",
+          }
+        ],
+      },
+    ]);
+
+    const toggle = (event) => {
+      menu.value.toggle(event);
+    };
+
+    return { menu, toggle, items };
+  },
+};
+</script>
+
+
+
+<style>
+/*
+.p-knob-value.path {
+  stroke: blue;
+}
+*/
+.logo {
+  position: absolute;
+  left: 0;
+  z-index: 10;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 1%;
+}
+
+h2 {
+  padding: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.RouterView {
+  overflow-y: auto;
+  height: 100%;
+  z-index: 0;
+}
+
+.botaoinicio {
+  position: absolute;
+  right: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-right: 1%;
+  z-index: 10;
+}
+
+.Principal {
+  height: 100%;
+  width: 100%;
+}
+
+.Rodape {
+  height: 8vh;
+  background-color: var(--surface-a);
+  padding: 10px;
+  width: 100%;
+  bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.Titulo {
+  height: 7vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-d);
+  padding-top: auto;
+  padding-bottom: auto;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  z-index: 10;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  /*color: #2c3e50;*/
+  margin-top: 0;
+  padding-top: 0px;
+  margin-bottom: 0;
+  padding-bottom: 0px;
+  height: 100%;
+}
+
+.app-container {
+  text-align: center;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: var(--surface-b);
+  font-family: var(--font-family);
+  font-weight: 400;
+  color: var(--text-color);
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+</style>
+
+

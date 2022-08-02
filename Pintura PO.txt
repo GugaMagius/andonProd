@@ -1,0 +1,15 @@
+select 
+me.DtMov,
+convert(time, me.DtTimeStamp) Hora,
+me.IDResource,
+me.Shift,
+me.IDProduct,
+me.MovQty,
+me.UndoIDMovEv,
+me.RelatedIDMovEv,
+me.IDMovEv,
+p.Code
+from TBLMovEv me
+inner join TBLProduct p on (p.IDProduct = me.IDProduct)
+where me.IDResource=97
+and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-1))) 
