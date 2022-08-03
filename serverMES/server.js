@@ -394,7 +394,8 @@ function respostaBD(string, destino) {
                 function (respostaED) {
                     console.log(JSON.stringify(respostaED), destino)
 
-                    ioSocket.atualizaDados(respostaED, destino)
+                    //ioSocket.atualizaDados(respostaED, destino)
+                    ioSocket.dadosServer[destino] = respostaED
 
 
                     /*
@@ -445,15 +446,15 @@ const formacaoKit = "select me.DtMov, convert(time, me.DtTimeStamp) Hora, me.IDR
 
 const stringEE = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and  CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END  >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-setTimeout(() => { respostaBD(stringPP, "AtualizaDadosPP") }, 15000)
+setTimeout(() => { respostaBD(stringPP, "dadosPP") }, 15000)
 
-criarInterval(30000, stringPP, "AtualizaDadosPP")
+criarInterval(30000, stringPP, "dadosPP")
 
-setTimeout(criarInterval, 2000, 30000, stringEE, "AtualizaDadosEE")
+setTimeout(criarInterval, 2000, 30000, stringEE, "dadosEE")
 
-setTimeout(criarInterval, 4000, 30000, stringPL, "AtualizaDadosPL")
+setTimeout(criarInterval, 4000, 30000, stringPL, "dadosPL")
 
-setTimeout(criarInterval, 6000, 30000, formacaoKit, "AtualizaDadosFK")
+setTimeout(criarInterval, 6000, 30000, formacaoKit, "dadosFK")
 
 
 function criarInterval(tempo, string, destino) {

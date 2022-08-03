@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
-import PinturaPo from "@/telas/Pinturapo.vue";
+//import PinturaPo from "@/telas/Pinturapo.vue";
 import PinturaLiq from "@/telas/Pinturaliq.vue";
 import FormacaoKit from "@/telas/Formacaokit.vue";
 import Enganchamento from "@/telas/Enganchamento.vue";
@@ -7,6 +7,8 @@ import Ecoat from "@/telas/Ecoat.vue";
 import Mosaico from "@/telas/Mosaico.vue";
 import Service from "@/telas/Service.vue";
 import Graficos from "@/relatorios/graficos.vue";
+import Andon from "@/components/telaAndon";
+
 
 const routes = [
     {
@@ -22,15 +24,15 @@ const routes = [
         props: true
     },
     {
-        path: "/enganchamento",
+        path: "/enganchamento/:Setor",
         name: "- Enganchamento",
         component: Enganchamento,
         props: true
     },
     {
-        path: "/pinturapo",
-        name: "- Pintura Pó",
-        component: PinturaPo,
+        path: "/andon/:Setor",
+        name: "- Tela Andon",
+        component: Andon,
         props: true
     },
     {

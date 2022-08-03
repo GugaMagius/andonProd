@@ -16,8 +16,14 @@ const versaoMES = require('../package.json').version
 const clientEcoat = require('./client')
 const bdMES = require('../BD/MES')
 
-
 const main = require('../server')
+
+var dadosServer = {}
+module.exports.dadosServer = dadosServer
+
+
+
+
 
 
 var socketConectado = false; // Status de conexão do socket
@@ -103,7 +109,7 @@ io.on('connection', (socket) => {
 
     function atualizaCliente() {
         try {
-            io.emit("AtualizaDados", main.retornaDados)
+            io.emit("AtualizaDados", dadosServer)
         } catch (err) {
            Functions.escreverLog("Falha ao tentar enviar atualização de dados ao cliente: ", err)
         }
@@ -122,7 +128,7 @@ io.on('connection', (socket) => {
     socket.on("dadosSolicitados", function () {
         //console.log("solicitado dados ")
 
-        io.emit("AtualizaDados", main.retornaDados)
+        io.emit("AtualizaDados", dadosServer)
 
     })
 

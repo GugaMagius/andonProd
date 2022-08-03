@@ -6,7 +6,7 @@
         <img src="../public/logoMagius.png" style="width: auto; height: auto; max-width: 300px; max-height: 300px" />
       </div>
 
-      <h2>Andon {{ $route.name }} &nbsp;</h2>
+      <h2>Andon {{ $route.name }} &nbsp;</h2> 
       <div>{{ isConnected ? "" : " *** Servidor Desconectado ***" }}</div>
 
       <div class="botaoinicio">
@@ -16,9 +16,7 @@
     </div>
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
-      <router-view :dadosServer="dadosServer" :dadosRecebidos="dadosRecebidos" :corOntem="corOntem" :corHoje="corHoje"
-        :fdoOntem="fdoOntem" :fdoHoje="fdoHoje" :txtOntem="txtOntem" :txtHoje="txtHoje" :tamTxtO="tamTxtO"
-        :tamTxtH="tamTxtH" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" />
+      <router-view :dadosServer="dadosServer" :dadosRecebidos="dadosRecebidos" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" :setor="$route.params.Setor" />
     </div>
 
     <!-- RODAPÉ -->
@@ -63,6 +61,7 @@ export default {
       tamTxtH: 2.7,
       fdoOntem: "var(--surface-50)",
       fdoHoje: "var(--surface-0)",
+      setorAndon: ''
     };
   },
   methods: {
@@ -152,23 +151,23 @@ export default {
         items: [
           {
             label: "Enganchamento",
-            to: "/enganchamento",
+            to: "/enganchamento"
           },
           {
             label: "E-coat",
-            to: "/ecoat",
+            to: "/ecoat"
           },
           {
             label: "Pintura Pó",
-            to: "/pinturapo",
+            to: "/andon/PP"
           },
           {
             label: "Pintura líquida",
-            to: "/pinturaliq",
+            to: "/andon/PL"
           },
           {
             label: "Formação Kits",
-            to: "/formacaokit",
+            to: "/formacaokits"
           },
         ],
       },

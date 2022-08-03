@@ -4,6 +4,7 @@
       <div class="col-6 grid box painel">
         <div class="col-12 titulo">E-coat</div>
         <div class="telaReduzida col-12">
+          <!--
           <router-link to="/ecoat">
             <Ecoat
               :dadosServer="dadosServer"
@@ -75,18 +76,19 @@
               :tamTxtH="tamTxtH"
             />
           </router-link>
+          -->
         </div>
       </div>
-      
+
     </div>
   </div>
 </template>
 
 <script>
-import Ecoat from "@/telas/Ecoat.vue";
-import PinturaPo from "@/telas/Pinturapo.vue";
-import PinturaLiq from "@/telas/Pinturaliq.vue";
-import Enganchamento from "@/telas/Enganchamento.vue";
+//import Ecoat from "@/telas/Ecoat.vue";
+//import PinturaPo from "@/telas/Pinturapo.vue";
+//import PinturaLiq from "@/telas/Pinturaliq.vue";
+//import Enganchamento from "@/telas/Enganchamento.vue";
 
 export default {
   name: "mosaico",
@@ -96,10 +98,10 @@ export default {
     };
   },
   components: {
-    Ecoat,
-    Enganchamento,
-    PinturaPo,
-    PinturaLiq,
+    //Ecoat,
+    //Enganchamento,
+    //PinturaPo,
+    //PinturaLiq,
   },
   props: {
     dadosServer: Object, // Pacote de dados do servidor
@@ -125,6 +127,7 @@ export default {
 .campo {
   background-color: var(--surface-e);
 }
+
 .titulo {
   margin-bottom: -10vh;
   margin-top: -5vh;

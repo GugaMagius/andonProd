@@ -54,17 +54,17 @@ export default {
 
   mounted() {
     //this.$socket.emit("dadosSolicitados", "Solicitando atualização de dados");
-    if (this.dadosServer[`dados${this.setor}`] != undefined) {
-      this.produzidos = this.dadosServer[`dados${this.setor}`];
-      this.produzidos.metaP = this.dadosServer.metas[`metaP_${this.setor}`]
+    if (this.dadosServer[`dados${setor}`] != undefined) {
+      this.produzidos = this.dadosServer[`dados${setor}`];
+      this.produzidos.metaP = this.dadosServer.metas[`metaP_${setor}`]
     }
   },
 
   watch: {
     dadosServer() {
-    if (this.dadosServer[`dados${this.setor}`] != undefined) {
-      this.produzidos = this.dadosServer[`dados${this.setor}`];
-      this.produzidos.metaP = this.dadosServer.metas[`metaP_${this.setor}`]
+    if (this.dadosServer[`dados${setor}`] != undefined) {
+      this.produzidos = this.dadosServer[`dados${setor}`];
+      this.produzidos.metaP = this.dadosServer.metas[`metaP_${setor}`]
       }
     },
   },
