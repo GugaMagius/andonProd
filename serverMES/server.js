@@ -304,6 +304,9 @@ function respostaBD(string, destino) {
 
     bdMES.conectarMES(string).then(
         function (respostaBD) {
+            
+            let horaAtualCmp = moment().format(formato) // Hora atual completa
+            let turnoAtual = testeTurno(horaAtualCmp).turno
 
             function extratDados(dadosBD) {
 
@@ -317,11 +320,10 @@ function respostaBD(string, destino) {
                                 let inicioDia = moment(config.turnos.Turno1.inicio, formato).format(formato)
                                 let horaReg2d = moment.utc(index.Hora, "AAAA-MM-DDTHH:mm:ss").format("HH")
                                 let diaReg2d = moment.utc(index.DtMov, "AAAA-MM-DDTHH:mm:ss").format("DD")
-                                let horaAtualCmp = moment().format(formato) // Hora atual completa
                                 let horaRegCmp = moment.utc(index.Hora, "AAAA-MM-DDTHH:mm:ss").format(formato) // Hora do registro completa
                                 let diaHoje2d = moment(horaAtualCmp).isBefore(inicioDia) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
                                 let diaOntem2d = moment().subtract(1, "days").format("DD")
-                                let turno = testeTurno(horaRegCmp).turno
+                                let turnoReg = testeTurno(horaRegCmp).turno
 
                                 var m2RegAtual = 0.0
 
@@ -365,13 +367,13 @@ function respostaBD(string, destino) {
                                 // Compila os dados no acumulador
                                 if (quando === "Hoje" || quando === "Ontem") {
 
-                                    acc[quando][`Turno${turno}`]["horarios"][horaReg2d] = acc[quando][`Turno${turno}`]["horarios"][horaReg2d] || 0
-                                    acc[quando][`Turno${turno}`]["soma"] = acc[quando][`Turno${turno}`]["soma"] || 0
-                                    acc[quando][`Turno${turno}`]["horarios"][horaReg2d] += m2RegAtual
-                                    acc[quando][`Turno${turno}`]["soma"] += m2RegAtual
+                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
+                                    acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
+                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += m2RegAtual
+                                    acc[quando][`Turno${turnoReg}`]["soma"] += m2RegAtual
 
 
-                                    console.log(`Valor atual para ${quando} no turno ${turno} na hora ${horaReg2d}: ${acc[quando][`Turno${turno}`]["horarios"][horaReg2d]}`)
+                                    console.log(`Valor atual para ${quando} no turno ${turnoReg} na hora ${horaReg2d}: ${acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d]}`)
                                 }
 
                                 return acc
@@ -396,6 +398,10 @@ function respostaBD(string, destino) {
 
                     //ioSocket.atualizaDados(respostaED, destino)
                     ioSocket.dadosServer[destino] = respostaED
+
+                    ioSocket.dadosServer["metas"] = config.metas
+
+                    ioSocket.dadosServer["turno"] = turnoAtual 
 
 
                     /*

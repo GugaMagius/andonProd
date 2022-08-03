@@ -23,9 +23,6 @@ module.exports.dadosServer = dadosServer
 
 
 
-
-
-
 var socketConectado = false; // Status de conexão do socket
 
 

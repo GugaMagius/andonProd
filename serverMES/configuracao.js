@@ -63,14 +63,18 @@ const DadosIni = {
                 }
             }
         },
-
-        metaP_PP: " >= 56",
-        metaP_PL: " >= 32",
-        metaP_EE: " >= 125",
-        metaP_FK: " >= 130",
-        turno: 0
         
     }
 
     
 module.exports.DadosIni = DadosIni
+
+const metas = {
+
+    metaP_PP: " >= 60",
+    metaP_PL: " >= 32",
+    metaP_EE: " >= 130",
+    metaP_FK: " >= 130",
+
+}
+module.exports.metas = metas

@@ -16,7 +16,7 @@
     </div>
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
-      <router-view :dadosServer="dadosServer" :dadosRecebidos="dadosRecebidos" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" :setor="$route.params.Setor" />
+      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" :setor="$route.params.Setor" />
     </div>
 
     <!-- RODAPÉ -->

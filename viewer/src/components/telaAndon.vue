@@ -1,5 +1,5 @@
 <template>
-  <div> {{setor}} Meta: {{dadosServer}}
+  <div>
     <div class="corpo" v-if="dadosRecebidos">
       <div class="grid geral">
         <!-- VALORES DE ONTEM  -->
@@ -586,33 +586,33 @@
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'10'" :valorP="
                         arredondar(produzidos.Hoje.Turno1.horarios['10'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['10'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['10'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="1"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'11'" :valorP="
                         arredondar(produzidos.Hoje.Turno1.horarios['11'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['11'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['11'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="1"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'12'" :valorP="
                         arredondar(produzidos.Hoje.Turno1.horarios['12'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['12'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['12'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="1"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'13'" :valorP="
                         arredondar(produzidos.Hoje.Turno1.horarios['13'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['13'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['13'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="1"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'14'" :valorP="
                         arredondar(produzidos.Hoje.Turno1.horarios['14'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['14'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['14'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="1"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                     </div>
                   </div>
 
@@ -626,57 +626,57 @@
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'15'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['15'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['15'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['15'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'16'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['16'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['16'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['16'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'17'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['17'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['17'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['17'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'18'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['18'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['18'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['18'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'19'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['19'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['19'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['19'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'20'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['20'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['20'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['20'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'21'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['21'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['21'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['21'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'22'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['22'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno1.horarios['22'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno1.horarios['22'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'23'" :valorP="
                         arredondar(produzidos.Hoje.Turno2.horarios['23'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno2.horarios['23'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno2.horarios['23'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="2"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                     </div>
                   </div>
                   <div class="col-4 box">
@@ -689,9 +689,9 @@
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'23'" :valorP="
                         arredondar(produzidos.Hoje.Turno3.horarios['23'], 0)
                       " :valorS="
-  ecoat ? perdidos.Hoje.Turno3.horarios['23'] : 0
-" :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno"
-                        :turnoDisp="3" :ecoat="ecoat" :mesclar="!ecoat" />
+                        ecoat ? perdidos.Hoje.Turno3.horarios['23'] : 0
+                      " :metaP="metaP" :metaS="produzidos.metaS" :tamanho="tamTxtH" :turnoAtual="produzidos.turno" :turnoDisp="3"
+                        :ecoat="ecoat" :mesclar="!ecoat" />
                       <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'00'" :valorP="
                         arredondar(produzidos.Hoje.Turno3.horarios['0'], 0)
                       " :valorS="ecoat ? perdidos.Hoje.Turno3.horarios['0'] : 0" :metaP="metaP"
@@ -910,11 +910,11 @@
                               margin: '0',
                               padding: '0',
                             }" :class="[
-                                this.performance.Hoje.total >=
-                                this.perfMeta.split(' ')[2]
-                                  ? 'fdoOK'
-                                  : 'fdoNOK',
-                              ]">
+                              this.performance.Hoje.total >=
+                              this.perfMeta.split(' ')[2]
+                                ? 'fdoOK'
+                                : 'fdoNOK',
+                            ]">
                               <b>{{ arredondar(performance.Hoje.total, 1) }}%</b>
                             </td>
                           </tr>
@@ -951,7 +951,8 @@ export default {
     metaP: String,
     perfMeta: String,
     performance: Object,
-    setor: String
+    setor: String,
+    listaCTs: Object
 
   },
 
@@ -961,20 +962,22 @@ export default {
 
   mounted() {
     this.$socket.emit("dadosSolicitados", "Solicitando atualização de dados");
-    if (this.dadosRecebidos === true) {
-      if (this.dadosServer[`dados${this.setor}`] != undefined) {
-        this.produzidos = this.dadosServer[`dados${this.setor}`];
-        this.produzidos.metaP = this.dadosServer.metas[`metaP_${this.setor}`]
-      }
+
+    if (this.dadosServer[`dados${this.setor}`] != undefined) {
+      this.produzidos = this.dadosServer[`dados${this.setor}`];
+      this.produzidos.metaP = this.dadosServer.metas[`metaP_${this.setor}`]
+      this.produzidos.turno = this.dadosServer.turno
     }
-      setTimeout(this.pegaLargGraf, 1000);
-      this.valorMeta = this.metaP.split(" ")[2];
-    },
+
+    setTimeout(this.pegaLargGraf, 1000);
+    this.valorMeta = this.produzidos.metaP.split(" ")[2];
+  },
   watch: {
     dadosServer() {
       if (this.dadosServer[`dados${this.setor}`] != undefined) {
         this.produzidos = this.dadosServer[`dados${this.setor}`];
         this.produzidos.metaP = this.dadosServer.metas[`metaP_${this.setor}`];
+        this.produzidos.turno = this.dadosServer.turno
         this.dadosRecebidos = true;
       }
     },
@@ -995,7 +998,7 @@ export default {
       try {
         if (this.produzidos != undefined) {
           if (this.dadosRecebidos === false) {
-            this.valorMeta = this.metaP.split(" ")[2];
+            this.valorMeta = this.produzidos.metaP.split(" ")[2];
           }
           this.dadosRecebidos = true;
         }
