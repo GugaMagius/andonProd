@@ -71,7 +71,7 @@ module.exports.DadosIni = DadosIni
 
 const metas = {
 
-    metaP_PP: " >= 60",
+    metaP_PP: " >= 62",
     metaP_PL: " >= 32",
     metaP_EE: " >= 130",
     metaP_FK: " >= 130",

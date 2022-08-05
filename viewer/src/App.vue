@@ -127,6 +127,7 @@ export default {
 
     },
     AtualizaDados(dados) {
+      console.log("DADOS RECEBIDOS DO SERVER: ",dados)
       try {
         if (dados !== undefined) {
           this.dadosServer = dados;
@@ -159,7 +160,7 @@ export default {
           },
           {
             label: "Pintura Pó",
-            to: "/andon/PP"
+            to: "/pinturapo"
           },
           {
             label: "Pintura líquida",
@@ -167,7 +168,7 @@ export default {
           },
           {
             label: "Formação Kits",
-            to: "/formacaokits"
+            to: "/formacaokit"
           },
         ],
       },

@@ -4,20 +4,9 @@
       <div class="col-6 grid box painel">
         <div class="col-12 titulo">E-coat</div>
         <div class="telaReduzida col-12">
-          <!--
+
           <router-link to="/ecoat">
-            <Ecoat
-              :dadosServer="dadosServer"
-              :dadosRecebidos="dadosRecebidos"
-              :corOntem="corOntem"
-              :corHoje="corHoje"
-              :fdoOntem="fdoOntem"
-              :fdoHoje="fdoHoje"
-              :txtOntem="txtOntem"
-              :txtHoje="txtHoje"
-              :tamTxtO="tamTxtO"
-              :tamTxtH="tamTxtH"
-            />
+            <Ecoat :dadosServer="dadosServer"/>
           </router-link>
         </div>
       </div>
@@ -25,18 +14,7 @@
         <div class="col-12 titulo">Enganchamento</div>
         <div class="telaReduzida col-12">
           <router-link to="/enganchamento">
-            <Enganchamento
-              :dadosServer="dadosServer"
-              :dadosRecebidos="dadosRecebidos"
-              :corOntem="corOntem"
-              :corHoje="corHoje"
-              :fdoOntem="fdoOntem"
-              :fdoHoje="fdoHoje"
-              :txtOntem="txtOntem"
-              :txtHoje="txtHoje"
-              :tamTxtO="tamTxtO"
-              :tamTxtH="tamTxtH"
-            />
+            <Enganchamento :dadosServer="dadosServer"/>
           </router-link>
         </div>
       </div>
@@ -44,18 +22,7 @@
         <div class="col-12 titulo">Pintura Pó</div>
         <div class="telaReduzida col-12">
           <router-link to="/pinturapo">
-            <PinturaPo
-              :dadosServer="dadosServer"
-              :dadosRecebidos="dadosRecebidos"
-              :corOntem="corOntem"
-              :corHoje="corHoje"
-              :fdoOntem="fdoOntem"
-              :fdoHoje="fdoHoje"
-              :txtOntem="txtOntem"
-              :txtHoje="txtHoje"
-              :tamTxtO="tamTxtO"
-              :tamTxtH="tamTxtH"
-            />
+            <PinturaPo :dadosServer="dadosServer" />
           </router-link>
         </div>
       </div>
@@ -63,20 +30,8 @@
         <div class="col-12 titulo">Pintura Líquida</div>
         <div class="telaReduzida col-12">
           <router-link to="/pinturaliq">
-            <PinturaLiq
-              :dadosServer="dadosServer"
-              :dadosRecebidos="dadosRecebidos"
-              :corOntem="corOntem"
-              :corHoje="corHoje"
-              :fdoOntem="fdoOntem"
-              :fdoHoje="fdoHoje"
-              :txtOntem="txtOntem"
-              :txtHoje="txtHoje"
-              :tamTxtO="tamTxtO"
-              :tamTxtH="tamTxtH"
-            />
+            <PinturaLiq :dadosServer="dadosServer" />
           </router-link>
-          -->
         </div>
       </div>
 
@@ -85,35 +40,35 @@
 </template>
 
 <script>
-//import Ecoat from "@/telas/Ecoat.vue";
-//import PinturaPo from "@/telas/Pinturapo.vue";
-//import PinturaLiq from "@/telas/Pinturaliq.vue";
-//import Enganchamento from "@/telas/Enganchamento.vue";
+import Ecoat from "@/telas/Ecoat.vue";
+import PinturaPo from "@/telas/Pinturapo.vue";
+import PinturaLiq from "@/telas/Pinturaliq.vue";
+import Enganchamento from "@/telas/Enganchamento.vue";
 
 export default {
   name: "mosaico",
   data() {
     return {
       Titulo: " - Geral",
+      dadosRecebidos: false
     };
   },
+  watch: {
+    dadosServer() {
+      if (this.dadosServer != undefined && this.dadosServer != {}) {
+        this.dadosRecebidos = true
+      }
+    }
+
+  },
   components: {
-    //Ecoat,
-    //Enganchamento,
-    //PinturaPo,
-    //PinturaLiq,
+    Ecoat,
+    Enganchamento,
+    PinturaPo,
+    PinturaLiq,
   },
   props: {
     dadosServer: Object, // Pacote de dados do servidor
-    dadosRecebidos: Boolean, // Indica quando os dados foram recebidos do servidor
-    corOntem: String,
-    corHoje: String,
-    fdoOntem: String,
-    fdoHoje: String,
-    txtOntem: String,
-    txtHoje: String,
-    tamTxtO: Number,
-    tamTxtH: Number,
   },
 };
 </script>

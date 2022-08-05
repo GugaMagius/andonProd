@@ -59,13 +59,6 @@ async function mostraSemCad(lista) {
 setTimeout(mostraSemCad, 50000, semCadastro);
 
 
-
-// ********* Inicialização do arquivo de dados ***********
-var arqDados = ''
-var dadosCompl = require('./dados').dadosCompl
-module.exports.retornaDados = dadosCompl
-
-
 // ****** Lista de itens cadastrados no Datasul *****
 var vItemsList = {};
 
@@ -134,6 +127,10 @@ function verifHora(horaRec, turno) {
         return { turno: 0, dif: tempo }
     }
 }
+const tempoT1 = verifHora(config.turnos.Turno1.fim, 1).dif
+const tempoT2 = verifHora(config.turnos.Turno2.fim, 2).dif
+const tempoT3 = verifHora(config.turnos.Turno3.fim, 3).dif
+
 
 // Testes de turno para saber qual o turno
 function testeTurno(horaRec) {
@@ -164,148 +161,13 @@ function testeTurno(horaRec) {
 fEnviaEmailSemCad(listaSemCadCompl);
 
 
-// *********** Função de cálculo do turno atual ************
-
-function atualizaArq() {
-    return new Promise(
-        function (resolve2, reject) {
-
-
-
-
-            /* **************** CÁLCULO DA MÉDIA DE HOJE ****************** */
-            // TURNO 1
-            if (turnoAtual === 1) {
-                calcTurno().then(
-                    function (res) {
-
-                        medTmp = arqDados["Hoje"]["Turno1"]["soma"] / res
-
-                        resolve(arqDados["Hoje"]["Turno1"]["media"] = medTmp)
-
-
-                    }
-                )
-            } else {
-
-                Functions.calcDifHora(config.turnos.Turno1.inicio, config.turnos.Turno1.fim).then(
-                    function (res) {
-
-                        medTmp = arqDados["Hoje"]["Turno1"]["soma"] / res
-
-                        resolve(arqDados["Hoje"]["Turno1"]["media"] = medTmp)
-
-                    }
-                )
-
-            }
-
-
-            // TURNO 2
-
-            if (turnoAtual === 2) {
-                calcTurno().then(
-                    function (res) {
-
-                        medTmp = parseInt(arqDados["Hoje"]["Turno2"]["soma"]) / res
-
-                        resolve(arqDados["Hoje"]["Turno2"]["media"] = medTmp)
-
-                    }
-                )
-            } else {
-
-                Functions.calcDifHora(config.turnos.Turno2.inicio, config.turnos.Turno2.fim).then(
-                    function (res) {
-
-                        medTmp = arqDados["Hoje"]["Turno2"]["soma"] / res
-
-                        resolve(arqDados["Hoje"]["Turno2"]["media"] = medTmp)
-
-
-                    }
-                )
-            }
-
-
-
-            // TURNO 3
-
-            if (turnoAtual === 3) {
-                calcTurno().then(
-                    function (res) {
-
-                        medTmp = parseInt(arqDados["Hoje"]["Turno3"]["soma"]) / res
-
-                        resolve(arqDados["Hoje"]["Turno3"]["media"] = medTmp)
-
-
-                    }
-                )
-            } else {
-
-
-                Functions.calcDifHora(config.turnos.Turno3.inicio, config.turnos.Turno3.fim).then(
-                    function (res) {
-
-                        medTmp = arqDados["Hoje"]["Turno3"]["soma"] / res
-
-                        resolve(arqDados["Hoje"]["Turno3"]["media"] = medTmp)
-
-
-                    }
-                )
-            }
-
-
-
-
-
-            /* **************** CÁLCULO DA MÉDIA DE ONTEM ****************** */
-            // TURNO 1
-            Functions.calcDifHora(config.turnos.Turno1.inicio, config.turnos.Turno1.fim).then(
-                function (res) {
-
-                    medTmp = arqDados["Ontem"]["Turno1"]["soma"] / res
-
-                    arqDados["Ontem"]["Turno1"]["media"] = medTmp
-                }
-            )
-
-            // TURNO 2
-            Functions.calcDifHora(config.turnos.Turno2.inicio, config.turnos.Turno2.fim).then(
-                function (res) {
-
-                    medTmp = arqDados["Ontem"]["Turno2"]["soma"] / res
-
-                    arqDados["Ontem"]["Turno2"]["media"] = medTmp
-                }
-            )
-
-            // TURNO 3
-            Functions.calcDifHora(config.turnos.Turno3.inicio, config.turnos.Turno3.fim).then(
-                function (res) {
-
-                    medTmp = arqDados["Ontem"]["Turno3"]["soma"] / res
-
-                    arqDados["Ontem"]["Turno3"]["media"] = medTmp
-                }
-            )
-
-        }
-    )
-}
-
-
-
-
 // *********** LEITURA DOS DADOS DO BD E SEPARAÇÃO ************
 function respostaBD(string, destino) {
 
     bdMES.conectarMES(string).then(
         function (respostaBD) {
-            
-            let horaAtualCmp = moment().format(formato) // Hora atual completa
+
+            let horaAtualCmp = moment(new Date()).format(formato) // Hora atual completa
             let turnoAtual = testeTurno(horaAtualCmp).turno
 
             function extratDados(dadosBD) {
@@ -343,6 +205,7 @@ function respostaBD(string, destino) {
                                 }
 
                                 acc["Hoje"] = acc["Hoje"] || {}
+
                                 acc["Ontem"] = acc["Ontem"] || {}
 
                                 acc["Hoje"]["Turno1"] = acc["Hoje"]["Turno1"] || { soma: 0, media: 0, horarios: {} }
@@ -359,7 +222,7 @@ function respostaBD(string, destino) {
 
                                 if (diaReg2d === diaHoje2d) { // Verifica se o registro é de hoje
                                     quando = "Hoje"
- 
+
                                 } else if (diaReg2d === diaOntem2d) { // Verifica se o registro é de ontem
                                     quando = "Ontem"
                                 }
@@ -372,8 +235,6 @@ function respostaBD(string, destino) {
                                     acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += m2RegAtual
                                     acc[quando][`Turno${turnoReg}`]["soma"] += m2RegAtual
 
-
-                                    console.log(`Valor atual para ${quando} no turno ${turnoReg} na hora ${horaReg2d}: ${acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d]}`)
                                 }
 
                                 return acc
@@ -394,41 +255,57 @@ function respostaBD(string, destino) {
             extratDados(respostaBD).then(  // Calcula média
 
                 function (respostaED) {
-                    console.log(JSON.stringify(respostaED), destino)
 
                     //ioSocket.atualizaDados(respostaED, destino)
+
+                    respostaED["metaP"] = config.metas[`metaP_${destino.split("dados")[1]}`]
+
+                    respostaED["turnoAtual"] = turnoAtual
+
+                    respostaED["Ontem"]["Turno1"]["media"] = respostaED["Ontem"]["Turno1"]["soma"] / tempoT1
+
+                    respostaED["Ontem"]["Turno2"]["media"] = respostaED["Ontem"]["Turno2"]["soma"] / tempoT2
+
+                    respostaED["Ontem"]["Turno3"]["media"] = respostaED["Ontem"]["Turno3"]["soma"] / tempoT3
+
+
+
+                    let tempoT1Hoje
+                    let tempoT2Hoje
+                    let tempoT3Hoje
+
+                    turnoAtual = 1 ?  tempoT1Hoje = verifHora(horaAtualCmp,1).dif : tempoT1Hoje = tempoT1
+                    turnoAtual = 2 ?  tempoT2Hoje = verifHora(horaAtualCmp,2).dif : tempoT2Hoje = tempoT2
+                    turnoAtual = 3 ?  tempoT3Hoje = verifHora(horaAtualCmp,3).dif : tempoT3Hoje = tempoT3
+
+                    console.log(`
+                    - Tempo turno 1: ${tempoT1Hoje}
+                    - Turno 2: ${tempoT2Hoje}
+                    - Turno 3: ${tempoT3Hoje}
+                    `)
+
+                    respostaED["Hoje"]["Turno1"]["media"] = respostaED["Hoje"]["Turno1"]["soma"] / tempoT1Hoje
+
+                    respostaED["Hoje"]["Turno2"]["media"] = respostaED["Hoje"]["Turno2"]["soma"] / tempoT2Hoje
+
+                    respostaED["Hoje"]["Turno3"]["media"] = respostaED["Hoje"]["Turno3"]["soma"] / tempoT3Hoje
+
+
+                    respostaED["Hoje"]["somaDia"] = parseFloat(respostaED["Hoje"]["Turno1"]["soma"]) + parseFloat(respostaED["Hoje"]["Turno2"]["soma"]) + parseFloat(respostaED["Hoje"]["Turno3"]["soma"])
+
+                    respostaED["Ontem"]["somaDia"] = parseFloat(respostaED["Ontem"]["Turno1"]["soma"]) + parseFloat(respostaED["Ontem"]["Turno2"]["soma"]) + parseFloat(respostaED["Ontem"]["Turno3"]["soma"])
+
+                    let tempoT1h = !parseFloat(respostaED.Hoje.Turno1.media) > 0 ? 0 : respostaED.Hoje.Turno1.soma / respostaED.Hoje.Turno1.media
+                    let tempoT2h = !parseFloat(respostaED.Hoje.Turno2.media) > 0 ? 0 : respostaED.Hoje.Turno2.soma / respostaED.Hoje.Turno2.media
+                    let tempoT3h = !parseFloat(respostaED.Hoje.Turno3.media) > 0 ? 0 : respostaED.Hoje.Turno3.soma / respostaED.Hoje.Turno3.media
+                    let tempoT1o = !parseFloat(respostaED.Ontem.Turno1.media) > 0 ? 0 : respostaED.Ontem.Turno1.soma / respostaED.Ontem.Turno1.media
+                    let tempoT2o = !parseFloat(respostaED.Ontem.Turno2.media) > 0 ? 0 : respostaED.Ontem.Turno2.soma / respostaED.Ontem.Turno2.media
+                    let tempoT3o = !parseFloat(respostaED.Ontem.Turno3.media) > 0 ? 0 : respostaED.Ontem.Turno3.soma / respostaED.Ontem.Turno3.media
+
+                    respostaED["Hoje"]["mediaDia"] = respostaED["Hoje"]["somaDia"] / (tempoT1h + tempoT2h + tempoT3h)
+                    respostaED["Ontem"]["mediaDia"] = respostaED["Ontem"]["somaDia"] / (tempoT1o + tempoT2o + tempoT3o)
+
                     ioSocket.dadosServer[destino] = respostaED
-
-                    ioSocket.dadosServer["metas"] = config.metas
-
-                    ioSocket.dadosServer["turno"] = turnoAtual 
-
-
-                    /*
-                                        try {
-                                            let statusConex = ioSocket.verifConexao();
-                                            if (statusConex === true) {
-                    
-                                                arqDados["Hoje"]["somaDia"] = parseFloat(arqDados["Hoje"]["Turno1"]["soma"]) + parseFloat(arqDados["Hoje"]["Turno2"]["soma"]) + parseFloat(arqDados["Hoje"]["Turno3"]["soma"])
-                                                arqDados["Ontem"]["somaDia"] = parseFloat(arqDados["Ontem"]["Turno1"]["soma"]) + parseFloat(arqDados["Ontem"]["Turno2"]["soma"]) + parseFloat(arqDados["Ontem"]["Turno3"]["soma"])
-                                                let tempoT1h = !parseFloat(arqDados.Hoje.Turno1.media) > 0 ? 0 : arqDados.Hoje.Turno1.soma / arqDados.Hoje.Turno1.media
-                                                let tempoT2h = !parseFloat(arqDados.Hoje.Turno2.media) > 0 ? 0 : arqDados.Hoje.Turno2.soma / arqDados.Hoje.Turno2.media
-                                                let tempoT3h = !parseFloat(arqDados.Hoje.Turno3.media) > 0 ? 0 : arqDados.Hoje.Turno3.soma / arqDados.Hoje.Turno3.media
-                                                let tempoT1o = !parseFloat(arqDados.Ontem.Turno1.media) > 0 ? 0 : arqDados.Ontem.Turno1.soma / arqDados.Ontem.Turno1.media
-                                                let tempoT2o = !parseFloat(arqDados.Ontem.Turno2.media) > 0 ? 0 : arqDados.Ontem.Turno2.soma / arqDados.Ontem.Turno2.media
-                                                let tempoT3o = !parseFloat(arqDados.Ontem.Turno3.media) > 0 ? 0 : arqDados.Ontem.Turno3.soma / arqDados.Ontem.Turno3.media
-                    
-                                                arqDados["Hoje"]["mediaDia"] = arqDados["Hoje"]["somaDia"] / (tempoT1h + tempoT2h + tempoT3h)
-                                                arqDados["Ontem"]["mediaDia"] = arqDados["Ontem"]["somaDia"] / (tempoT1o + tempoT2o + tempoT3o)
-                    
-                                                //console.log("ARQUIVO DE DADOS PRINCIPAL: ", dadosCompl)
-                                            }
-                    
-                                            //arqDados = DadosIni
-                                        } catch (err) {
-                                            console.log("Falha ao conectar ao cliente: ", err, " - Verificar se existe algum cliente conectado")
-                                        }
-                                        */
 
                 }
             )
