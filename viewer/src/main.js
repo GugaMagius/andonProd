@@ -29,6 +29,7 @@ import Badge from 'primevue/badge';
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Menu from 'primevue/menu';
+import TabMenu from 'primevue/tabmenu';
 import TieredMenu from 'primevue/tieredmenu';
 import Calendar from 'primevue/calendar';
 import MultiSelect from 'primevue/multiselect';
@@ -78,6 +79,7 @@ app.component('Badge', Badge);
 app.component('InputNumber', InputNumber);
 app.component('InputText', InputText)
 app.component('Menu', Menu);
+app.component('TabMenu', TabMenu);
 app.component('TieredMenu', TieredMenu);
 app.component('Calendar', Calendar);
 app.component('MultiSelect', MultiSelect);

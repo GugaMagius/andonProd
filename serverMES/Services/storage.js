@@ -10,7 +10,7 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   module.exports.setLS = setLS
 
   function getLS(key) {
-    return JSON.parse(localStorage.getItem(key))
+    return localStorage.getItem(key)
 
   }
   module.exports.getLS = getLS

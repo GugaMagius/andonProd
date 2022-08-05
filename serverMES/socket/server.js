@@ -15,7 +15,7 @@ const Functions = require('../Services/functions')
 const versaoMES = require('../package.json').version
 const clientEcoat = require('./client')
 const bdMES = require('../BD/MES')
-const nedb = require('../BD/localBD')
+const storage = require('../Services/storage')
 
 const main = require('../server')
 
@@ -155,22 +155,20 @@ try {
 
 
         // Socket para inserir novo valor no banco de dados NeDB
-        socket.on("inserir", function (dados) {
-            let varGrava = { campo1: dados }
-            console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(varGrava)}`)
-
-            nedb.gravaBD(varGrava);
+        socket.on("gravarConfig", function (dados) {
+            console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)}`)
+            storage.setLS("metas", JSON.parse(dados))
         })
 
-        // Socket para ler valores do banco de dados NeDB
-        socket.on("leituraBD", function () {
+        // Socket para ler valores do banco de dados NeDB 
+        socket.on("leituraConfig", function () {
+            let respConfig = {}
+            
+            respConfig = JSON.parse(storage.getLS("metas"))
 
-            nedb.leBD().then(
-                function (val) {
-                    console.log("Valor recebido: ", val)
-                    io.emit("respostaBD", val)
-                }
-            )
+            console.log("Valor recebido: ", respConfig["metaPP"])
+            io.emit("respStorage", respConfig)
+
         })
         // Função para resposta dos dados consultados ao cliente que solicitou
 
