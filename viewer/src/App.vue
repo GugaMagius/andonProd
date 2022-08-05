@@ -164,7 +164,7 @@ export default {
           },
           {
             label: "Pintura líquida",
-            to: "/andon/PL"
+            to: "/pinturaliq"
           },
           {
             label: "Formação Kits",

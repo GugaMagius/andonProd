@@ -14,6 +14,9 @@ const config = require('./configuracao') //Configuração dos turnos (turnos / D
 // **** Conexão com arquivo de funções *********
 const Functions = require('./Services/functions')
 
+const storage = require('./Services/storage')
+storage
+
 
 
 // ********** Sem Cadastro ***************
@@ -38,6 +41,7 @@ function fEnviaEmailSemCad(lista) {
 
     }
 }
+
 var msg
 var listaSemCadCompl
 
