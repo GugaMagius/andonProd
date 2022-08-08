@@ -89,10 +89,9 @@ export default {
 
     sListaCTs(lista) {
       this.listaCTs = lista;
-      this.listaCTs.unshift({ CT: "*Enganchamento E-coat (Apont. Bastidor)" , IDResource: "EE", CC: 'ENGANCHAMENTO E-COAT', IDSector: 5000, Depto: 'ENGANCHAMENTO E-COAT', IDArea: 5000 })
-      this.listaCTs.unshift({ CT: "*Linha E-coat (Supervisório)", IDResource: "ecoat", CC: 'E-COAT (SUPERVISORIO)', IDSector: 5001, Depto: 'E-COAT (SUPERVISORIO)', IDArea: 5001 })
+      this.listaCTs.unshift({ CT: "*Enganchamento E-coat" , IDResource: "EE", CC: 'ENGANCHAMENTO E-COAT', IDSector: 5000, Depto: 'ENGANCHAMENTO E-COAT', IDArea: 5000 })
+      this.listaCTs.unshift({ CT: "*Linha E-coat (Bastidor)", IDResource: "ecoat", CC: 'E-COAT (SUPERVISORIO)', IDSector: 5001, Depto: 'E-COAT (SUPERVISORIO)', IDArea: 5001 })
 
-      
       this.listaRecReceb = true;
     },
 
@@ -289,8 +288,11 @@ body {
   padding-top: 0px;
   padding-bottom: 0px;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
+
 </style>
+
+
 
 

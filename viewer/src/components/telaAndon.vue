@@ -82,7 +82,6 @@
                   </tr>
                 </table>
               </div>
-              {{ produzidos.metaP.split(" ")[2] }}
               <div class="grid">
                 <div class="col-4 box">
                   <div class="grid"></div>
@@ -1073,7 +1072,10 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
+
 .pulsar {
   animation: blink 0.8s linear infinite;
 }
@@ -1082,24 +1084,6 @@ export default {
   50% {
     opacity: 0;
   }
-}
-
-.fonteOK {
-  color: #42a500;
-}
-
-.fonteNOK {
-  color: #ff0000;
-}
-
-.fdoOK {
-  background-color: #42a500;
-  color: white;
-}
-
-.fdoNOK {
-  background-color: #ff0000;
-  color: white;
 }
 
 .mesclVert {
@@ -1130,14 +1114,6 @@ export default {
 
 .conteudo {
   height: 100%;
-}
-
-.colunas {
-  display: table;
-  margin-top: 0px;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
 }
 
 .fonteMaior {
@@ -1193,26 +1169,12 @@ export default {
   padding: 0;
 }
 
-.grafico {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 0;
-  padding-bottom: auto;
-  margin-top: -0.5vh;
-}
 
 .geral {
   padding-top: 0%;
   padding-bottom: 0%;
 }
 
-.quadro {
-  background-color: aqua;
-  display: table-cell;
-  height: 100%;
-  width: 100%;
-}
 
 .titulo {
   display: flex;
@@ -1235,8 +1197,4 @@ export default {
     0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
-.span {
-  margin: 0;
-  padding: 0;
-}
 </style>

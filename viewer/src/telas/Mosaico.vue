@@ -1,5 +1,5 @@
 <template>
-  <div class="flexgrid-demo p-p-2">
+  <div class="flexgrid-demo semscrool p-p-2">
     <div class="grid" v-if="dadosRecebidos">
       <div class="col-6 grid box painel">
         <div class="col-12 titulo">E-coat</div>
@@ -74,6 +74,9 @@ export default {
 </script>
 
 <style scoped>
+.semscrool{
+  overflow-x: hidden;
+}
 .painel {
   height: 10vh;
   width: 45vw;
@@ -141,82 +144,3 @@ a:active {
   text-decoration: none;
 }
 </style>
-<!--
-<style scoped>
-
-.box {
-  background-color: aqua;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  margin-top: auto;
-  margin-bottom: auto;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    0 1px 3px 0 rgba(0, 0, 0, 0.12);
-}
-
-.box-stretched {
-  height: 100%;
-}
-
-.telaReduzida {
-  zoom: 0.65;
-  -moz-transform: scale(0.65);
-  -webkit-transform: scale(0.65);
-  transform: scale(0.65);
-  width: 99%;
-}
-
-.grid {
-  position: absolute;
-  padding: 0px;
-  padding-right: -200px;
-  margin-left: 0vw;
-  margin-right: -200px;
-  width: 100%;
-  margin-top: -8vh;
-}
-
-.p-col-6 {
-  width: 49%;
-  padding: 0px;
-  margin: 0px;
-  margin-top: 0vh;
-  margin-bottom: -15vh;
-  padding-left: 0vw;
-  padding-right: -8vw;
-  margin-left: -12vw;
-  margin-right: -15vw;
-}
-
-/* unvisited link */
-a:link {
-  color: var(--text-color);
-  text-decoration: none;
-}
-
-/* visited link */
-a:visited {
-  color: var(--text-color);
-  text-decoration: none;
-}
-
-/* mouse over link */
-a:hover {
-  color: var(--text-color);
-  text-decoration: none;
-}
-
-/* selected link */
-a:active {
-  color: var(--text-color);
-  text-decoration: none;
-}
-</style>
--->
-

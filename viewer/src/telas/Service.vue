@@ -2,7 +2,7 @@
   <div>
 <TabMenu :model="itemsMenu" />
 
-<router-view name="panel"></router-view>
+<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTsC="listaCTs"></router-view>
 
   </div>
 
@@ -11,6 +11,10 @@
 
 export default {
   name: "Service",
+  props: {
+    listaCTsReceb: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
+    listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
+  },
 
   data: function () {
     return {
@@ -25,4 +29,5 @@ export default {
 
 </script>
 <style>
+
 </style>

@@ -53,23 +53,30 @@ module.exports.verifConexao = verifConexao
 
 // Lista de Recussos e MGrps*********/
 var listaCT = [] // Centro de trabalho
-var listaMGrps = []
+var listaCTsMeta = [] // Centro de trabalho
+
 
 const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code, st.Name as CC, st.IDSector, ar.Name as Depto, ar.IDArea from TBLResource ct
 inner join TBLManagerGrp mg on (ct.IDManagerGrp = mg.IDManagerGrp)
 inner join TBLSector st on (mg.IDSector = st.IDSector)
 inner join TBLArea ar on (st.IDArea = ar.IDArea)
-WHERE ar.Code LIKE '11%'`
+WHERE ar.Code LIKE '11%' OR ct.Code LIKE '1014001'`
 
 bdMES.selectBD(queryCTs).then(
     function (res) {
-        listaCT.push({ IDResource: "EE", Name: "ENGANCHAMENTO E-COAT" })
+        //listaCT.push({ IDResource: "EE", Name: "ENGANCHAMENTO E-COAT" })
         listaCT = res[0].recordset
+        /*
+        listaCT = listaCT.reduce((acc, index)=> {
+            let registro = index
+            registro["metaP"] = 0
+            acc.push(registro)
+            return acc
+        },[])
+        */
     }
 )
 //**************************************/
-
-
 
 // ########################################################################
 // ************************************************************************
@@ -99,8 +106,6 @@ try {
 
         // Atualiza lista de MGrps e CTs no cliente
         socket.emit("sListaCTs", listaCT)
-        socket.emit("sListaMGrps", listaMGrps)
-
 
         // Intervalo para atualizar dados no cliente ************************** */
         setInterval(atualizaCliente, 15000)
@@ -153,12 +158,12 @@ try {
         module.exports.atualizaDados = atualizaDados
 
 
-
         // Socket para inserir novo valor no banco de dados NeDB
         socket.on("gravarConfig", function (dados) {
             console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)}`)
             storage.setLS("metas", JSON.parse(dados))
         })
+
 
         // Socket para ler valores do banco de dados NeDB 
         socket.on("leituraConfig", function () {
@@ -170,8 +175,9 @@ try {
             io.emit("respStorage", respConfig)
 
         })
-        // Função para resposta dos dados consultados ao cliente que solicitou
 
+        
+        // Função para resposta dos dados consultados ao cliente que solicitou
         function enviarResposta(dados) {
 
             io.emit("resConsDB", dados)

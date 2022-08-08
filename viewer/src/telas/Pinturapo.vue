@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="semScrool">
     <TelaAndon
     :dadosServer="dadosServer"
     :ecoat="false"
@@ -29,4 +29,12 @@ export default {
 </script>
 
 <style scoped>
+
+
+.semScrool{
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+}
+
 </style>

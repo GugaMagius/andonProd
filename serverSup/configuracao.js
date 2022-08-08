@@ -18,6 +18,5 @@ const turnos = {
  }
 
  
-
 module.exports.turnos = turnos
 

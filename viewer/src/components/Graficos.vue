@@ -48,6 +48,7 @@ export default {
       } else {
         this.basicData.datasets[1].backgroundColor[0] = this.corNOK;
       }
+      this.$refs.grafico.refresh();
     },
     Turno2m() {
       this.basicData.datasets[1].data[1] = this.Turno2m;
@@ -56,6 +57,7 @@ export default {
       } else {
         this.basicData.datasets[1].backgroundColor[1] = this.corNOK;
       }
+      this.$refs.grafico.refresh();
     },
     Turno3m() {
       this.basicData.datasets[1].data[2] = this.Turno3m;
@@ -64,6 +66,7 @@ export default {
       } else {
         this.basicData.datasets[1].backgroundColor[2] = this.corNOK;
       }
+      this.$refs.grafico.refresh();
     },
 
   },

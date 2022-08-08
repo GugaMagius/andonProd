@@ -42,6 +42,7 @@ import ProgressBar from 'primevue/progressbar';
 import Chips from 'primevue/chips';
 import RadioButton from 'primevue/radiobutton';
 import Checkbox from 'primevue/checkbox';
+import ScrollPanel from 'primevue/scrollpanel';
 import Chart from 'primevue/chart';
 import {ref} from 'vue';
 
@@ -92,6 +93,7 @@ app.component('ProgressBar', ProgressBar);
 app.component('Chips', Chips);
 app.component('RadioButton', RadioButton);
 app.component('Checkbox', Checkbox);
+app.component('ScrollPanel', ScrollPanel);
 app.component('Chart', Chart);
 //app.component(ChartDataLabels)
 
