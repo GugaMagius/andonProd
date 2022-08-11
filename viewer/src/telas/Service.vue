@@ -2,7 +2,7 @@
   <div>
 <TabMenu :model="itemsMenu" />
 
-<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTsC="listaCTs"></router-view>
+<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTs="listaCTs"></router-view>
 
   </div>
 

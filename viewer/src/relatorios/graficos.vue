@@ -669,11 +669,11 @@ export default {
   margin: 1%;
 }
 
+.inline {
+  display: inline;
+}
 .selectTurno {
   margin: 1%;
 }
 
-.inline {
-  display: inline;
-}
 </style>
