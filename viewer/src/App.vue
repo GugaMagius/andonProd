@@ -1,12 +1,14 @@
 <template>
   <div class="Principal">
+    
+    
     <!-- FAIXA DE TÍTULO (FIXA )-->
     <div class="Titulo">
       <div class="logo">
         <img src="../public/logoMagius.png" style="width: auto; height: auto; max-width: 300px; max-height: 300px" />
       </div>
 
-      <h2>Andon {{ $route.name }} &nbsp;</h2> 
+      <h2>Andon {{ $route.name }} &nbsp;</h2>
       <div>{{ isConnected ? "" : " *** Servidor Desconectado ***" }}</div>
 
       <div class="botaoinicio">
@@ -16,7 +18,8 @@
     </div>
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
-      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb" :setor="$route.params.Setor" />
+      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb"
+        :setor="$route.params.Setor" :metas="metas" />
     </div>
 
     <!-- RODAPÉ -->
@@ -43,7 +46,7 @@ export default {
   },
   data: function () {
     return {
-      id:'',
+      id: '',
       listaCTs: [], // Lista completa de MGrps consultadas no BD do MES
       listaRecReceb: false, // Sinaliza se os dados dos MGrps foram recebidos para mostrar o formulário
       versaoViewer: '',
@@ -61,7 +64,8 @@ export default {
       tamTxtH: 2.7,
       fdoOntem: "var(--surface-50)",
       fdoHoje: "var(--surface-0)",
-      setorAndon: ''
+      setorAndon: '',       
+      metas: {}, // Valores temporários de metas
     };
   },
   methods: {
@@ -74,12 +78,9 @@ export default {
 
 
   },
-  events: {
-    teste(){
-      alert("Mensagem recebida")
-    }
-  },
   sockets: {
+
+    // ID enviado pelo server para conexões socket
     id(val) {
       if (this.id === 0) {
         this.id = val
@@ -87,19 +88,27 @@ export default {
 
     },
 
+    // Resposta do storage com as configurações
+    respStorage(valor) {
+
+        this.metas = valor
+
+    },
+
+    // Resposta com a lista de Centros de trabalhos
     sListaCTs(lista) {
-      lista.unshift({ CT: "*Enganchamento E-coat" , IDResource: "EE", CC: 'ENGANCHAMENTO E-COAT', IDSector: 5000, Depto: 'ENGANCHAMENTO E-COAT', IDArea: 5000 })
+      lista.unshift({ CT: "*Enganchamento E-coat", IDResource: "EE", CC: 'ENGANCHAMENTO E-COAT', IDSector: 5000, Depto: 'ENGANCHAMENTO E-COAT', IDArea: 5000 })
       lista.unshift({ CT: "*Linha E-coat (Bastidor)", IDResource: "ecoat", CC: 'E-COAT (SUPERVISORIO)', IDSector: 5001, Depto: 'E-COAT (SUPERVISORIO)', IDArea: 5001 })
 
-      Promise.resolve(this.listaCTs = lista.reduce((acc, el)=>{
+      Promise.resolve(this.listaCTs = lista.reduce((acc, el) => {
         acc[el.IDResource] = el
         return acc
 
-      },{}))
-      .then(
-        this.listaRecReceb = true,
-      )
-      
+      }, {}))
+        .then(
+          this.listaRecReceb = true,
+        )
+
     },
 
     connect() {
@@ -125,6 +134,8 @@ export default {
       this.socketMessage = data;
       this.msgToServer();
     },
+
+    // Resposta com as versões dos servers
     Versoes([versaoMES, versaoSUP]) {
       console.log("VersãoMES: ", versaoMES, "VersãoSup: ", versaoSUP, "Versão Viewer: ", this.versaoViewer)
       this.versaoMES = versaoMES
@@ -132,8 +143,10 @@ export default {
 
 
     },
+
+    // Atualização de dados do server para os clientes
     AtualizaDados(dados) {
-      console.log("DADOS RECEBIDOS DO SERVER: ",dados)
+      console.log("DADOS RECEBIDOS DO SERVER: ", dados)
       try {
         if (dados !== undefined) {
           this.dadosServer = dados;
@@ -145,6 +158,8 @@ export default {
       }
     },
   },
+
+  // Configuração do MENU
   setup() {
     const menu = ref();
 
@@ -297,7 +312,6 @@ body {
   overflow-x: hidden;
   overflow-y: scroll;
 }
-
 </style>
 
 

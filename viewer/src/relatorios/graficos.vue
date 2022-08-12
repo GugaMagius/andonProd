@@ -394,7 +394,7 @@ export default {
 
 
       // Filtra Departamentos disponíveis e elimina duplicados
-      this.listaDeptos = this.listaCTs.reduce((acc, index) => {
+      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => {
         acc["Codigos"] = acc["Codigos"] || []
         acc["Valores"] = acc["Valores"] || []
         if (!acc["Codigos"].includes(index.IDArea) && index.IDArea < 5000) {
@@ -406,7 +406,7 @@ export default {
 
 
       // Filtra Centros de Custo (Setores) e elimina duplicados
-      this.listaCCs = this.listaCTs.reduce((acc, index) => {
+      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => {
         acc["Codigos"] = acc["Codigos"] || []
         acc["Valores"] = acc["Valores"] || []
         if (!acc["Codigos"].includes(index.IDSector) && index.IDArea < 5000) {

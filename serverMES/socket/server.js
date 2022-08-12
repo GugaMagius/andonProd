@@ -161,20 +161,28 @@ try {
         // Socket para inserir novo valor no banco de dados NeDB
         socket.on("gravarConfig", function (dados) {
             console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)}`)
-            storage.setLS("metas", JSON.parse(dados))
+            storage.setLS("metas", dados)
         })
 
 
-        // Socket para ler valores do banco de dados NeDB 
-        socket.on("leituraConfig", function () {
+        // Leitura das configurações de meta
+        function leituraConfig(){
             let respConfig = {}
             
-            respConfig = JSON.parse(storage.getLS("metas"))
+            try {
+                respConfig = JSON.parse(storage.getLS("metas"))
 
-            console.log("Valor recebido: ", respConfig["metaPP"])
+            } catch (err) {
+                Functions.escreverLog("Falha ao gravar arquivo de configuração. Erro: ", err)
+            }
+
             io.emit("respStorage", respConfig)
+        }
+        leituraConfig();
 
-        })
+        
+        // Socket para ler valores do banco de dados NeDB 
+        socket.on("leituraConfig", leituraConfig)
 
         
         // Função para resposta dos dados consultados ao cliente que solicitou

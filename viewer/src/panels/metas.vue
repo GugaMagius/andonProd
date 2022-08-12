@@ -1,5 +1,6 @@
 <template>
   <div class="meta">
+{{selecDepto}} {{selecCC}}
     <div class="linhaSuperior grid">
       <!-- Seleção de Unidade  -->
       <div class="inline col-6">
@@ -30,14 +31,14 @@
       <div class="selectDepto col-3 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="listaFDeptos" optionValue="IDArea"
-            optionLabel="Name" :filter="true" />
+            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
+            optionValue="IDArea" optionLabel="Name" :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
 
 
-      <!-- Seleção do MGrp (Setor - Centro de Custo) -->
+      <!-- Seleção do MGrp (Setor - Centro de Custo)  -->
       <div class="selectMGrp col-3 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
@@ -47,7 +48,7 @@
         </span>
       </div>
 
-      <!-- Seleção do CT -->
+      <!-- Seleção do CT 
       <div class="selectCT col-5 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
@@ -55,32 +56,54 @@
             optionLabel="CT" :filter="true" />
           <label for="selCT"> Centro de Trabalho: </label>
         </span>
-      </div>
-    </div>
+      </div> -->
+
+    </div> 
 
 
     <!-- Data Table editável -->
     <div>
       <ScrollPanel style="width: 100%; height: 70vh" class="custom">
-      <!-- Se meta por Centro de Trabalho -->
+        <!-- Se meta por Centro de Trabalho -->
         <DataTable v-if="metaPor === 'CT'" :value="listaFCTs" editMode="cell" :scrollable="true" scrollHeight="flex"
           @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
           sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
           <Column field="Depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="IDResource" header="IDResource" style="min-width:15%" :sortable="true"></Column>
           <Column field="CC" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
           <Column field="CT" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metaP" header="Meta" style="min-width:15%" :sortable="true">
+          <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" autofocus />
+            </template>
+          </Column>
+          <Column field="metaM2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" autofocus />
+            </template>
+          </Column>
+          <Column field="altName" header="Nome Alternativo" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputText v-model="data[field]" autofocus />
             </template>
           </Column>
         </DataTable>
         <!-- Se meta por Departamento -->
-        <DataTable v-if="metaPor === 'depto'" :value="listaFDeptos" editMode="cell" :scrollable="true" scrollHeight="flex"
-          @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
-          sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
+        <DataTable v-if="metaPor === 'depto'" :value="listaFDeptos" editMode="cell" :scrollable="true"
+          scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
+          responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
           <Column field="Name" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metaP" header="Meta" style="min-width:15%" :sortable="true">
+          <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" autofocus />
+            </template>
+          </Column>
+          <Column field="metaM2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" autofocus />
+            </template>
+          </Column>
+          <Column field="altName" header="Nome Alternativo" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputText v-model="data[field]" autofocus />
             </template>
@@ -89,21 +112,23 @@
       </ScrollPanel>
     </div>
 
+    {{ listaFCTs }}
   </div>
 
 </template>
 <script>
 
+
 export default {
   name: "Metas",
   data: function () {
     return {
-      listaFCTs: [], // Lista de Centros de Trabalho Filtrados para DataTable
+      listaFCTs: {}, // Lista de Centros de Trabalho Filtrados para DataTable
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [], // Lista de Centros de Custo
       listaFCCs: [], // Lista de Centros de Custo Filtrados
       listaDeptos: [], // Lista de Departamentos
-      listaFDeptos: [], // Lista de Departamentos Filtrados
+      listaFDeptos: {}, // Lista de Departamentos Filtrados
       listaCTmetas: {}, // Lista de Centros de trabalho com as respectivas metas
       selecCT: [], // Centros de Trabalho Selecionados
       selecCC: [], // Centros de Custos Selecionados
@@ -111,50 +136,103 @@ export default {
       valorGravar: '',
       respConfig: '',
       metaPor: "depto", // Seletor para configuração da meta, Por DEPARTAMENTO ou por CENTRO DE TRABALHO
-      metaDepto: {}, // Valores temporários de meta por departamento
-      metaCT: {} // Valores temporários de meta por Centro de Trabalho
+      metasEnv: { // Arquivo de metas para enviar ao server
+        metaCT: {}, // Valores temporários de meta por Centro de Trabalho
+        metaDepto: {} // Valores temporários de meta por departamento
+      }
     }
   },
+
   mounted: function () {
-    this.toInicializaMenu();
+    this.toinitVar();
+    this.metasEnv = this.metasRec
+    this.atualizaConfig();
+
   },
 
-watch: {
+  watch: {
 
     listaCTsReceb() {
 
-      this.inicializaMenu();
+      this.initVar();
+      this.atualizaConfig();
 
+    },
+    metasRec() {
+      this["metasEnv"]["metaCT"] = this.metasRec.metaCT || {};
+      this["metasEnv"]["metaDepto"] = this.metasRec.metaDepto || {};
+      this.atualizaConfig();
     }
 
   },
+
 
   props: {
     listaCTsRecebC: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
+    metasRec: Object // Variável com os valores de metas configurados (Storage)
   },
+
 
   methods: {
 
+    atualizaConfig() {
+      try {
+
+        if (this.metasRec.metaDepto != undefined) {
+
+          Object.keys(this.metasRec.metaDepto).forEach(element => {
+
+            this.listaFDeptos[element] = Object.assign(this.listaFDeptos[element], this.metasRec.metaDepto[element])
+
+          })
+
+        }
+        if (this.metasRec.metaCT != undefined) {
+
+          Object.keys(this.metasRec.metaCT).forEach(element => {
+
+            this.listaFCTs[element] = Object.assign(this.listaFCTs[element], this.metasRec.metaCT[element])
+
+          })
+
+        }
+      } catch (err) {
+        let tempoTentativa = 2000
+        console.log("falha ao tentar atualizar variáveis. Erro: ", err, " - Iniciando nova tentativa em ", tempoTentativa, " segundos")
+        setTimeout(this.atualizaConfig, tempoTentativa)
+      }
+
+    },
+
     onCellEditComplete(event) {
-      let { data, newValue } = event;
+      let { data, newValue, field } = event;
+      console.log("#$#$#$# EVENTO:", event)
 
       if (this.metaPor === "depto") {
-        this.metaDepto[data.IDArea] = newValue
-      this.listaFDeptos[data.IDArea]["metaP"] = newValue
+        this["metasEnv"]["metaDepto"][data.IDArea] = this["metasEnv"]["metaDepto"][data.IDArea] || {}
+        this["metasEnv"]["metaDepto"][data.IDArea][field] = newValue || 0
+        this.listaFDeptos[data.IDArea][field] = newValue
+        this.$socket.emit("gravarConfig", this.metasEnv)
+
       } else {
-        this.metaCT[data.IDResource] = newValue
-      this.listaFCTs[data.IDResource]["metaP"] = newValue
+
+        this["metasEnv"]["metaCT"][data.IDResource] = this["metasEnv"]["metaCT"][data.IDResource] || {}
+        this["metasEnv"]["metaCT"][data.IDResource][field] = newValue || 0
+        this.listaFCTs[data.IDResource][field] = newValue
+        this.$socket.emit("gravarConfig", this.metasEnv)
+
       }
-      
+
+
     },
-    toInicializaMenu() {
+    toinitVar() { // TimeOut para inicializar variáveis
 
       if (this.listaCTsRecebC === true) {
-        this.inicializaMenu();
+        this.initVar();
       } else {
         // Caso não recebido a lista ainda, faz nova tentativa em 10 segundos
-        setTimeout(this.toInicializaMenu, 2000)
+        setTimeout(this.toinitVar, 2000)
       }
 
     },
@@ -165,14 +243,12 @@ watch: {
     ler() {
       this.$socket.emit("leituraConfig")
     },
-    inicializaMenu() {
+    initVar() {
 
       // Atualiza lista de itens filtrados dos Centros de Trabalho
       this.listaFCTs = this.listaCTs
 
       this.listaFCTsM = this.listaFCTs
-
-      console.log(this.listaCTs)
 
       // Filtra Departamentos disponíveis e elimina duplicados
       this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => {
@@ -197,8 +273,36 @@ watch: {
         return acc
       }, {})
 
-      this.listaFDeptos = Object.values(this.listaDeptos.Valores)
+      this.listaFDeptos = this.listaDeptos.Valores
       this.listaFCCs = this.listaCCs.Valores
+
+    },
+
+    atualizaFCTs() {
+      console.log("$%##$%%#$%$#$ Tentativa de atualização da lista de CTS", this.listaCTs)
+
+
+
+      try {
+        
+        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index)=>{
+
+          //console.log(`${this.selecDepto.indexOf(index.IDArea)} ${this.selecDepto.length === 0} ${this.selecCC.indexOf(index.IDSector)} ${this.selecCC.lenght === 0} `)
+
+           if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) && (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0 )) {
+            acc[index.IDResource] = index
+           } 
+
+          return acc
+        },{})
+
+      } catch (err) {
+        console.log("Falha ao filtrar Centros de Trabalho: ", err)
+      }
+
+
+
+
 
     },
     atualizaMenu(seletor) {
@@ -206,11 +310,11 @@ watch: {
 
       if (seletor === "Depto") {
 
-if (this.metaPor === "CT") {
+        if (this.metaPor === "CT") {
 
-        this.$refs.selectCT.filterValue = null;
+          //this.$refs.selectCT.filterValue = null;
 
-}
+        }
 
         if (this.selecDepto.length === 0) {
 
@@ -218,7 +322,9 @@ if (this.metaPor === "CT") {
 
           this.selecCC = []
 
-          this.listaFCTs = this.listaCTs
+          //this.listaFCTs = this.listaCTs
+
+          this.atualizaFCTs()
 
           this.listaFCTsM = this.listaCTs
 
@@ -230,23 +336,25 @@ if (this.metaPor === "CT") {
 
           this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
 
-          this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
+          //this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
+          this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
 
-          this.selecCT = this.listaFCTs.reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 
         }
 
       } else if (seletor === "CC") {
 
-        this.$refs.selectCT.filterValue = null;
+        //this.$refs.selectCT.filterValue = null;
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
 
         if (this.selecCC.length === 0) {
 
-          this.listaFCTs = this.listaCTs
+          //this.listaFCTs = this.listaCTs
+          this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
 
@@ -254,11 +362,12 @@ if (this.metaPor === "CT") {
 
         } else {
 
-          this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
+          //this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
+          this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
 
-          this.selecCT = this.listaFCTs.reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 
         }
 
@@ -270,15 +379,18 @@ if (this.metaPor === "CT") {
 
         if (this.selecCT.length === 0) {
 
-          this.listaFCTs = this.listaCTs
+          //this.listaFCTs = this.listaCTs
+
+          this.atualizaFCTs()
 
           //this.selecCT = []
 
         } else {
 
-          this.listaFCTs = this.listaCTs.filter((item => { return (this.selecCT.indexOf(item.IDResource) != -1) }))
+          //this.listaFCTs = this.listaCTs.filter((item => { return (this.selecCT.indexOf(item.IDResource) != -1) }))
+          this.atualizaFCTs()
 
-          //this.selecCT = this.listaFCTs.reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          //this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 
         }
 
@@ -313,9 +425,7 @@ if (this.metaPor === "CT") {
   padding: 1.1%;
 }
 
-.meta{
+.meta {
   overflow-x: hidden;
 }
-
-
 </style>
