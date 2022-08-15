@@ -1,6 +1,6 @@
 <template>
   <div class="meta">
-{{selecDepto}} {{selecCC}}
+    {{listaDeptos}}
     <div class="linhaSuperior grid">
       <!-- Seleção de Unidade  -->
       <div class="inline col-6">
@@ -31,8 +31,8 @@
       <div class="selectDepto col-3 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
-            optionValue="IDArea" optionLabel="Name" :filter="true" />
+            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
+            optionValue="IDArea" optionLabel="Depto" :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -42,23 +42,23 @@
       <div class="selectMGrp col-3 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-            @change="atualizaMenu('CC')" :options="listaFCCs" optionValue="IDSector" optionLabel="Name"
+            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="IDSector" optionLabel="Name"
             :filter="true" />
           <label for="selCC"> Centro de Custo: </label>
         </span>
       </div>
 
-      <!-- Seleção do CT 
+      <!-- Seleção do CT -->
       <div class="selectCT col-5 field" v-if="metaPor != 'depto'">
         <span class="p-float-label">
           <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecCT" @change="atualizaMenu('CT')" :options="listaFCTsM" optionValue="IDResource"
+            v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="IDResource"
             optionLabel="CT" :filter="true" />
           <label for="selCT"> Centro de Trabalho: </label>
         </span>
-      </div> -->
+      </div>
 
-    </div> 
+    </div>
 
 
     <!-- Data Table editável -->
@@ -112,7 +112,7 @@
       </ScrollPanel>
     </div>
 
-    {{ listaFCTs }}
+    {{ listaFCCs }}
   </div>
 
 </template>
@@ -251,50 +251,32 @@ export default {
       this.listaFCTsM = this.listaFCTs
 
       // Filtra Departamentos disponíveis e elimina duplicados
-      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => {
-        acc["Codigos"] = acc["Codigos"] || []
-        acc["Valores"] = acc["Valores"] || {}
-        if (!acc["Codigos"].includes(index.IDArea) && index.IDArea < 5000) {
-          acc["Codigos"].push(index.IDArea)
-          acc["Valores"][index.IDArea] = { Name: index.Depto, IDArea: index.IDArea }
-        }
-        return acc
-      }, {})
-
+      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.IDArea] = index; return acc}, {})
 
       // Filtra Centros de Custo (Setores) e elimina duplicados
-      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => {
-        acc["Codigos"] = acc["Codigos"] || []
-        acc["Valores"] = acc["Valores"] || []
-        if (!acc["Codigos"].includes(index.IDSector) && index.IDArea < 5000) {
-          acc["Codigos"].push(index.IDSector)
-          acc["Valores"].push({ Name: index.CC, IDArea: index.IDArea, IDSector: index.IDSector })
-        }
-        return acc
-      }, {})
+      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.IDSector] = index; return acc}, {})
 
-      this.listaFDeptos = this.listaDeptos.Valores
-      this.listaFCCs = this.listaCCs.Valores
+      this.listaFDeptos = Object.values(this.listaDeptos)
+      this.listaFCCs = Object.values(this.listaCCs)
 
     },
 
     atualizaFCTs() {
-      console.log("$%##$%%#$%$#$ Tentativa de atualização da lista de CTS", this.listaCTs)
-
-
 
       try {
-        
-        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index)=>{
+
+        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
           //console.log(`${this.selecDepto.indexOf(index.IDArea)} ${this.selecDepto.length === 0} ${this.selecCC.indexOf(index.IDSector)} ${this.selecCC.lenght === 0} `)
 
-           if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) && (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0 )) {
+          if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) &&
+            (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0) &&
+            (this.selecCT.indexOf(index.IDResource) != -1 || this.selecCT.lenght === 0)) {
             acc[index.IDResource] = index
-           } 
+          }
 
           return acc
-        },{})
+        }, {})
 
       } catch (err) {
         console.log("Falha ao filtrar Centros de Trabalho: ", err)
@@ -377,11 +359,15 @@ export default {
 
           this.atualizaFCTs()
 
+          this.listaFCTsM = this.listaFCTs
+
           //this.selecCT = []
 
         } else {
 
           this.atualizaFCTs()
+
+          this.listaFCTsM = this.listaFCTs
 
         }
 

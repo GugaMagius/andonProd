@@ -28,7 +28,7 @@
           <div class="selectDepto col-2 field col-3 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)" optionValue="IDArea"
+                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="listaFDeptos" optionValue="IDArea"
                 optionLabel="Name" :filter="true" />
               <label for="selDepto"> Departamento: </label>
             </span>
@@ -48,7 +48,7 @@
           <!-- Seleção do CT -->
           <div class="selectCT field col-2 md:col-2">
             <span class="p-float-label">
-              <MultiSelect id="selCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCT"
+              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCT"
                 @change="atualizaMenu()" :options="Object.values(listaFCTs)" optionValue="IDResource" optionLabel="CT"
                 :filter="true" />
               <label for="selCT"> Centro de Trabalho: </label>
@@ -430,7 +430,6 @@ export default {
 
 
     atualizaFCTs() {
-      console.log("$%##$%%#$%$#$ Tentativa de atualização da lista de CTS", this.listaCTs)
 
 
 
@@ -478,11 +477,9 @@ export default {
 
           this.selecCC = []
 
-          //this.listaFCTs = this.listaCTs
+          //this.atualizaFCTs()
 
-          this.atualizaFCTs()
-
-          this.listaFCTsM = this.listaCTs
+          this.listaFCTs = this.listaCTs
 
           this.selecCT = []
 
@@ -494,7 +491,7 @@ export default {
 
           this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaFCTs
+          //this.listaFCTsM = this.listaFCTs
 
           this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 
@@ -508,9 +505,9 @@ export default {
 
         if (this.selecCC.length === 0) {
 
-          this.atualizaFCTs()
+          //this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaFCTs
+          this.listaFCTs = this.listaCTs
 
           this.selecCT = []
 
@@ -518,7 +515,7 @@ export default {
 
           this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaFCTs
+          //this.listaFCTs? = this.listaFCTs
 
           this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 

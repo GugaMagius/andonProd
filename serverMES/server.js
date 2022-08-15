@@ -349,3 +349,6 @@ function criarInterval(tempo, string, destino) {
 }
 
 module.exports.respostaBD = respostaBD
+
+const Zeno = require('./BD/apiZeno')
+Zeno;
