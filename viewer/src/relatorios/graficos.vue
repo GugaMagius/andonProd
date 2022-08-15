@@ -28,7 +28,7 @@
           <div class="selectDepto col-2 field col-3 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="listaFDeptos" optionValue="IDArea"
+                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)" optionValue="IDArea"
                 optionLabel="Name" :filter="true" />
               <label for="selDepto"> Departamento: </label>
             </span>
@@ -49,7 +49,7 @@
           <div class="selectCT field col-2 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCT"
-                @change="atualizaMenu()" :options="listaFCTs" optionValue="IDResource" optionLabel="CT"
+                @change="atualizaMenu()" :options="Object.values(listaFCTs)" optionValue="IDResource" optionLabel="CT"
                 :filter="true" />
               <label for="selCT"> Centro de Trabalho: </label>
             </span>
@@ -428,11 +428,130 @@ export default {
       this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
     },
 
+
+    atualizaFCTs() {
+      console.log("$%##$%%#$%$#$ Tentativa de atualização da lista de CTS", this.listaCTs)
+
+
+
+      try {
+        
+        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index)=>{
+
+          //console.log(`${this.selecDepto.indexOf(index.IDArea)} ${this.selecDepto.length === 0} ${this.selecCC.indexOf(index.IDSector)} ${this.selecCC.lenght === 0} `)
+
+           if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) && (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0 )) {
+            acc[index.IDResource] = index
+           } 
+
+          return acc
+        },{})
+
+      } catch (err) {
+        console.log("Falha ao filtrar Centros de Trabalho: ", err)
+      }
+
+
+
+
+
+    },
+    
     atualizaMenu(seletor) {
 
       if (this.selecCT.includes("ecoat")) {
         this.selecCT = ["ecoat"]
       }
+
+      
+      if (seletor === "Depto") {
+
+        if (this.metaPor === "CT") {
+
+          this.$refs.selectCT.filterValue = null;
+
+        }
+
+        if (this.selecDepto.length === 0) {
+
+          this.listaFCCs = this.listaCCs.Valores
+
+          this.selecCC = []
+
+          //this.listaFCTs = this.listaCTs
+
+          this.atualizaFCTs()
+
+          this.listaFCTsM = this.listaCTs
+
+          this.selecCT = []
+
+        } else {
+
+          this.listaFCCs = this.listaCCs.Valores.filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
+
+          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
+
+          this.atualizaFCTs()
+
+          this.listaFCTsM = this.listaFCTs
+
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+
+        }
+
+      } else if (seletor === "CC") {
+
+        this.$refs.selectCT.filterValue = null;
+
+        this.selecDepto = [] // Zera marcação do seletor de departamentos
+
+        if (this.selecCC.length === 0) {
+
+          this.atualizaFCTs()
+
+          this.listaFCTsM = this.listaFCTs
+
+          this.selecCT = []
+
+        } else {
+
+          this.atualizaFCTs()
+
+          this.listaFCTsM = this.listaFCTs
+
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+
+        }
+
+      } else if (seletor === "CT") {
+
+        this.selecDepto = [] // Zera marcação do seletor de Departamentos
+
+        this.selecCC = [] // Zera marcação do setor de Centros de Custo
+
+        if (this.selecCT.length === 0) {
+
+
+          this.atualizaFCTs()
+
+
+        } else {
+
+          this.atualizaFCTs()
+
+
+        }
+
+      } else {
+
+
+        this.selecDepto = [] // Zera marcação do seletor de departamentos
+        this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
+
+      }
+
+      /*
 
       if (seletor === "Depto") {
 
@@ -485,6 +604,8 @@ export default {
         this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
 
       }
+
+      */
     },
 
     calculaMedia(dados, labels) {

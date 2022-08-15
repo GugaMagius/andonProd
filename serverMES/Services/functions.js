@@ -64,7 +64,6 @@ async function solicitaBD(queryQtd, queryHt, msg) {
     bdMES.selectBD(queryQtd, msg).then(
         async function (res) {
 
-            //ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': parametros })
             if (res[0].recordset.length <= 0) {
                 ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': msg })
                 return
@@ -74,7 +73,6 @@ async function solicitaBD(queryQtd, queryHt, msg) {
             bdMES.selectBD(queryHt, msg).then(
                 async function (res) {
 
-                    //console.log("Resposta do BD para horas trabalhadas ", new Date(), res[0])
 
 
                     if (res[0].recordset.length <= 0) {
@@ -94,9 +92,7 @@ async function solicitaBD(queryQtd, queryHt, msg) {
 
                     console.log("**Finalizado Compilação dos dados recebidos! ", "Data-hora: ", new Date())
 
-                })/*.catch((err) => {
-                    escreverLog(`Falha no tratamento de dados para HT - Erro: ${err}`)
-                });*/
+                })
 
 
         }

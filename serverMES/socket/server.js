@@ -85,7 +85,52 @@ bdMES.selectBD(queryCTs).then(
 // ########################################################################
 try {
 
+    /*
+    setTimeout(()=>{
+        //console.log("Verificando rooms do socket", io.sockets)
+
+        
+        for (const room of io.sockets.sockets) {
+            console.log("$%#$#$ Usuário conectado: ", room[0])
+            if (room[0] !== io.sockets.id) {
+                io.socket.to(room[0]).emit("respStorage", io.sockets.id);
+            }
+        }
+        
+    },5000)
+    */
+    // Função para envio dos dados para os clientes (TODOS OS CLIENTES)
+    function atualizaDados(dadosRec, destino) {
+        console.log("enviando dados.... ", destino)
+
+        io.sockets.emit(destino, dadosRec)
+    }
+
+    module.exports.atualizaDados = atualizaDados
+
+    function atualizaCliente() {
+        try {
+            io.emit("AtualizaDados", dadosServer)
+        } catch (err) {
+            Functions.escreverLog("Falha ao tentar enviar atualização de dados ao cliente: ", err)
+        }
+    }
+
+    // Intervalo para atualizar dados no cliente ************************** */
+    setInterval(atualizaCliente, 15000)
+
+    io.sockets.on('disconnect', function () {
+        // handle disconnect
+        io.sockets.disconnect();
+        io.sockets.close();
+    });
+
+
+
     io.on('connection', (socket) => {
+        //console.log("SOCKET #$#$#$#$#$: ", socket.rooms)
+
+
 
         socketConectado = true;
 
@@ -93,8 +138,7 @@ try {
 
         console.log('New connection', socket.id)
 
-        io.emit("id", socket.id)
-
+        socket.emit("id", socket.id)
 
         // Função para receber a versão do serverSup e enviar os valores ao cliente
         clientEcoat.enviaVersSup().then(
@@ -104,33 +148,20 @@ try {
             }
         )
 
+
+        socket.on("disconnecting", function () {
+            console.log(`Cliente ${socket.id} desconectando`)
+
+        })
+
         // Atualiza lista de MGrps e CTs no cliente
         socket.emit("sListaCTs", listaCT)
 
-        // Intervalo para atualizar dados no cliente ************************** */
-        setInterval(atualizaCliente, 15000)
-
-        function atualizaCliente() {
-            try {
-                io.emit("AtualizaDados", dadosServer)
-            } catch (err) {
-                Functions.escreverLog("Falha ao tentar enviar atualização de dados ao cliente: ", err)
-            }
-        }
 
         /*********************************************************************** */
 
-        socket.on("connected", function () {
-            socketConectado = true;
-        })
-
-        socket.on("disconnected", function () {
-            socketConectado = false;
-        })
-
         socket.on("dadosSolicitados", function () {
-            //console.log("solicitado dados ")
-            io.emit("AtualizaDados", dadosServer)
+            socket.emit("AtualizaDados", dadosServer)
 
         })
 
@@ -143,19 +174,10 @@ try {
             Functions.lerFS().then(
                 function (val) {
                     console.log("Valor obtido do arquivo: ", val)
-                    io.emit("respostaLog", val)
+                    socket.emit("respostaLog", val)
                 }
             )
         })
-
-        // Função para envio dos dados para os clientes (TODOS OS CLIENTES)
-        function atualizaDados(dadosRec, destino) {
-            console.log("enviando dados.... ", destino)
-
-            io.emit(destino, dadosRec)
-        }
-
-        module.exports.atualizaDados = atualizaDados
 
 
         // Socket para inserir novo valor no banco de dados NeDB
@@ -166,9 +188,9 @@ try {
 
 
         // Leitura das configurações de meta
-        function leituraConfig(){
+        function leituraConfig() {
             let respConfig = {}
-            
+
             try {
                 respConfig = JSON.parse(storage.getLS("metas"))
 
@@ -176,15 +198,15 @@ try {
                 Functions.escreverLog("Falha ao gravar arquivo de configuração. Erro: ", err)
             }
 
-            io.emit("respStorage", respConfig)
+            socket.emit("respStorage", respConfig)
         }
         leituraConfig();
 
-        
+
         // Socket para ler valores do banco de dados NeDB 
         socket.on("leituraConfig", leituraConfig)
 
-        
+
         // Função para resposta dos dados consultados ao cliente que solicitou
         function enviarResposta(dados) {
 

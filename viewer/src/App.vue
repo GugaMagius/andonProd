@@ -79,6 +79,11 @@ export default {
 
   },
   sockets: {
+    msgServerClient(msg){
+      console.log("Mensgem recebida do cliente: ", msg)
+
+    },
+
 
     // ID enviado pelo server para conexões socket
     id(val) {

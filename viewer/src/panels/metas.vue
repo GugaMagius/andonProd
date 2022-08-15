@@ -312,7 +312,7 @@ export default {
 
         if (this.metaPor === "CT") {
 
-          //this.$refs.selectCT.filterValue = null;
+          this.$refs.selectCT.filterValue = null;
 
         }
 
@@ -322,7 +322,6 @@ export default {
 
           this.selecCC = []
 
-          //this.listaFCTs = this.listaCTs
 
           this.atualizaFCTs()
 
@@ -336,7 +335,6 @@ export default {
 
           this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
 
-          //this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
           this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
@@ -347,13 +345,12 @@ export default {
 
       } else if (seletor === "CC") {
 
-        //this.$refs.selectCT.filterValue = null;
+        this.$refs.selectCT.filterValue = null;
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
 
         if (this.selecCC.length === 0) {
 
-          //this.listaFCTs = this.listaCTs
           this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
@@ -362,7 +359,6 @@ export default {
 
         } else {
 
-          //this.listaFCTs = Object.values(this.listaCTs).filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
           this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
@@ -379,18 +375,13 @@ export default {
 
         if (this.selecCT.length === 0) {
 
-          //this.listaFCTs = this.listaCTs
-
           this.atualizaFCTs()
 
           //this.selecCT = []
 
         } else {
 
-          //this.listaFCTs = this.listaCTs.filter((item => { return (this.selecCT.indexOf(item.IDResource) != -1) }))
           this.atualizaFCTs()
-
-          //this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
 
         }
 
