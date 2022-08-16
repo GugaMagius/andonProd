@@ -16,6 +16,8 @@ const workerpool = require('workerpool');
 
 const pool = workerpool.pool(__dirname + '/pDadosComp.js');
 
+const storage = require('../Services/storage')
+
 // Função para organizar dados do datasul em uma variável objeto
 function reduceDatasul(dados) {
     return dados.reduce(function (acc, index) {
@@ -97,7 +99,7 @@ async function solicitaBD(queryQtd, queryHt, msg) {
 
         }
     ).catch((err) => {
-        Functions.escreverLog(`Falha na consulta ao banco de dados para Qtd. ${err}`)
+        storage.setLS("log",`Falha na consulta ao banco de dados para Qtd. ${err}`)
     });
 }
 module.exports.solicitaBD = solicitaBD
@@ -163,6 +165,7 @@ async function escreverFS(msg) {
             }
         );
     } catch (err) {
+        
         console.log("Falha ao ler arquivo para atualização: ", err)
     }
 

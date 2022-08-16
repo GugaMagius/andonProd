@@ -17,6 +17,8 @@ const config = require('../configuracao')
 
 const main = require('../server')
 
+const storage = require('../Services/storage')
+
 var versaoSup
 
 function enviaVersSup() {
@@ -95,7 +97,9 @@ try {
   })
 
 } catch (err) {
-  Functions.escreverLog("Erro ao criar socket: ", err)
+  let msg = "Erro ao criar socket: "  + err
+  
+  storage.setLS("log", msg)
 }
 
 function solicitaDadosEcoat(parametros) {

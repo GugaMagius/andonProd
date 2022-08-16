@@ -151,7 +151,7 @@ export default {
 
     // Atualização de dados do server para os clientes
     AtualizaDados(dados) {
-      console.log("DADOS RECEBIDOS DO SERVER: ", dados)
+      //console.log("DADOS RECEBIDOS DO SERVER: ", dados)
       try {
         if (dados !== undefined) {
           this.dadosServer = dados;

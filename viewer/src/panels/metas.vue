@@ -1,6 +1,6 @@
 <template>
   <div class="meta">
-    {{listaDeptos}}
+    
     <div class="linhaSuperior grid">
       <!-- Seleção de Unidade  -->
       <div class="inline col-6">
@@ -14,21 +14,12 @@
           <label for="CT">Centro de Trabalho</label>
         </div>
       </div>
-
-      <!-- Botão para atualizar-->
-      <div class="inline col-6">
-        <span> Dados para gravar: </span>
-        <InputText type="text" v-model="valorGravar" />
-        <span> <Button label="Gravar" @click="gravar()" /> </span>
-        <span> <Button label="Ler" @click="ler()" /> </span>
-        {{ respConfig.metaP_EE }}
-
-      </div>
     </div>
 
-    <div class="p-fluid seletores grid">
+      <!-- Seletores de departamento/CC/CT -->
+    <div class="p-fluid seletores grid" v-if="metaPor != 'depto'">
       <!-- Seleção do Departamento -->
-      <div class="selectDepto col-3 field" v-if="metaPor != 'depto'">
+      <div class="selectDepto col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
@@ -39,17 +30,18 @@
 
 
       <!-- Seleção do MGrp (Setor - Centro de Custo)  -->
-      <div class="selectMGrp col-3 field" v-if="metaPor != 'depto'">
+      <div class="selectMGrp col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="IDSector" optionLabel="Name"
+            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="IDSector" optionLabel="CC"
             :filter="true" />
           <label for="selCC"> Centro de Custo: </label>
         </span>
       </div>
 
+
       <!-- Seleção do CT -->
-      <div class="selectCT col-5 field" v-if="metaPor != 'depto'">
+      <div class="selectCT col-5 field">
         <span class="p-float-label">
           <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="IDResource"
@@ -92,7 +84,7 @@
         <DataTable v-if="metaPor === 'depto'" :value="listaFDeptos" editMode="cell" :scrollable="true"
           scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
           responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-          <Column field="Name" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="Depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
           <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
@@ -112,7 +104,6 @@
       </ScrollPanel>
     </div>
 
-    {{ listaFCCs }}
   </div>
 
 </template>
@@ -256,8 +247,8 @@ export default {
       // Filtra Centros de Custo (Setores) e elimina duplicados
       this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.IDSector] = index; return acc}, {})
 
-      this.listaFDeptos = Object.values(this.listaDeptos)
-      this.listaFCCs = Object.values(this.listaCCs)
+      this.listaFDeptos = this.listaDeptos
+      this.listaFCCs = this.listaCCs
 
     },
 
@@ -267,15 +258,15 @@ export default {
 
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
-          //console.log(`${this.selecDepto.indexOf(index.IDArea)} ${this.selecDepto.length === 0} ${this.selecCC.indexOf(index.IDSector)} ${this.selecCC.lenght === 0} `)
 
           if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) &&
-            (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0) &&
-            (this.selecCT.indexOf(index.IDResource) != -1 || this.selecCT.lenght === 0)) {
+            (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.length === 0) &&
+            (this.selecCT.indexOf(index.IDResource) != -1 || this.selecCT.length === 0)) {
             acc[index.IDResource] = index
           }
 
           return acc
+
         }, {})
 
       } catch (err) {
@@ -298,22 +289,26 @@ export default {
 
         }
 
+ 
+          this.selecCT = []
+
+          this.selecCC = []
+
         if (this.selecDepto.length === 0) {
 
-          this.listaFCCs = this.listaCCs.Valores
+          this.listaFCCs = Object.values(this.listaCCs)
 
           this.selecCC = []
 
 
           this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaCTs
+          this.listaFCTsM = this.listaFCTs
 
-          this.selecCT = []
 
         } else {
 
-          this.listaFCCs = this.listaCCs.Valores.filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
+          this.listaFCCs = Object.values(this.listaCCs).filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
 
           this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
 
@@ -330,6 +325,8 @@ export default {
         this.$refs.selectCT.filterValue = null;
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
+
+          this.selecCT = []
 
         if (this.selecCC.length === 0) {
 
@@ -351,15 +348,15 @@ export default {
 
       } else if (seletor === "CT") {
 
-        this.selecDepto = [] // Zera marcação do seletor de Departamentos
+        //this.selecDepto = [] // Zera marcação do seletor de Departamentos
 
-        this.selecCC = [] // Zera marcação do setor de Centros de Custo
+        //this.selecCC = [] // Zera marcação do setor de Centros de Custo
 
         if (this.selecCT.length === 0) {
 
           this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaFCTs
+          //this.listaFCTsM = this.listaFCTs
 
           //this.selecCT = []
 
@@ -367,7 +364,7 @@ export default {
 
           this.atualizaFCTs()
 
-          this.listaFCTsM = this.listaFCTs
+          //this.listaFCTsM = this.listaFCTs
 
         }
 

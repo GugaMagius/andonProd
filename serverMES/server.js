@@ -55,7 +55,7 @@ async function mostraSemCad(lista) {
         emailSemCadEnviado = false
     } catch (err) {
         let msg = `Falha ao listar itens sem cadastro - erro: ${err}`
-        Functions.escreverLog(msg)
+        storage.setLS("log", msg)
     }
 
 }
@@ -278,15 +278,10 @@ function respostaBD(string, destino) {
                     let tempoT2Hoje
                     let tempoT3Hoje
 
-                    turnoAtual = 1 ?  tempoT1Hoje = verifHora(horaAtualCmp,1).dif : tempoT1Hoje = tempoT1
-                    turnoAtual = 2 ?  tempoT2Hoje = verifHora(horaAtualCmp,2).dif : tempoT2Hoje = tempoT2
-                    turnoAtual = 3 ?  tempoT3Hoje = verifHora(horaAtualCmp,3).dif : tempoT3Hoje = tempoT3
+                    turnoAtual = 1 ? tempoT1Hoje = verifHora(horaAtualCmp, 1).dif : tempoT1Hoje = tempoT1
+                    turnoAtual = 2 ? tempoT2Hoje = verifHora(horaAtualCmp, 2).dif : tempoT2Hoje = tempoT2
+                    turnoAtual = 3 ? tempoT3Hoje = verifHora(horaAtualCmp, 3).dif : tempoT3Hoje = tempoT3
 
-                    console.log(`
-                    - Tempo turno 1: ${tempoT1Hoje}
-                    - Turno 2: ${tempoT2Hoje}
-                    - Turno 3: ${tempoT3Hoje}
-                    `)
 
                     respostaED["Hoje"]["Turno1"]["media"] = respostaED["Hoje"]["Turno1"]["soma"] / tempoT1Hoje
 
@@ -318,8 +313,10 @@ function respostaBD(string, destino) {
 
     )
         .catch(
-            function (res) {
-                Functions.escreverLog("Erro ao conectar ao banco de dados: ", res)
+            function (err) {
+                let msg = "Erro ao conectar ao banco de dados: " + err
+
+                storage.setLS("log", msg)
             }
         )
 }

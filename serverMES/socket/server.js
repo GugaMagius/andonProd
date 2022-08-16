@@ -66,14 +66,6 @@ bdMES.selectBD(queryCTs).then(
     function (res) {
         //listaCT.push({ IDResource: "EE", Name: "ENGANCHAMENTO E-COAT" })
         listaCT = res[0].recordset
-        /*
-        listaCT = listaCT.reduce((acc, index)=> {
-            let registro = index
-            registro["metaP"] = 0
-            acc.push(registro)
-            return acc
-        },[])
-        */
     }
 )
 //**************************************/
@@ -85,20 +77,6 @@ bdMES.selectBD(queryCTs).then(
 // ########################################################################
 try {
 
-    /*
-    setTimeout(()=>{
-        //console.log("Verificando rooms do socket", io.sockets)
-
-        
-        for (const room of io.sockets.sockets) {
-            console.log("$%#$#$ Usuário conectado: ", room[0])
-            if (room[0] !== io.sockets.id) {
-                io.socket.to(room[0]).emit("respStorage", io.sockets.id);
-            }
-        }
-        
-    },5000)
-    */
     // Função para envio dos dados para os clientes (TODOS OS CLIENTES)
     function atualizaDados(dadosRec, destino) {
         console.log("enviando dados.... ", destino)
@@ -108,17 +86,24 @@ try {
 
     module.exports.atualizaDados = atualizaDados
 
+
+
     function atualizaCliente() {
         try {
             io.emit("AtualizaDados", dadosServer)
         } catch (err) {
-            Functions.escreverLog("Falha ao tentar enviar atualização de dados ao cliente: ", err)
+            let msg = "Falha ao tentar enviar atualização de dados ao cliente: " + err
+            
+            storage.setLS("log", msg)
         }
     }
+
 
     // Intervalo para atualizar dados no cliente ************************** */
     setInterval(atualizaCliente, 15000)
 
+
+    // Monitora clientes que foram desconectados e fecha a conexão socket
     io.sockets.on('disconnect', function () {
         // handle disconnect
         io.sockets.disconnect();
@@ -126,10 +111,8 @@ try {
     });
 
 
-
+    // *******************Conexão SOCKET *****************************
     io.on('connection', (socket) => {
-        //console.log("SOCKET #$#$#$#$#$: ", socket.rooms)
-
 
 
         socketConectado = true;
@@ -167,16 +150,24 @@ try {
 
         socket.on("gravaLog", function (msg) {
             console.log("Escrevendo o arquivo com a mensagem: ", msg)
-            Functions.escreverFS(msg);
+
+            storage.setLS("log", msg)
         })
 
         socket.on("lerLog", function () {
+
+                    socket.emit("respostaLog", storage.getLS("log"))
+                
+            
+
+            /*
             Functions.lerFS().then(
                 function (val) {
                     console.log("Valor obtido do arquivo: ", val)
                     socket.emit("respostaLog", val)
                 }
             )
+            */
         })
 
 
@@ -192,10 +183,11 @@ try {
             let respConfig = {}
 
             try {
-                respConfig = JSON.parse(storage.getLS("metas"))
+                respConfig = storage.getLS("metas")
 
             } catch (err) {
-                Functions.escreverLog("Falha ao gravar arquivo de configuração. Erro: ", err)
+                let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
+                storage.setLS("log", msg)
             }
 
             socket.emit("respStorage", respConfig)
@@ -253,7 +245,9 @@ try {
 
     })
 } catch (err) {
-    Functions.escreverLog("Erro ao subir o servidor de socket. Erro: ", err)
+    let msg = "Erro ao subir o servidor de socket. Erro: " + err
+    
+    storage.setLS("log", msg)
 }
 
 module.exports.io = io

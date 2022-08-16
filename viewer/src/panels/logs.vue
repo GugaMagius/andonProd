@@ -1,14 +1,17 @@
 <template>
   <div>
 
-    <h1>Manutenção do LOG</h1>
+    <h2>Log de falhas</h2>
 
     <div>
       <InputText type="text" v-model="Texto" />
-
-      <span> Resposta do Log: {{ msgRespLog }} </span>
       <span> <Button label="Enviar Mensagem" @click="enviaMsg()" /> </span>
-      <span> <Button label="Receber Mensagem" @click="recebeMsg()" /> </span>
+      <br>
+      <span ><div style="margin-top: 1vh"><Button label="Receber Mensagem" @click="recebeMsg()" /> </div></span>
+      <br>
+      <div style="margin-top: 1vh">
+      <li v-for="log in msgRespLog" :key="log.DataHora"> {{ log }} </li>
+      </div>
 
     </div>
     
