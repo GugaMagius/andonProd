@@ -84,13 +84,12 @@ async function solicitaBD(queryQtd, queryHt, msg) {
 
                     resHt = res
 
-
                     var paramConsQtd = await pool.exec('dadosComp', [resQtd, false, main.eItemsList(), config])
 
                     var paramConsHt = await pool.exec('dadosComp', [resHt, true, main.eItemsList(), config])
 
 
-                    await calculaMedia(paramConsQtd, paramConsHt, res[1])
+                    calculaMedia(paramConsQtd, paramConsHt, res[1])
 
                     console.log("**Finalizado Compilação dos dados recebidos! ", "Data-hora: ", new Date())
 
@@ -99,7 +98,7 @@ async function solicitaBD(queryQtd, queryHt, msg) {
 
         }
     ).catch((err) => {
-        storage.setLS("log",`Falha na consulta ao banco de dados para Qtd. ${err}`)
+        storage.setLS("log", `Falha na consulta ao banco de dados para Qtd. ${err}`)
     });
 }
 module.exports.solicitaBD = solicitaBD
@@ -165,7 +164,7 @@ async function escreverFS(msg) {
             }
         );
     } catch (err) {
-        
+
         console.log("Falha ao ler arquivo para atualização: ", err)
     }
 
