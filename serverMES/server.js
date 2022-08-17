@@ -6,8 +6,12 @@ const ioSocket = require('./socket/server') //client SOCKET
 const bdMES = require('./BD/MES');
 const enviaEmail = require('./Services/enviaEmail')
 const datasulApi = require('./ServiceApi/DataSulApiService')
-const moment = require('moment')
 datasulApi;
+const apiZeno = require('./BD/apiZeno')
+apiZeno;
+
+const moment = require('moment')
+
 
 const config = require('./configuracao') //Configuração dos turnos (turnos / DadosIni)
 
@@ -166,9 +170,10 @@ fEnviaEmailSemCad(listaSemCadCompl);
 
 
 // *********** LEITURA DOS DADOS DO BD E SEPARAÇÃO ************
-function respostaBD(string, destino) {
+function respostaBD(string, destino, BD) {
 
-    bdMES.conectarMES(string).then(
+    //bdMES.conectarMES(string).then(
+    apiZeno.getDataSQL(string, BD).then(
         function (respostaBD) {
 
             let horaAtualCmp = moment(new Date()).format(formato) // Hora atual completa
@@ -181,32 +186,38 @@ function respostaBD(string, destino) {
 
                         resolve(
 
-                            dadosBD.recordset.reduce(function (acc, index) {
+                            dadosBD.data.result.reduce(function (acc, index) {
 
                                 let inicioDia = moment(config.turnos.Turno1.inicio, formato).format(formato)
-                                let horaReg2d = moment.utc(index.Hora, "AAAA-MM-DDTHH:mm:ss").format("HH")
-                                let diaReg2d = moment.utc(index.DtMov, "AAAA-MM-DDTHH:mm:ss").format("DD")
-                                let horaRegCmp = moment.utc(index.Hora, "AAAA-MM-DDTHH:mm:ss").format(formato) // Hora do registro completa
+                                let horaReg2d = moment.utc(index.hora, "HH:mm:ss").format("HH")
+                                let diaReg2d = moment.utc(index.dtmov, "DD/MM/AAAA HH:mm:ss").format("DD")
+                                let horaRegCmp = moment.utc(index.hora, "HH:mm:ss").format(formato) // Hora do registro completa
                                 let diaHoje2d = moment(horaAtualCmp).isBefore(inicioDia) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
                                 let diaOntem2d = moment().subtract(1, "days").format("DD")
                                 let turnoReg = testeTurno(horaRegCmp).turno
 
-                                var m2RegAtual = 0.0
+                                var regAtualCalc = 0.0
 
+                                
                                 // Calcula quantidade de m2 para o item
-                                if (vItemsList[index.Code]["m2"] > 0) {
+                                if (vItemsList[index.code]["m2"] > 0 && destino !== "perdidosLE" && destino !== "produzidosLE") {
 
-                                    m2RegAtual = parseFloat(parseInt(index.MovQty) * parseFloat(vItemsList[index.Code]["m2"]))
+                                    regAtualCalc = parseFloat(parseInt(index.movqty) * parseFloat(vItemsList[index.code]["m2"]))
+
+                                } else if (destino !== "perdidosLE" || destino !== "produzidosLE" ){
+
+                                    regAtualCalc = index.movqty
 
                                 } else { // Verifica itens sem cadastro e adiciona na lista nova
 
-                                    if (!semCadastro.includes(index.Code)) {
+                                    if (!semCadastro.includes(index.code)) {
 
-                                        semCadastro.push(index.Code)
+                                        semCadastro.push(index.code)
 
                                     }
 
                                 }
+
 
                                 acc["Hoje"] = acc["Hoje"] || {}
 
@@ -236,8 +247,8 @@ function respostaBD(string, destino) {
 
                                     acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
                                     acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
-                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += m2RegAtual
-                                    acc[quando][`Turno${turnoReg}`]["soma"] += m2RegAtual
+                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += regAtualCalc
+                                    acc[quando][`Turno${turnoReg}`]["soma"] += regAtualCalc
 
                                 }
 
@@ -321,31 +332,40 @@ function respostaBD(string, destino) {
         )
 }
 
+const connSuperv = "Data Source=MGU-SERVER02;Initial Catalog=SUPERVISORIO;User ID=gustavo;Password=magius@2021"
 
-const stringPP = "select me.DtMov, convert(time, me.DtTimeStamp) Hora, me.IDResource, me.Shift, me.IDProduct, me.MovQty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=97 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
+const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
 
-const stringPL = "select me.DtMov, convert(time, me.DtTimeStamp) Hora, me.IDResource, me.Shift, me.IDProduct, me.MovQty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=108 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
+const prodLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then DAY(data-1) ELSE DAY(data) END dtmov from cicloEcoat ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-const formacaoKit = "select me.DtMov, convert(time, me.DtTimeStamp) Hora, me.IDResource, me.Shift, me.IDProduct, me.MovQty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=107 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
+const perdLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then DAY(data-1) ELSE DAY(data) END dtmov from bastPerdido ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-const stringEE = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and  CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END  >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
+const stringPP = "select me.DtMov, convert(time, me.DtTimeStamp) hora, me.IDResource, me.Shift, me.IDProduct, me.movqty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=97 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-setTimeout(() => { respostaBD(stringPP, "dadosPP") }, 15000)
+const stringPL = "select me.DtMov, convert(time, me.DtTimeStamp) hora, me.IDResource, me.Shift, me.IDProduct, me.movqty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=108 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-criarInterval(30000, stringPP, "dadosPP")
+const formacaoKit = "select me.DtMov, convert(time, me.DtTimeStamp) hora, me.IDResource, me.Shift, me.IDProduct, me.movqty, me.UndoIDMovEv, me.RelatedIDMovEv, me.IDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource=107 and me.DtMov >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-setTimeout(criarInterval, 2000, 30000, stringEE, "dadosEE")
+const stringEE = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS movqty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and  CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END  >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-setTimeout(criarInterval, 4000, 30000, stringPL, "dadosPL")
+setTimeout(() => { respostaBD(stringPP, "dadosPP", connMES) }, 15000)
 
-setTimeout(criarInterval, 6000, 30000, formacaoKit, "dadosFK")
+criarInterval(30000, stringPP, "dadosPP", connMES)
+
+setTimeout(criarInterval, 2000, 30000, stringEE, "dadosEE", connMES)
+
+setTimeout(criarInterval, 4000, 30000, stringPL, "dadosPL", connMES)
+
+setTimeout(criarInterval, 6000, 30000, formacaoKit, "dadosFK", connMES)
+
+setTimeout(criarInterval, 8000, 30000, prodLE, "produzidosLE", connSuperv)
+
+setTimeout(criarInterval, 10000, 30000, perdLE, "perdidosLE", connSuperv)
 
 
-function criarInterval(tempo, string, destino) {
-    setInterval(respostaBD, tempo, string, destino); // Cria intervalo para leitura dos dados no BD
+function criarInterval(tempo, string, destino, BD) {
+    setInterval(respostaBD, tempo, string, destino, BD); // Cria intervalo para leitura dos dados no BD
 }
 
 module.exports.respostaBD = respostaBD
 
-const Zeno = require('./BD/apiZeno')
-Zeno;
