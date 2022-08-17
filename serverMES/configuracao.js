@@ -75,6 +75,8 @@ const metas = {
     metaP_PL: " >= 32",
     metaP_EE: " >= 130",
     metaP_FK: " >= 130",
+    metaP_LE: " >= 90",
+    metaS_LE: " <= 0"
 
 }
 module.exports.metas = metas

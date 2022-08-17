@@ -198,24 +198,25 @@ function respostaBD(string, destino, BD) {
 
                                 var regAtualCalc = 0.0
 
-                                
-                                // Calcula quantidade de m2 para o item
-                                if (vItemsList[index.code]["m2"] > 0 && destino !== "perdidosLE" && destino !== "produzidosLE") {
+                                if (destino === "perdidos_LE" || destino === "produzidos_LE") {
 
-                                    regAtualCalc = parseFloat(parseInt(index.movqty) * parseFloat(vItemsList[index.code]["m2"]))
+                                    regAtualCalc = 1
 
-                                } else if (destino !== "perdidosLE" || destino !== "produzidosLE" ){
+                                } else {
+                                    // Calcula quantidade de m2 para o item
+                                    if (vItemsList[index.code]["m2"] > 0) {
 
-                                    regAtualCalc = index.movqty
+                                        regAtualCalc = parseFloat(parseInt(index.movqty) * parseFloat(vItemsList[index.code]["m2"]))
 
-                                } else { // Verifica itens sem cadastro e adiciona na lista nova
+                                    } else { // Verifica itens sem cadastro e adiciona na lista nova
 
-                                    if (!semCadastro.includes(index.code)) {
+                                        if (!semCadastro.includes(index.code)) {
 
-                                        semCadastro.push(index.code)
+                                            semCadastro.push(index.code)
+
+                                        }
 
                                     }
-
                                 }
 
 
@@ -273,7 +274,9 @@ function respostaBD(string, destino, BD) {
 
                     //ioSocket.atualizaDados(respostaED, destino)
 
-                    respostaED["metaP"] = config.metas[`metaP_${destino.split("dados")[1]}`]
+                    respostaED["metaP"] = config.metas[`metaP_${destino.split("_")[1]}`]
+
+                    respostaED["metaS"] = config.metas[`metaS_${destino.split("_")[1]}`]
 
                     respostaED["turnoAtual"] = turnoAtual
 
@@ -348,19 +351,19 @@ const formacaoKit = "select me.DtMov, convert(time, me.DtTimeStamp) hora, me.IDR
 
 const stringEE = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS movqty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and  CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END  >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
-setTimeout(() => { respostaBD(stringPP, "dadosPP", connMES) }, 15000)
+setTimeout(() => { respostaBD(stringPP, "dados_PP", connMES) }, 15000)
 
-criarInterval(30000, stringPP, "dadosPP", connMES)
+criarInterval(30000, stringPP, "dados_PP", connMES)
 
-setTimeout(criarInterval, 2000, 30000, stringEE, "dadosEE", connMES)
+setTimeout(criarInterval, 2000, 30000, stringEE, "dados_EE", connMES)
 
-setTimeout(criarInterval, 4000, 30000, stringPL, "dadosPL", connMES)
+setTimeout(criarInterval, 4000, 30000, stringPL, "dados_PL", connMES)
 
-setTimeout(criarInterval, 6000, 30000, formacaoKit, "dadosFK", connMES)
+setTimeout(criarInterval, 6000, 30000, formacaoKit, "dados_FK", connMES)
 
-setTimeout(criarInterval, 8000, 30000, prodLE, "produzidosLE", connSuperv)
+setTimeout(criarInterval, 8000, 30000, prodLE, "produzidos_LE", connSuperv)
 
-setTimeout(criarInterval, 10000, 30000, perdLE, "perdidosLE", connSuperv)
+setTimeout(criarInterval, 10000, 30000, perdLE, "perdidos_LE", connSuperv)
 
 
 function criarInterval(tempo, string, destino, BD) {
