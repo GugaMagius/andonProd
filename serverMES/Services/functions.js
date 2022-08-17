@@ -18,6 +18,8 @@ const pool = workerpool.pool(__dirname + '/pDadosComp.js');
 
 const storage = require('../Services/storage')
 
+const apiZeno = require('../BD/apiZeno')
+
 // Função para organizar dados do datasul em uma variável objeto
 function reduceDatasul(dados) {
     return dados.reduce(function (acc, index) {
@@ -59,9 +61,21 @@ function calcDifHora(horaInicial, horaFinal) {
 module.exports.calcDifHora = calcDifHora
 
 // Função para solicitar dados do banco de dados
-async function solicitaBD(queryQtd, queryHt, msg) {
+async function solicitaBD(queryQtd, queryHt, msg, setor) {
     let resQtd
     let resHt
+
+    if (setor === "ecoat") {
+        await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor)).then(res=>{
+
+            console.log("Resultado da consulta do BD Ecoat: ", res)
+        }
+        )
+        await apiZeno.getDataSQL(queryHt, main.seletorConexaoBD()).then(res=>{
+            console.log("Resultado da consulta do BD para HT: ", res)
+        })
+
+    }
 
     bdMES.selectBD(queryQtd, msg).then(
         async function (res) {

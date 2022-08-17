@@ -28,8 +28,8 @@
           <div class="selectDepto col-2 field col-3 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="listaFDeptos" optionValue="IDArea"
-                optionLabel="Name" :filter="true" />
+                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
+                optionValue="idarea" optionLabel="depto" :filter="true" />
               <label for="selDepto"> Departamento: </label>
             </span>
           </div>
@@ -39,7 +39,7 @@
           <div class="selectMGrp col-2 field col-3 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-                @change="atualizaMenu('CC')" :options="listaFCCs" optionValue="IDSector" optionLabel="Name"
+                @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
                 :filter="true" />
               <label for="selCC"> Centro de Custo: </label>
             </span>
@@ -48,9 +48,9 @@
           <!-- Seleção do CT -->
           <div class="selectCT field col-2 md:col-2">
             <span class="p-float-label">
-              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCT"
-                @change="atualizaMenu()" :options="Object.values(listaFCTs)" optionValue="IDResource" optionLabel="CT"
-                :filter="true" />
+              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+                v-model="selecCT" @change="atualizaMenu()" :options="Object.values(listaFCTs)" optionValue="idresource"
+                optionLabel="ct" :filter="true" />
               <label for="selCT"> Centro de Trabalho: </label>
             </span>
           </div>
@@ -213,6 +213,7 @@ export default {
   data() {
     return {
       listaFCTs: [],
+      listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [],
       listaFCCs: [],
       listaDeptos: [],
@@ -284,7 +285,6 @@ export default {
                 let dd = label.substr(6, 2) > 0 ? label.substr(6, 2) + "/" : "";
                 let hh =
                   label.substr(8, 2) !== "" ? label.substr(8, 2) + ":00" : "";
-                //console.log("valor: ", this.getLabelForValue(value), " - index: ", this.getLabelForValue(index), " - ticks: ", this.getLabelForValue(ticks))
                 return `${dd}${mm}${aa}${hh}`;
               },
             },
@@ -392,32 +392,16 @@ export default {
       // Atualiza lista de itens filtrados dos Centros de Trabalho
       this.listaFCTs = this.listaCTs
 
-
       // Filtra Departamentos disponíveis e elimina duplicados
-      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => {
-        acc["Codigos"] = acc["Codigos"] || []
-        acc["Valores"] = acc["Valores"] || []
-        if (!acc["Codigos"].includes(index.IDArea) && index.IDArea < 5000) {
-          acc["Codigos"].push(index.IDArea)
-          acc["Valores"].push({ Name: index.Depto, IDArea: index.IDArea })
-        }
-        return acc
-      }, {})
-
+      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idarea] = index; return acc }, {})
 
       // Filtra Centros de Custo (Setores) e elimina duplicados
-      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => {
-        acc["Codigos"] = acc["Codigos"] || []
-        acc["Valores"] = acc["Valores"] || []
-        if (!acc["Codigos"].includes(index.IDSector) && index.IDArea < 5000) {
-          acc["Codigos"].push(index.IDSector)
-          acc["Valores"].push({ Name: index.CC, IDArea: index.IDArea, IDSector: index.IDSector })
-        }
-        return acc
-      }, {})
+      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc }, {})
 
-      this.listaFDeptos = this.listaDeptos.Valores
-      this.listaFCCs = this.listaCCs.Valores
+
+
+      this.listaFDeptos = this.listaDeptos
+      this.listaFCCs = this.listaCCs
 
     },
 
@@ -431,38 +415,33 @@ export default {
 
     atualizaFCTs() {
 
-
-
       try {
-        
-        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index)=>{
 
-          //console.log(`${this.selecDepto.indexOf(index.IDArea)} ${this.selecDepto.length === 0} ${this.selecCC.indexOf(index.IDSector)} ${this.selecCC.lenght === 0} `)
+        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
-           if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) && (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.lenght === 0 )) {
-            acc[index.IDResource] = index
-           } 
+
+          if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
+            (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
+            (this.selecCT.indexOf(index.idresource) != -1 || this.selecCT.length === 0)) {
+            acc[index.idresource] = index
+          }
 
           return acc
-        },{})
+
+        }, {})
 
       } catch (err) {
         console.log("Falha ao filtrar Centros de Trabalho: ", err)
       }
 
-
-
-
-
     },
-    
     atualizaMenu(seletor) {
 
       if (this.selecCT.includes("ecoat")) {
         this.selecCT = ["ecoat"]
       }
 
-      
+
       if (seletor === "Depto") {
 
         if (this.metaPor === "CT") {
@@ -471,29 +450,27 @@ export default {
 
         }
 
+        this.selecCT = []
+
+        this.selecCC = []
+
         if (this.selecDepto.length === 0) {
 
-          this.listaFCCs = this.listaCCs.Valores
+          this.listaFCCs = Object.values(this.listaCCs)
 
           this.selecCC = []
 
-          //this.atualizaFCTs()
-
-          this.listaFCTs = this.listaCTs
-
-          this.selecCT = []
+          this.atualizaFCTs()
 
         } else {
 
-          this.listaFCCs = this.listaCCs.Valores.filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
+          this.listaFCCs = Object.values(this.listaCCs).filter((item) => { return (this.selecDepto.indexOf(item.idarea) != -1) })
 
-          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
+          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.idsector); return acc }, [])
 
           this.atualizaFCTs()
 
-          //this.listaFCTsM = this.listaFCTs
-
-          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
 
         }
 
@@ -503,40 +480,42 @@ export default {
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
 
+        this.selecCT = []
+
         if (this.selecCC.length === 0) {
 
-          //this.atualizaFCTs()
-
-          this.listaFCTs = this.listaCTs
-
           this.selecCT = []
+
+          this.atualizaFCTs()
+
 
         } else {
 
           this.atualizaFCTs()
 
-          //this.listaFCTs? = this.listaFCTs
-
-          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
 
         }
 
       } else if (seletor === "CT") {
 
-        this.selecDepto = [] // Zera marcação do seletor de Departamentos
+        //this.selecDepto = [] // Zera marcação do seletor de Departamentos
 
-        this.selecCC = [] // Zera marcação do setor de Centros de Custo
+        //this.selecCC = [] // Zera marcação do setor de Centros de Custo
 
         if (this.selecCT.length === 0) {
 
-
           this.atualizaFCTs()
 
+          //this.listaFCTsM = this.listaFCTs
+
+          //this.selecCT = []
 
         } else {
 
           this.atualizaFCTs()
 
+          //this.listaFCTsM = this.listaFCTs
 
         }
 
@@ -548,61 +527,6 @@ export default {
 
       }
 
-      /*
-
-      if (seletor === "Depto") {
-
-
-        if (this.selecDepto.length === 0) {
-
-          this.listaFCCs = this.listaCCs.Valores
-
-          this.selecCC = []
-
-          this.listaFCTs = this.listaCTs
-
-          this.selecCT = []
-
-        } else {
-
-          this.listaFCCs = this.listaCCs.Valores.filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
-
-          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
-
-          this.listaFCTs = this.listaCTs.filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
-
-          this.selecCT = this.listaFCTs.reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
-
-        }
-
-
-      } else if (seletor === "CC") {
-
-        this.selecDepto = [] // Zera marcação do seletor de departamentos
-
-        if (this.selecCC.length === 0) {
-
-          this.listaFCTs = this.listaCTs
-
-          this.selecCT = []
-
-        } else {
-
-          this.listaFCTs = this.listaCTs.filter((item => { return (this.selecCC.indexOf(item.IDSector) != -1) }))
-
-          this.selecCT = this.listaFCTs.reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
-
-        }
-
-      } else {
-
-
-        this.selecDepto = [] // Zera marcação do seletor de departamentos
-        this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
-
-      }
-
-      */
     },
 
     calculaMedia(dados, labels) {
@@ -660,8 +584,6 @@ export default {
         alert("Selecionar o Período do Gráfico");
       } else if (this.selecCT === undefined || this.selecCT === null || this.selecCT === [] || this.selecCT.length <= 0) {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
-        //} else if (this.convertData(this.dataInicio) === this.convertData(this.dataFim)) {
-        //alert("Data de início e fim iguais... Alterar a Data Início ou Data Fim")
       } else {
 
         this.dadosRecebidos = false;
@@ -674,9 +596,6 @@ export default {
 
         this.basicData.labels = []; // Apaga labels atuais
         this.basicData.datasets[0].data = []; // Apaga datasets atuais
-        //this.$refs.graficoProd.refresh(); // Atualiza gráfico zerado
-
-        //console.log("Penas atuais", this.basicData.datasets);
         this.msg =
           "Solicitando atualização dos dados para os CTs selecionados... "
         this.$socket.emit("solicitaDados", {
@@ -694,7 +613,6 @@ export default {
 
     // Converte a data recebida para o formado do Banco de Dados
     convertData(data) {
-      //console.log("DATA RECEBIDA",data.getYear())
       let ano = data.getYear() + 1900;
       let mes = (data.getMonth() + 1).toLocaleString("en-US", {
         minimumIntegerDigits: 2,
@@ -790,8 +708,8 @@ export default {
 .inline {
   display: inline;
 }
+
 .selectTurno {
   margin: 1%;
 }
-
 </style>

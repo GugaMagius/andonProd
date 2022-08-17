@@ -23,7 +23,7 @@
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
-            optionValue="IDArea" optionLabel="Depto" :filter="true" />
+            optionValue="idarea" optionLabel="Depto" :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -33,7 +33,7 @@
       <div class="selectMGrp col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="IDSector" optionLabel="CC"
+            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="CC"
             :filter="true" />
           <label for="selCC"> Centro de Custo: </label>
         </span>
@@ -44,7 +44,7 @@
       <div class="selectCT col-5 field">
         <span class="p-float-label">
           <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="IDResource"
+            v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="idresource"
             optionLabel="CT" :filter="true" />
           <label for="selCT"> Centro de Trabalho: </label>
         </span>
@@ -60,10 +60,10 @@
         <DataTable v-if="metaPor === 'CT'" :value="listaFCTs" editMode="cell" :scrollable="true" scrollHeight="flex"
           @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
           sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-          <Column field="Depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="IDResource" header="IDResource" style="min-width:15%" :sortable="true"></Column>
-          <Column field="CC" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
-          <Column field="CT" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
+          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
+          <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
+          <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
           <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
@@ -84,7 +84,7 @@
         <DataTable v-if="metaPor === 'depto'" :value="listaFDeptos" editMode="cell" :scrollable="true"
           scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
           responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-          <Column field="Depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
           <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
@@ -198,19 +198,18 @@ export default {
 
     onCellEditComplete(event) {
       let { data, newValue, field } = event;
-      console.log("#$#$#$# EVENTO:", event)
 
       if (this.metaPor === "depto") {
-        this["metasEnv"]["metaDepto"][data.IDArea] = this["metasEnv"]["metaDepto"][data.IDArea] || {}
-        this["metasEnv"]["metaDepto"][data.IDArea][field] = newValue || 0
-        this.listaFDeptos[data.IDArea][field] = newValue
+        this["metasEnv"]["metaDepto"][data.idarea] = this["metasEnv"]["metaDepto"][data.idarea] || {}
+        this["metasEnv"]["metaDepto"][data.idarea][field] = newValue || 0
+        this.listaFDeptos[data.idarea][field] = newValue
         this.$socket.emit("gravarConfig", this.metasEnv)
 
       } else {
 
-        this["metasEnv"]["metaCT"][data.IDResource] = this["metasEnv"]["metaCT"][data.IDResource] || {}
-        this["metasEnv"]["metaCT"][data.IDResource][field] = newValue || 0
-        this.listaFCTs[data.IDResource][field] = newValue
+        this["metasEnv"]["metaCT"][data.idresource] = this["metasEnv"]["metaCT"][data.idresource] || {}
+        this["metasEnv"]["metaCT"][data.idresource][field] = newValue || 0
+        this.listaFCTs[data.idresource][field] = newValue
         this.$socket.emit("gravarConfig", this.metasEnv)
 
       }
@@ -242,10 +241,10 @@ export default {
       this.listaFCTsM = this.listaFCTs
 
       // Filtra Departamentos disponíveis e elimina duplicados
-      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.IDArea] = index; return acc}, {})
+      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idarea] = index; return acc}, {})
 
       // Filtra Centros de Custo (Setores) e elimina duplicados
-      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.IDSector] = index; return acc}, {})
+      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc}, {})
 
       this.listaFDeptos = this.listaDeptos
       this.listaFCCs = this.listaCCs
@@ -259,10 +258,10 @@ export default {
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
 
-          if ((this.selecDepto.indexOf(index.IDArea) != -1 || this.selecDepto.length === 0) &&
-            (this.selecCC.indexOf(index.IDSector) != -1 || this.selecCC.length === 0) &&
-            (this.selecCT.indexOf(index.IDResource) != -1 || this.selecCT.length === 0)) {
-            acc[index.IDResource] = index
+          if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
+            (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
+            (this.selecCT.indexOf(index.idresource) != -1 || this.selecCT.length === 0)) {
+            acc[index.idresource] = index
           }
 
           return acc
@@ -308,15 +307,15 @@ export default {
 
         } else {
 
-          this.listaFCCs = Object.values(this.listaCCs).filter((item) => { return (this.selecDepto.indexOf(item.IDArea) != -1) })
+          this.listaFCCs = Object.values(this.listaCCs).filter((item) => { return (this.selecDepto.indexOf(item.idarea) != -1) })
 
-          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.IDSector); return acc }, [])
+          this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.idsector); return acc }, [])
 
           this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
 
-          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
 
         }
 
@@ -342,29 +341,20 @@ export default {
 
           this.listaFCTsM = this.listaFCTs
 
-          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.IDResource); return acc }, [])
+          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
 
         }
 
       } else if (seletor === "CT") {
 
-        //this.selecDepto = [] // Zera marcação do seletor de Departamentos
-
-        //this.selecCC = [] // Zera marcação do setor de Centros de Custo
 
         if (this.selecCT.length === 0) {
 
           this.atualizaFCTs()
 
-          //this.listaFCTsM = this.listaFCTs
-
-          //this.selecCT = []
-
         } else {
 
           this.atualizaFCTs()
-
-          //this.listaFCTsM = this.listaFCTs
 
         }
 

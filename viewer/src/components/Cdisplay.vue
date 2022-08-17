@@ -2,50 +2,33 @@
   <div class="flexgrid-demo p-p-2">
     <div class="grid">
       <!-- TAG -->
-      <div
-        class="col-4 disp"
-        :style="{
-          'font-size': tamanhoC,
-          'background-color': corFundoR,
-          color: txtCor,
-        }"
-      >
-        {{ teste }}{{ tag }}
+      <div class="col-4 disp" :style="{
+        'font-size': tamanhoC,
+        'background-color': corFundoR,
+        color: txtCor,
+      }">
+        {{ tag }}
       </div>
 
       <!-- VALOR -->
-      <div
-        :class="mesclar ? 'col-8' : 'col-4'"
-        class="disp"
-        :style="{
-          'font-size': tamanhoC,
-          'background-color': corFundo,
-          color: corTexto,
-        }"
-      >
-        <div
-          v-if="dispVis"
-          :style="{ color: statusFonte, 'background-color': corFundoP }"
-          :class="{ negrito: negrito }"
-        >
+      <div :class="mesclar ? 'col-8' : 'col-4'" class="disp" :style="{
+        'font-size': tamanhoC,
+        'background-color': corFundo,
+        color: corTexto,
+      }">
+        <div v-if="dispVis" :style="{ color: statusFonte, 'background-color': corFundoP }"
+          :class="{ negrito: negrito }">
           {{ valorP }}{{ sufixo }}
         </div>
       </div>
       <!-- PERDIDO -->
-      <div
-        class="col-4 disp"
-        v-if="!mesclar"
-        :style="{
-          'font-size': tamanhoC,
-          'background-color': corFundo,
-          color: corTexto,
-        }"
-      >
-        <div
-          v-if="dispVis"
-          :style="{ color: statusFonte, 'background-color': corFundoP }"
-          :class="{ negrito: negrito }"
-        >
+      <div class="col-4 disp" v-if="!mesclar" :style="{
+        'font-size': tamanhoC,
+        'background-color': corFundo,
+        color: corTexto,
+      }">
+        <div v-if="dispVis" :style="{ color: statusFonte, 'background-color': corFundoP }"
+          :class="{ negrito: negrito }">
           {{ valorS }}{{ sufixo }}
         </div>
       </div>
@@ -116,7 +99,7 @@ export default {
       this.negrito = true;
     }
   },
-  mounted() {},
+  mounted() { },
   methods: {
     atualizaHora() {
       try {
@@ -132,121 +115,19 @@ export default {
       }
       //console.log("Hora atual: ", this.horaAtual, " - Turno: ", this.turnoAtual)
     },
-    verificaCor: function () {        
-      
-        if (
-          this.turnoAtual > this.turnoDisp ||
-          (this.turnoAtual === this.turnoDisp &&
-            (this.horaAtual >= parseInt(this.tag)) || (this.turnoAtual === 3 && parseInt(this.tag) > 20)) ||
-          (this.fixo === true && this.turnoAtual === this.turnoDisp)
-        ) {
-          // Mostra valores
-          this.dispVis = true;
+    verificaCor: function () {
 
-          if (this.ecoat !== true) {
-            // Se não é display do e-coat ...
-            if (this.valorP === undefined || this.valorP === "") {
-              this.corStatusP = this.corNOK;
-            } else if (this.metaP != undefined) {
-              if (eval(`${this.valorP} ${this.metaP}`)) {
-                this.corStatusP = this.corOK;
-              } else {
-                this.corStatusP = this.corNOK;
-              }
-            } else {
-              this.corStatusP = "";
-            }
-          } else {
-            //Se for para o E-coat...
-
-            if (this.metaS != undefined && this.turnoAtual >= this.turnoDisp) {
-              if (this.valorS == undefined) {
-                this.corStatusS = "";
-                if (this.ecoat === true) {
-                  this.corStatusP = this.corOK;
-                }
-              } else if (eval(`${this.valorS} ${this.metaS}`)) {
-                this.corStatusS = this.corOK;
-                if (this.ecoat === true) {
-                  this.corStatusP = this.corOK;
-                }
-              } else {
-                this.corStatusS = this.corNOK;
-                if (this.ecoat === true) {
-                  this.corStatusP = this.corNOK;
-                }
-              }
-            } else if (
-              this.tag === "Perf." &&
-              this.turnoAtual >= this.turnoDisp
-            ) {
-              if (
-                this.metaP != undefined &&
-                this.valorP != undefined &&
-                this.valorP != ""
-              ) {
-                if (eval(`${this.valorP} ${this.metaP}`)) {
-                  this.corStatusP = this.corOK;
-                } else {
-                  this.corStatusP = this.corNOK;
-                }
-              } else {
-                this.corStatusP = "";
-              }
-            } else if (
-              this.tag === "Total" &&
-              this.turnoAtual >= this.turnoDisp
-            ) {
-              if (eval(`${this.valorS} ${this.metaS}`)) {
-                this.corStatusS = this.corOK;
-                this.corStatusP = this.corOK;
-              } else {
-                this.corStatusS = this.corNOK;
-                this.corStatusP = this.corNOK;
-              }
-            } else {
-              this.corStatusS = "";
-              if (this.ecoat === true) {
-                this.corStatusP = "";
-              }
-            }
-          }
-        } else {
-          // Não mostra valores
-
-          this.dispVis = false;
-        }
-
-
-        if (this.statusFdo === true && ((this.tag === "Méd." && this.ecoat !== true) || (this.tag === "Perf."))) {
-          this.corFundoP = this.corStatusP
-          this.corTexto = 'white'
-        } else {
-          this.corFundoP = ''
-          this.corTexto = this.corStatusP        
-        }
-      
-
-
-
-      /*
       if (
         this.turnoAtual > this.turnoDisp ||
         (this.turnoAtual === this.turnoDisp &&
-          this.horaAtual >= parseInt(this.tag)) ||
-        this.fixo === true
+          (this.horaAtual >= parseInt(this.tag)) || (this.turnoAtual === 3 && parseInt(this.tag) > 20)) ||
+        (this.fixo === true && this.turnoAtual === this.turnoDisp)
       ) {
+        // Mostra valores
         this.dispVis = true;
-      } else {
-        this.dispVis = false;
-      }
 
-      if (this.ecoat !== true) {
-        if (
-          (this.turnoAtual >= this.turnoDisp &&
-            this.horaAtual >= parseInt(this.tag)) ||
-          this.turnoAtual > this.turnoDisp
-        ) {
+        if (this.ecoat !== true) {
+          // Se não é display do e-coat ...
           if (this.valorP === undefined || this.valorP === "") {
             this.corStatusP = this.corNOK;
           } else if (this.metaP != undefined) {
@@ -258,60 +139,76 @@ export default {
           } else {
             this.corStatusP = "";
           }
-        }
-      }
+        } else {
+          //Se for para o E-coat...
 
-      if (this.metaS != undefined && this.turnoAtual >= this.turnoDisp) {
-        if (this.valorS == undefined) {
-          this.corStatusS= "";
-          if (this.ecoat === true) {
-            this.corStatusP = this.corOK;
-          }
-        } else if (eval(`${this.valorS} ${this.metaS}`)) {
-          this.corStatusS= this.corOK;
-          if (this.ecoat === true) {
-            this.corStatusP = this.corOK;
-          }
-        } else {
-          this.corStatusS= this.corNOK;
-          if (this.ecoat === true) {
-            this.corStatusP = this.corNOK;
-          }
-        }
-      } else if (this.tag === "Perf." && this.turnoAtual >= this.turnoDisp) {
-        if (
-          this.metaP != undefined &&
-          this.valorP != undefined &&
-          this.valorP != "" &&
-          this.turnoAtual >= this.turnoDisp
-        ) {
-          if (eval(`${this.valorP} ${this.metaP}`)) {
-            this.corStatusP = this.corOK;
+          if (this.metaS != undefined && this.turnoAtual >= this.turnoDisp) {
+            if (this.valorS == undefined) {
+              this.corStatusS = "";
+              if (this.ecoat === true) {
+                this.corStatusP = this.corOK;
+              }
+            } else if (eval(`${this.valorS} ${this.metaS}`)) {
+              this.corStatusS = this.corOK;
+              if (this.ecoat === true) {
+                this.corStatusP = this.corOK;
+              }
+            } else {
+              this.corStatusS = this.corNOK;
+              if (this.ecoat === true) {
+                this.corStatusP = this.corNOK;
+              }
+            }
+          } else if (
+            this.tag === "Perf." &&
+            this.turnoAtual >= this.turnoDisp
+          ) {
+            if (
+              this.metaP != undefined &&
+              this.valorP != undefined &&
+              this.valorP != ""
+            ) {
+              if (eval(`${this.valorP} ${this.metaP}`)) {
+                this.corStatusP = this.corOK;
+              } else {
+                this.corStatusP = this.corNOK;
+              }
+            } else {
+              this.corStatusP = "";
+            }
+          } else if (
+            this.tag === "Total" &&
+            this.turnoAtual >= this.turnoDisp
+          ) {
+            if (eval(`${this.valorS} ${this.metaS}`)) {
+              this.corStatusS = this.corOK;
+              this.corStatusP = this.corOK;
+            } else {
+              this.corStatusS = this.corNOK;
+              this.corStatusP = this.corNOK;
+            }
           } else {
-            this.corStatusP = this.corNOK;
+            this.corStatusS = "";
+            if (this.ecoat === true) {
+              this.corStatusP = "";
+            }
           }
-        } else {
-          this.corStatusP = "";
-        }
-      } else if (
-        this.tag === "Total" &&
-        this.ecoat === true &&
-        this.turnoAtual >= this.turnoDisp
-      ) {
-        if (eval(`${this.valorS} ${this.metaS}`)) {
-          this.corStatusS= this.corOK;
-          this.corStatusP = this.corOK;
-        } else {
-          this.corStatusS= this.corNOK;
-          this.corStatusP = this.corNOK;
         }
       } else {
-        this.corStatusS= "";
-        if (this.ecoat === true) {
-          this.corStatusP = "";
-        }
+        // Não mostra valores
+
+        this.dispVis = false;
       }
-      */
+
+
+      if (this.statusFdo === true && ((this.tag === "Méd." && this.ecoat !== true) || (this.tag === "Perf."))) {
+        this.corFundoP = this.corStatusP
+        this.corTexto = 'white'
+      } else {
+        this.corFundoP = ''
+        this.corTexto = this.corStatusP
+      }
+
     },
   },
 
@@ -338,10 +235,12 @@ export default {
 .mesclada {
   background-color: white;
 }
+
 .grid {
   height: 100%;
   margin-top: 0;
 }
+
 .negrito {
   font-weight: 700;
 }

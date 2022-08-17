@@ -3,7 +3,6 @@
 // **************************************************
 
 const ioSocket = require('./socket/server') //client SOCKET
-const bdMES = require('./BD/MES');
 const enviaEmail = require('./Services/enviaEmail')
 const datasulApi = require('./ServiceApi/DataSulApiService')
 datasulApi;
@@ -11,7 +10,6 @@ const apiZeno = require('./BD/apiZeno')
 apiZeno;
 
 const moment = require('moment')
-
 
 const config = require('./configuracao') //Configuração dos turnos (turnos / DadosIni)
 
@@ -22,6 +20,20 @@ const storage = require('./Services/storage')
 storage
 
 
+const connSuperv = "Data Source=MGU-SERVER02;Initial Catalog=SUPERVISORIO;User ID=gustavo;Password=magius@2021"
+
+const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
+
+function seletorConexaoBD (CTselect) {
+
+    if (CTselect === "ecoat" ) {
+        return connSuperv
+    } else {
+        return connMES
+    }
+
+}
+module.exports.seletorConexaoBD = seletorConexaoBD
 
 // ********** Sem Cadastro ***************
 var semCadastro = [] // Variável para indicar itens sem cadastro
@@ -112,13 +124,13 @@ function verifHora(horaRec, turno) {
     let Fim = moment(config["turnos"][`Turno${turno}`]["fim"], formato)
 
     if (moment(Inicio).isAfter(Fim)) {
-        if (moment(horaComp).isBetween(moment("00:00:00", formato), Fim)) {
+        if (moment(horaComp).isSameOrAfter(moment("00:00:00", formato)) && moment(horaComp).isBefore(Fim)) {
             tempo = (parseFloat(moment(horaComp).diff(moment("00:00:00", formato), "minute")) +
                 parseFloat(moment(moment("23:59:59", formato)).diff(Inicio, "minute"))) / 60
 
             return { turno: turno, dif: tempo }
 
-        } else if (moment(horaComp).isBetween(Inicio, moment("23:59:59", formato))) {
+        } else if (moment(horaComp).isSameOrAfter(Inicio) && moment(horaComp).isSameOrBefore(moment("23:59:59", formato))) {
             tempo = parseFloat(moment(horaComp).diff(Inicio, "minute")) / 60
             return { turno: turno, dif: tempo }
         } else {
@@ -246,11 +258,19 @@ function respostaBD(string, destino, BD) {
                                 // Compila os dados no acumulador
                                 if (quando === "Hoje" || quando === "Ontem") {
 
+                                    try {
+
+                                        
+
                                     acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
                                     acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
                                     acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += regAtualCalc
                                     acc[quando][`Turno${turnoReg}`]["soma"] += regAtualCalc
 
+                                    
+                                } catch (err) {
+                                    console.log("falha ao tentar compilar dados: ", err, " - Dados: ", index)
+                                }
                                 }
 
                                 return acc
@@ -334,10 +354,6 @@ function respostaBD(string, destino, BD) {
             }
         )
 }
-
-const connSuperv = "Data Source=MGU-SERVER02;Initial Catalog=SUPERVISORIO;User ID=gustavo;Password=magius@2021"
-
-const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
 
 const prodLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then DAY(data-1) ELSE DAY(data) END dtmov from cicloEcoat ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 

@@ -16,6 +16,7 @@ const versaoMES = require('../package.json').version
 const clientEcoat = require('./client')
 const bdMES = require('../BD/MES')
 const storage = require('../Services/storage')
+const apiZeno = require('../BD/apiZeno')
 
 const main = require('../server')
 
@@ -56,18 +57,23 @@ var listaCT = [] // Centro de trabalho
 var listaCTsMeta = [] // Centro de trabalho
 
 
-const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code, st.Name as CC, st.IDSector, ar.Name as Depto, ar.IDArea from TBLResource ct
-inner join TBLManagerGrp mg on (ct.IDManagerGrp = mg.IDManagerGrp)
-inner join TBLSector st on (mg.IDSector = st.IDSector)
-inner join TBLArea ar on (st.IDArea = ar.IDArea)
-WHERE ar.Code LIKE '11%' OR ct.Code LIKE '1014001'`
+const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
+const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code, st.Name as CC, st.IDSector, ar.Name as Depto, ar.IDArea from TBLResource ct inner join TBLManagerGrp mg on (ct.IDManagerGrp = mg.IDManagerGrp) inner join TBLSector st on (mg.IDSector = st.IDSector) inner join TBLArea ar on (st.IDArea = ar.IDArea) WHERE ar.Code LIKE '11%' OR ct.Code LIKE '1014001'`
 
+apiZeno.getDataSQL(queryCTs, connMES).then(
+    res => {
+        listaCT = res.data.result
+        console.log("resposta do BD", res.data.result)
+    }
+)
+/*
 bdMES.selectBD(queryCTs).then(
     function (res) {
         //listaCT.push({ IDResource: "EE", Name: "ENGANCHAMENTO E-COAT" })
         listaCT = res[0].recordset
     }
 )
+*/
 //**************************************/
 
 // ########################################################################
@@ -222,7 +228,9 @@ try {
                 let CTs = parametros.CT
 
                 if (parametros.CT.includes('ecoat')) {
-                    ioClient.solicitaDadosEcoat(parametros);
+                    queryQtd = "select data, convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END between " + parametros.dtInicio + " and " + parametros.dtFim
+                    queryHt = "select pev.dtprod,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between " + parametros.dtInicio + " and " + parametros.dtFim
+                    await Functions.solicitaBD(queryQtd, queryHt, parametros, "ecoat")
                 } else if (parametros.CT.includes("EE")) {
                     queryQtd = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between CONVERT(datetime," + parametros.dtInicio + ", 121) and CONVERT(datetime," + parametros.dtFim + ", 121)"
                     queryHt = "select pev.dtprod,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between " + parametros.dtInicio + " and " + parametros.dtFim

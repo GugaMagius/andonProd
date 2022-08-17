@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-9">
                   <div class="col-12 meta">
-                    {{ prefixoMeta }} {{ produzidos.meta }}
+                    {{ prefixoMeta }} {{ produzidos.metaP }}
                     {{ sufixoMeta }}
                   </div>
                 </div>
@@ -254,7 +254,7 @@
                     :valorS="ecoat ? perdidos.Ontem.Turno1.soma : 0" :metaS="perdidos.metaS" :turnoAtual="4"
                     :turnoDisp="1" :tamanho="tamTxtO" :ecoat="ecoat" :mesclar="!ecoat" />
                   <Display v-if="ecoat" :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Perf.'"
-                    :valorP="arredondar(performance.Ontem.Turno1, 1)" :metaP="performance.meta" :sufixo="'%'"
+                    :valorP="arredondar(performance.Ontem.Turno1, 1)" :metaP="performance.metaP" :sufixo="'%'"
                     :tamanho="tamTxtO" :mesclar="true" :turnoAtual="4" :turnoDisp="1" :ecoat="ecoat"
                     :statusFdo="true" />
                 </div>
@@ -270,7 +270,7 @@
                     :valorS="ecoat ? perdidos.Ontem.Turno2.soma : 0" :metaS="perdidos.metaS" :turnoAtual="4"
                     :turnoDisp="2" :tamanho="tamTxtO" :ecoat="ecoat" :mesclar="!ecoat" />
                   <Display v-if="ecoat" :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Perf.'"
-                    :valorP="arredondar(performance.Ontem.Turno2, 1)" :metaP="performance.meta" :sufixo="'%'"
+                    :valorP="arredondar(performance.Ontem.Turno2, 1)" :metaP="performance.metaP" :sufixo="'%'"
                     :tamanho="tamTxtO" :mesclar="true" :turnoAtual="4" :turnoDisp="2" :ecoat="ecoat"
                     :statusFdo="true" />
                 </div>
@@ -286,7 +286,7 @@
                     :valorS="ecoat ? perdidos.Ontem.Turno3.soma : 0" :metaS="perdidos.metaS" :turnoAtual="4"
                     :turnoDisp="3" :tamanho="tamTxtO" :ecoat="ecoat" :mesclar="!ecoat" />
                   <Display v-if="ecoat" :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Perf.'"
-                    :valorP="arredondar(performance.Ontem.Turno3, 1)" :metaP="performance.meta" :sufixo="'%'"
+                    :valorP="arredondar(performance.Ontem.Turno3, 1)" :metaP="performance.metaP" :sufixo="'%'"
                     :tamanho="2.7" :mesclar="true" :turnoAtual="4" :turnoDisp="3" :ecoat="ecoat" :statusFdo="true" />
                 </div>
               </div>
@@ -386,26 +386,18 @@
                             margin: '00',
                             padding: '00',
                             'font-size': '2.1vh',
-                          }" :class="[
-  this.perdidos.Ontem.mediaDia <=
-    this.perdidos.metaS.split(' ')[2]
-    ? 'fonteOK'
-    : 'fonteNOK',
-]">
+                          }"
+                            :class="[this.perdidos.Ontem.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{
                                 arredondar(produzidos.Ontem.mediaDia, 1)
-                            }}{{perdidos.metaS.split(' ')[2]}}</b>
+                            }}</b>
                           </td>
                           <td v-if="ecoat" :style="{
                             margin: '00',
                             padding: '00',
                             'font-size': '2.1vh',
-                          }" :class="[
-  this.perdidos.Ontem.mediaDia >=
-    this.perdidos.metaS.split(' ')[2]
-    ? 'fonteOK'
-    : 'fonteNOK',
-]">
+                          }"
+                            :class="[this.perdidos.Ontem.mediaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(perdidos.Ontem.mediaDia, 1) }}</b>
                           </td>
                           <td v-if="!ecoat" colspan="2" :style="{
@@ -419,36 +411,24 @@
                             margin: '00',
                             padding: '00',
                             'font-size': '2.1vh',
-                          }" :class="[
-  this.perdidos.Ontem.somaDia >=
-    this.perdidos.metaS.split(' ')[2]
-    ? 'fonteOK'
-    : 'fonteNOK',
-]">
+                          }"
+                            :class="[this.perdidos.Ontem.somaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(produzidos.Ontem.somaDia, 1) }}</b>
                           </td>
                           <td v-if="ecoat" :style="{
                             margin: '00',
                             padding: '00',
                             'font-size': '2.1vh',
-                          }" :class="[
-  this.perdidos.Ontem.somaDia >=
-    this.perdidos.metaS.split(' ')[2]
-    ? 'fonteOK'
-    : 'fonteNOK',
-]">
+                          }"
+                            :class="[this.perdidos.Ontem.somaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(perdidos.Ontem.somaDia, 0) }}</b>
                           </td>
                           <td v-if="ecoat" :style="{
                             margin: '00',
                             padding: '00',
                             'font-size': '2.1vh',
-                          }" :class="[
-  this.performance.Ontem.total >=
-    this.performance.metaP.split(' ')[2]
-    ? 'fdoOK'
-    : 'fdoNOK',
-]">
+                          }"
+                            :class="[this.performance.Ontem.total >= this.performance.metaP.split(' ')[2] ? 'fdoOK' : 'fdoNOK']">
                             <b>{{ arredondar(performance.Ontem.total, 1) }}%</b>
                           </td>
                         </tr>
@@ -499,15 +479,15 @@
                             )
                           )
                         " :Turno2m="
-  parseFloat(
-    arredondar(
-      ecoat
-        ? performance.Hoje.Turno2
-        : produzidos.Hoje.Turno2.media,
-      0
-    )
-  )
-" :Turno3m="
+                          parseFloat(
+                            arredondar(
+                              ecoat
+                                ? performance.Hoje.Turno2
+                                : produzidos.Hoje.Turno2.media,
+                              0
+                            )
+                          )
+                        " :Turno3m="
   parseFloat(
     arredondar(
       ecoat
@@ -535,7 +515,7 @@
                             </div>
                             <div class="col-12 semEspaco valMeta" display="inline">
                               <span :style="{ color: atingiuMetaHj }">
-                                {{ ecoat ? perfMeta : produzidos.meta }}
+                                {{ produzidos.metaP }}
                               </span>
                               <span v-if="sufixoMeta">
                                 {{ sufixoMeta }}
@@ -739,7 +719,7 @@
                       :turnoAtual="produzidos.turnoAtual" :turnoDisp="1" :tamanho="3" :ecoat="ecoat" :mesclar="!ecoat"
                       :fixo="true" />
                     <Display v-if="ecoat" :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Perf.'"
-                      :valorP="arredondar(performance.Hoje.Turno1, 1)" :metaP="performance.meta" :sufixo="'%'"
+                      :valorP="arredondar(performance.Hoje.Turno1, 1)" :metaP="performance.metaP" :sufixo="'%'"
                       :tamanho="3" :mesclar="true" :turnoAtual="produzidos.turnoAtual" :turnoDisp="1" :ecoat="ecoat"
                       :fixo="true" :statusFdo="true" />
                   </div>
@@ -756,7 +736,7 @@
                       :turnoAtual="produzidos.turnoAtual" :turnoDisp="2" :tamanho="3" :ecoat="ecoat" :mesclar="!ecoat"
                       :fixo="true" />
                     <Display v-if="ecoat" :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Perf.'"
-                      :valorP="arredondar(performance.Hoje.Turno2, 1)" :metaP="performance.meta" :sufixo="'%'"
+                      :valorP="arredondar(performance.Hoje.Turno2, 1)" :metaP="performance.metaP" :sufixo="'%'"
                       :tamanho="3" :mesclar="true" :turnoAtual="produzidos.turnoAtual" :turnoDisp="2" :ecoat="ecoat"
                       :fixo="true" :statusFdo="true" />
                   </div>
@@ -773,7 +753,7 @@
                       :turnoAtual="produzidos.turnoAtual" :turnoDisp="3" :tamanho="3" :ecoat="ecoat" :mesclar="!ecoat"
                       :fixo="true" />
                     <Display v-if="ecoat" :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Perf.'"
-                      :valorP="arredondar(performance.Hoje.Turno3, 1)" :metaP="performance.meta" :sufixo="'%'"
+                      :valorP="arredondar(performance.Hoje.Turno3, 1)" :metaP="performance.metaP" :sufixo="'%'"
                       :tamanho="3" :mesclar="true" :turnoAtual="produzidos.turnoAtual" :turnoDisp="3" :ecoat="ecoat"
                       :fixo="true" :statusFdo="true" />
                   </div>
@@ -866,58 +846,29 @@
                               }}</b>
                             </td>
 
-                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }" :class="[
-                              this.perdidos.Hoje.mediaDia <=
-                              this.perdidos.metaS.split(' ')[2]
-                                ? 'fonteOK'
-                                : 'fonteNOK',
-                            ]">
-                              <b>{{
-                              arredondar(produzidos.Hoje.mediaDia, 1)
-                              }}</b>
+                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
+                              :class="[this.perdidos.Hoje.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                              <b>{{arredondar(produzidos.Hoje.mediaDia, 1)}}</b>
                             </td>
 
-                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }" :class="[
-                              this.perdidos.Hoje.mediaDia <=
-                              this.perdidos.metaS.split(' ')[2]
-                                ? 'fonteOK'
-                                : 'fonteNOK',
-                            ]">
+                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
+                              :class="[this.perdidos.Hoje.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                               <b>{{ arredondar(perdidos.Hoje.mediaDia, 1) }}</b>
                             </td>
 
                             <td v-if="!ecoat" colspan="2" class="fonteMaior" :style="{ margin: '00', padding: '00' }">
-                              <b>{{
-                              arredondar(produzidos.Hoje.somaDia, 1)
-                              }}</b>
+                              <b>{{ arredondar(produzidos.Hoje.somaDia, 1) }}</b>
                             </td>
-                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }" :class="[
-                              this.perdidos.Hoje.somaDia <=
-                              this.perdidos.metaS.split(' ')[2]
-                                ? 'fonteOK'
-                                : 'fonteNOK',
-                            ]">
-                              <b>{{
-                              arredondar(produzidos.Hoje.somaDia, 1)
-                              }}</b>
+                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
+                              :class="[ this.perdidos.Hoje.somaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                              <b>{{ arredondar(produzidos.Hoje.somaDia, 1) }}</b>
                             </td>
-                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }" :class="[
-                              this.perdidos.Hoje.somaDia <=
-                              this.perdidos.metaS.split(' ')[2]
-                                ? 'fonteOK'
-                                : 'fonteNOK',
-                            ]">
+                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
+                              :class="[ this.perdidos.Hoje.somaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                               <b>{{ arredondar(perdidos.Hoje.somaDia, 0) }}</b>
                             </td>
-                            <td v-if="ecoat" class="fonteMaior" :style="{
-                              margin: '00',
-                              padding: '00',
-                            }" :class="[
-                              this.performance.Hoje.total >=
-                              this.performance.metaP.split(' ')[2]
-                                ? 'fdoOK'
-                                : 'fdoNOK',
-                            ]">
+                            <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00', }"
+                              :class="[ this.performance.Hoje.total >= this.performance.metaP.split(' ')[2] ? 'fdoOK' : 'fdoNOK']">
                               <b>{{ arredondar(performance.Hoje.total, 1) }}%</b>
                             </td>
                           </tr>
@@ -974,7 +925,9 @@ export default {
       this.atualizaDados();
     },
     dadosRecebidos() {
+
       setTimeout(this.pegaLargGraf, 1000);
+
     },
     produzidos() {
       this.atualizaDados();
@@ -1105,6 +1058,7 @@ export default {
   background-color: #42a500;
   color: black;
 }
+
 .fdoNOK {
   background-color: #ff0000;
   color: white;
@@ -1114,6 +1068,7 @@ export default {
 .fonteOK {
   color: #42a500;
 }
+
 .fonteNOK {
   color: #ff0000;
 }
