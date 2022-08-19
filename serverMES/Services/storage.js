@@ -6,10 +6,10 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 
 function setLS(key, value) {
   if (key === "log") {
-    console.log("FALHA: ", value);
+    //console.log("FALHA: ", value);
 
     let valorAtual = getLS(key);
-    console.log("Valor atual: ", valorAtual)
+    //console.log("Valor atual: ", valorAtual)
     let registroAtual = { DataHora: new Date(), Mensagem: value };
 
     function verifLogAtual() {

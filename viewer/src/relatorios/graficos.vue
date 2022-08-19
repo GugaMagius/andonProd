@@ -1,5 +1,6 @@
 <template>
   <div class="painel">
+    
     <div class="p-grid menu">
       <div class="col-12 inline">
         <div class="p-fluid seletores grid">
@@ -174,6 +175,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 
 export default {
 
@@ -212,6 +214,7 @@ export default {
 
   data() {
     return {
+      testeData: '',
       listaFCTs: [],
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [],
@@ -499,23 +502,13 @@ export default {
 
       } else if (seletor === "CT") {
 
-        //this.selecDepto = [] // Zera marcação do seletor de Departamentos
-
-        //this.selecCC = [] // Zera marcação do setor de Centros de Custo
-
         if (this.selecCT.length === 0) {
 
           this.atualizaFCTs()
 
-          //this.listaFCTsM = this.listaFCTs
-
-          //this.selecCT = []
-
         } else {
 
           this.atualizaFCTs()
-
-          //this.listaFCTsM = this.listaFCTs
 
         }
 
@@ -578,6 +571,9 @@ export default {
 
     },
 
+teste(){
+console.log(moment())
+},
     // Realiza a consulta dos dados no banco de dados e configura as penas do gráfico
     consultaDados() {
       if (this.selecPeriodo.code === undefined) {
@@ -603,36 +599,13 @@ export default {
           CT: this.selecCT, // Configuração de qual CT está solicitando
           periodo: this.selecPeriodo.code, // Configuração de qual periodo está sendo solicitado (Dia / Hora / Mês)
           unidade: this.unidade, // Unidade selecionada (m2 / kg)
-          dtInicio: this.convertData(this.dataInicio), // Data inicial para os dados solicitados
-          dtFim: this.convertData(this.dataFim), // Data final para os dados solicitados
+          dtInicio: moment(this.dataInicio).format("YYYY-MM-DD 06:00:00"), // Data inicial para os dados solicitados
+          dtFim: moment(this.dataFim).add(1, "days").format("YYYY-MM-DD 05:59:00"), // Data final para os dados solicitados
           turnos: this.selecTurno, // Turnos selecionados
+          ht: this.periodo,
           id: this.id // ID do cliente que está solicitando os dados
         });
       }
-    },
-
-    // Converte a data recebida para o formado do Banco de Dados
-    convertData(data) {
-      let ano = data.getYear() + 1900;
-      let mes = (data.getMonth() + 1).toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      });
-      let dia = data.getDate().toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      });
-      let hora = data.getHours().toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      });
-      let minuto = data.getMinutes().toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      });
-      return (
-        "'" + ano + "-" + mes + "-" + dia + " " + hora + ":" + minuto + "'"
-      );
     },
 
     AdicionaVar(label, borderColor, data) {

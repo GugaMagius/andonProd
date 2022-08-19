@@ -62,58 +62,119 @@ module.exports.calcDifHora = calcDifHora
 
 // Função para solicitar dados do banco de dados
 async function solicitaBD(queryQtd, queryHt, msg, setor) {
-    let resQtd
-    let resHt
+    console.log("mensagem: ", msg)
 
-    if (setor === "ecoat") {
-        await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor)).then(res=>{
 
-            console.log("Resultado da consulta do BD Ecoat: ", res)
-        }
+
+    var paramConsQtd
+    var paramConsHt
+
+    function consultaSQL(query) {
+        return new Promise(
+            async function (resolve, reject) {
+
+                await apiZeno.getDataSQL(query, main.seletorConexaoBD(setor), msg).then(res => {
+                    //if (res[0].length <= 0) {
+                    //    ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': msg })
+                    //    reject("vazio")
+                    //}
+                    resolve(res)
+                }
+                )
+
+            }
         )
-        await apiZeno.getDataSQL(queryHt, main.seletorConexaoBD()).then(res=>{
-            console.log("Resultado da consulta do BD para HT: ", res)
-        })
-
     }
 
-    bdMES.selectBD(queryQtd, msg).then(
-        async function (res) {
 
-            if (res[0].recordset.length <= 0) {
-                ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': msg })
-                return
+    if (setor === "ecoat") {
+
+        console.log("é ecoat: ")
+
+        let promiseQtd = new Promise(
+            function (resolve, reject) {
+
+                consultaSQL(queryQtd).then(res => {
+                    pool.exec('dadosComp', [res, false, main.eItemsList(), config]).then(
+                        resPool => {
+                            console.log("Resposta do POOL: ", resPool)
+
+                            resolve(paramConsQtd = resPool)
+
+                        }
+                    )
+
+                })
             }
+        )
 
-            resQtd = res
-            bdMES.selectBD(queryHt, msg).then(
-                async function (res) {
+        let promiseHt = new Promise(
+            function (resolve, reject) {
+                if (msg.ht==="media") {resolve()}
+                consultaSQL(queryHt).then(res => {
+                    pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
+                        resPool => {
+                            resolve(paramConsHt = resPool)
 
-
-
-                    if (res[0].recordset.length <= 0) {
-                        ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': msg })
-                        return
-                    }
-
-                    resHt = res
-
-                    var paramConsQtd = await pool.exec('dadosComp', [resQtd, false, main.eItemsList(), config])
-
-                    var paramConsHt = await pool.exec('dadosComp', [resHt, true, main.eItemsList(), config])
-
-
-                    calculaMedia(paramConsQtd, paramConsHt, res[1])
-
-                    console.log("**Finalizado Compilação dos dados recebidos! ", "Data-hora: ", new Date())
+                        }
+                    )
 
                 })
 
+            }
+        )
+
+
+        Promise.all([promiseQtd, promiseHt]).then((res) => {
+
+                ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
+
 
         }
-    ).catch((err) => {
-        storage.setLS("log", `Falha na consulta ao banco de dados para Qtd. ${err}`)
-    });
+
+        )
+
+
+
+
+    }
+
+    /*
+        bdMES.selectBD(queryQtd, msg).then(
+            async function (res) {
+    
+    
+    
+                resQtd = res
+                bdMES.selectBD(queryHt, msg).then(
+                    async function (res) {
+    
+    
+    
+                        if (res[0].recordset.length <= 0) {
+                            ioSocket.enviarResposta({ 'dadosQtd': 0, 'media': 0, 'parametros': msg })
+                            return
+                        }
+    
+                        resHt = res
+    
+                        var paramConsQtd = await pool.exec('dadosComp', [resQtd, false, main.eItemsList(), config])
+    
+                        var paramConsHt = await pool.exec('dadosComp', [resHt, true, main.eItemsList(), config])
+    
+    
+                        calculaMedia(paramConsQtd, paramConsHt, res[1])
+    
+                        console.log("**Finalizado Compilação dos dados recebidos! ", "Data-hora: ", new Date())
+    
+                    })
+    
+    
+            }
+        ).catch((err) => {
+            storage.setLS("log", `Falha na consulta ao banco de dados para Qtd. ${err}`)
+        });
+        */
 }
 module.exports.solicitaBD = solicitaBD
 
@@ -121,6 +182,7 @@ module.exports.solicitaBD = solicitaBD
 // Função para calcular a média
 async function calculaMedia(Qtd, tempo, parametros) {
     let media = {}
+    console.log("Iniciando calculo da média: ", Qtd)
 
     for (const [index, data] of Object.keys(Qtd).entries()) {
         //console.log("valor: ", Qtd[data], " - tempo: ", tempo[data])
@@ -128,6 +190,7 @@ async function calculaMedia(Qtd, tempo, parametros) {
         media[data] = parseFloat((Qtd[data] / tempo[data]).toFixed(1))
 
         if (index >= Object.keys(Qtd).length - 1) {
+            console.log("enviando dados compilados da média: ", media)
             ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'parametros': parametros })
         }
 
@@ -192,3 +255,6 @@ async function escreverLog(msg) {
     await escreverFS(`${dataHora} - ${msg}`)
 }
 module.exports.escreverLog = escreverLog
+
+
+

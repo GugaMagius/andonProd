@@ -54,7 +54,6 @@ module.exports.verifConexao = verifConexao
 
 // Lista de Recussos e MGrps*********/
 var listaCT = [] // Centro de trabalho
-var listaCTsMeta = [] // Centro de trabalho
 
 
 const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
@@ -62,8 +61,7 @@ const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code
 
 apiZeno.getDataSQL(queryCTs, connMES).then(
     res => {
-        listaCT = res.data.result
-        console.log("resposta do BD", res.data.result)
+        listaCT = res[0]
     }
 )
 /*
@@ -218,6 +216,7 @@ try {
 
         // Solicitação de dados pelo cliente
         socket.on("solicitaDados", function (msg) {
+            console.log("solicitado dados: ", msg)
 
             // Para criar para outros MGrps, consultar a tabela [TBLResource], montar grupos conforme o campo [IDManagerGrp] e nome do grupo na tabela [TBLManagerGrp]
 
@@ -228,20 +227,20 @@ try {
                 let CTs = parametros.CT
 
                 if (parametros.CT.includes('ecoat')) {
-                    queryQtd = "select data, convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END between " + parametros.dtInicio + " and " + parametros.dtFim
-                    queryHt = "select pev.dtprod,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between " + parametros.dtInicio + " and " + parametros.dtFim
+                    queryQtd = "select data, convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryHt = "select pev.dtprod as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros, "ecoat")
                 } else if (parametros.CT.includes("EE")) {
-                    queryQtd = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between CONVERT(datetime," + parametros.dtInicio + ", 121) and CONVERT(datetime," + parametros.dtFim + ", 121)"
-                    queryHt = "select pev.dtprod,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between " + parametros.dtInicio + " and " + parametros.dtFim
+                    queryQtd = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP as data, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between CONVERT(datetime," + parametros.dtInicio + ", 121) and CONVERT(datetime," + parametros.dtFim + ", 121)"
+                    queryHt = "select pev.dtprod as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 } else if (parametros.CT === '') {
                     console.log("Nenhum CT selecionado")
                 } else if (parametros.CT === undefined) {
                     console.log("Nenhum CT selecionado")
                 } else {
-                    queryQtd = "select me.DtMov, me.DtTimeStamp, convert(time, me.DtTimeStamp) Hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and me.DtMov between " + parametros.dtInicio + " and " + parametros.dtFim
-                    queryHt = "select pev.dtprod,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + CTs + ") and DtProd between " + parametros.dtInicio + " and " + parametros.dtFim
+                    queryQtd = "select me.DtMov, me.DtTimeStamp as data, convert(time, me.DtTimeStamp) Hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and me.DtMov between " + parametros.dtInicio + " and " + parametros.dtFim + "'"
+                    queryHt = "select pev.dtprod as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + CTs + ") and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 }
 

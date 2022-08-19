@@ -7,7 +7,6 @@ const enviaEmail = require('./Services/enviaEmail')
 const datasulApi = require('./ServiceApi/DataSulApiService')
 datasulApi;
 const apiZeno = require('./BD/apiZeno')
-apiZeno;
 
 const moment = require('moment')
 
@@ -15,6 +14,8 @@ const config = require('./configuracao') //Configuração dos turnos (turnos / D
 
 // **** Conexão com arquivo de funções *********
 const Functions = require('./Services/functions')
+
+const calcHorarios = require('./Services/calcHorarios')
 
 const storage = require('./Services/storage')
 storage
@@ -24,9 +25,9 @@ const connSuperv = "Data Source=MGU-SERVER02;Initial Catalog=SUPERVISORIO;User I
 
 const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
 
-function seletorConexaoBD (CTselect) {
+function seletorConexaoBD(CTselect) {
 
-    if (CTselect === "ecoat" ) {
+    if (CTselect === "ecoat") {
         return connSuperv
     } else {
         return connMES
@@ -114,7 +115,7 @@ var formato = "HH:mm:ss"; // fomato para data e hora utilizado nos cálculos de 
 
 const horaAtual = moment(dateTime, formato) // hora atual
 
-
+/*
 // Função para inverter a Hora-fim e Hora-Inicio, se necessário
 function verifHora(horaRec, turno) {
     let tempo = 0.0
@@ -136,22 +137,28 @@ function verifHora(horaRec, turno) {
         } else {
             tempo = (parseFloat(moment(Fim).diff(moment("00:00:00", formato), "minute")) +
                 parseFloat(moment(moment("23:59:59", formato)).diff(Inicio, "minute"))) / 60
+
             return { turno: 0, dif: tempo }
         }
 
     } else if (moment(horaComp).isBetween(Inicio, Fim)) {
         tempo = parseFloat(moment(horaComp).diff(Inicio, "minute")) / 60
+
         return { turno: turno, dif: tempo }
     } else {
         tempo = parseFloat(moment(Fim).diff(Inicio, "minute")) / 60
+
         return { turno: 0, dif: tempo }
     }
+
 }
-const tempoT1 = verifHora(config.turnos.Turno1.fim, 1).dif
-const tempoT2 = verifHora(config.turnos.Turno2.fim, 2).dif
-const tempoT3 = verifHora(config.turnos.Turno3.fim, 3).dif
+*/
 
+const tempoT1 = calcHorarios.verifHora(config.turnos.Turno1.fim, 1).dif
+const tempoT2 = calcHorarios.verifHora(config.turnos.Turno2.fim, 2).dif
+const tempoT3 = calcHorarios.verifHora(config.turnos.Turno3.fim, 3).dif
 
+/*
 // Testes de turno para saber qual o turno
 function testeTurno(horaRec) {
     let t1 = verifHora(horaRec, 1);
@@ -169,13 +176,8 @@ function testeTurno(horaRec) {
     }
 
 }
-
-/*console.log(
-"1", verifHora('',1),
-"2", verifHora('',2),
-"3", verifHora('',3),
-"1", verifHora('',1),
-)*/
+module.exports.testeTurno = testeTurno
+*/
 
 
 fEnviaEmailSemCad(listaSemCadCompl);
@@ -189,16 +191,68 @@ function respostaBD(string, destino, BD) {
         function (respostaBD) {
 
             let horaAtualCmp = moment(new Date()).format(formato) // Hora atual completa
-            let turnoAtual = testeTurno(horaAtualCmp).turno
+            let turnoAtual = calcHorarios.testeTurno(horaAtualCmp).turno
+
 
             function extratDados(dadosBD) {
 
                 return new Promise(
                     function (resolve, reject) {
 
+                        const DadosIni = {
+                            Hoje: {
+                                Turno1: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                },
+                                Turno2: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                },
+                                Turno3: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                }
+                            },
+                            Ontem: {
+                                Turno1: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                },
+                                Turno2: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                },
+                                Turno3: {
+                                    soma: 0,
+                                    media: 0,
+                                    horarios: {
+                    
+                                    }
+                                }
+                            },
+                            
+                        }
+
                         resolve(
 
-                            dadosBD.data.result.reduce(function (acc, index) {
+                            dadosBD.reduce(function (acc, index) {
+
 
                                 let inicioDia = moment(config.turnos.Turno1.inicio, formato).format(formato)
                                 let horaReg2d = moment.utc(index.hora, "HH:mm:ss").format("HH")
@@ -206,7 +260,7 @@ function respostaBD(string, destino, BD) {
                                 let horaRegCmp = moment.utc(index.hora, "HH:mm:ss").format(formato) // Hora do registro completa
                                 let diaHoje2d = moment(horaAtualCmp).isBefore(inicioDia) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
                                 let diaOntem2d = moment().subtract(1, "days").format("DD")
-                                let turnoReg = testeTurno(horaRegCmp).turno
+                                let turnoReg = calcHorarios.testeTurno(horaRegCmp).turno
 
                                 var regAtualCalc = 0.0
 
@@ -260,23 +314,21 @@ function respostaBD(string, destino, BD) {
 
                                     try {
 
-                                        
+                                        acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
+                                        acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
+                                        acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += regAtualCalc
+                                        acc[quando][`Turno${turnoReg}`]["soma"] += regAtualCalc
 
-                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
-                                    acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
-                                    acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += regAtualCalc
-                                    acc[quando][`Turno${turnoReg}`]["soma"] += regAtualCalc
 
-                                    
-                                } catch (err) {
-                                    console.log("falha ao tentar compilar dados: ", err, " - Dados: ", index)
-                                }
+                                    } catch (err) {
+                                        console.log("falha ao tentar compilar dados: ", err, " - Dados: ", index)
+                                    }
                                 }
 
                                 return acc
 
                             },
-                                {} // valor inicial do reduce
+                                DadosIni // valor inicial do reduce
                             )
                         )
 
@@ -287,12 +339,9 @@ function respostaBD(string, destino, BD) {
 
             }
 
-
-            extratDados(respostaBD).then(  // Calcula média
+            extratDados(respostaBD[0]).then(  // Calcula média
 
                 function (respostaED) {
-
-                    //ioSocket.atualizaDados(respostaED, destino)
 
                     respostaED["metaP"] = config.metas[`metaP_${destino.split("_")[1]}`]
 
@@ -312,9 +361,9 @@ function respostaBD(string, destino, BD) {
                     let tempoT2Hoje
                     let tempoT3Hoje
 
-                    turnoAtual = 1 ? tempoT1Hoje = verifHora(horaAtualCmp, 1).dif : tempoT1Hoje = tempoT1
-                    turnoAtual = 2 ? tempoT2Hoje = verifHora(horaAtualCmp, 2).dif : tempoT2Hoje = tempoT2
-                    turnoAtual = 3 ? tempoT3Hoje = verifHora(horaAtualCmp, 3).dif : tempoT3Hoje = tempoT3
+                    turnoAtual = 1 ? tempoT1Hoje = calcHorarios.verifHora(horaAtualCmp, 1).dif : tempoT1Hoje = tempoT1
+                    turnoAtual = 2 ? tempoT2Hoje = calcHorarios.verifHora(horaAtualCmp, 2).dif : tempoT2Hoje = tempoT2
+                    turnoAtual = 3 ? tempoT3Hoje = calcHorarios.verifHora(horaAtualCmp, 3).dif : tempoT3Hoje = tempoT3
 
 
                     respostaED["Hoje"]["Turno1"]["media"] = respostaED["Hoje"]["Turno1"]["soma"] / tempoT1Hoje
