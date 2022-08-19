@@ -345,6 +345,7 @@ export default {
         this.dadosRecebidos = true;
 
       } else if (data.parametros.id === this.id) {
+        console.log(data.dadosQtd)
 
         this.dadosRecebidos = true;
 

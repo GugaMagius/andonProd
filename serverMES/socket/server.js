@@ -163,15 +163,6 @@ try {
                     socket.emit("respostaLog", storage.getLS("log"))
                 
             
-
-            /*
-            Functions.lerFS().then(
-                function (val) {
-                    console.log("Valor obtido do arquivo: ", val)
-                    socket.emit("respostaLog", val)
-                }
-            )
-            */
         })
 
 
@@ -228,7 +219,7 @@ try {
 
                 if (parametros.CT.includes('ecoat')) {
                     queryQtd = "select data, convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
-                    queryHt = "select pev.dtprod as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and rsev.ShiftDtStart between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros, "ecoat")
                 } else if (parametros.CT.includes("EE")) {
                     queryQtd = "select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP as data, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between CONVERT(datetime," + parametros.dtInicio + ", 121) and CONVERT(datetime," + parametros.dtFim + ", 121)"
