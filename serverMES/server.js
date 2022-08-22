@@ -45,7 +45,7 @@ function fEnviaEmailSemCad(lista) {
 
     if (emailSemCadEnviado === false && turnoAtual === 1 && listaSemCadCompl != undefined) {
 
-        /* #Teste desativar quando estiver em teste */
+        /* #Teste desativar quando estiver em teste 
         enviaEmail("Itens não cadastrados",
             "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
             "Diones",
@@ -53,7 +53,7 @@ function fEnviaEmailSemCad(lista) {
         )
         emailSemCadEnviado = true;
         semCadastro = []
-
+*/
 
     }
 }

@@ -246,7 +246,7 @@
                   <!-- SOMA E MÉDIA-->
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Méd.'"
                     :valorP="arredondar(produzidos.Ontem.Turno1.media, 1)"
-                    :valorS="ecoat ? perdidos.Ontem.Turno1.media : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
+                    :valorS="ecoat ? arredondar(perdidos.Ontem.Turno1.media,1) : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
                     :metaS="perdidos.metaS" :turnoAtual="4" :turnoDisp="1" :ecoat="ecoat" :mesclar="!ecoat"
                     :statusFdo="true" />
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Total'"
@@ -262,7 +262,7 @@
                 <div class="col-4 box">
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Méd.'"
                     :valorP="arredondar(produzidos.Ontem.Turno2.media, 1)"
-                    :valorS="ecoat ? perdidos.Ontem.Turno2.media : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
+                    :valorS="ecoat ? arredondar(perdidos.Ontem.Turno2.media,1) : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
                     :metaS="perdidos.metaS" :turnoAtual="4" :turnoDisp="2" :ecoat="ecoat" :mesclar="!ecoat"
                     :statusFdo="true" />
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Total'"
@@ -278,7 +278,7 @@
                 <div class="col-4 box">
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Méd.'"
                     :valorP="arredondar(produzidos.Ontem.Turno3.media, 1)"
-                    :valorS="ecoat ? perdidos.Ontem.Turno3.media : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
+                    :valorS="ecoat ? arredondar(perdidos.Ontem.Turno3.media,1) : 0" :tamanho="tamTxtO" :metaP="produzidos.metaP"
                     :metaS="perdidos.metaS" :turnoAtual="4" :turnoDisp="3" :ecoat="ecoat" :mesclar="!ecoat"
                     :statusFdo="true" />
                   <Display :corFundoR="corOntem" :txtCor="txtOntem" :tag="'Total'"
@@ -397,7 +397,7 @@
                             padding: '00',
                             'font-size': '2.1vh',
                           }"
-                            :class="[this.perdidos.Ontem.mediaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                            :class="[this.perdidos.Ontem.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(perdidos.Ontem.mediaDia, 1) }}</b>
                           </td>
                           <td v-if="!ecoat" colspan="2" :style="{
@@ -412,7 +412,7 @@
                             padding: '00',
                             'font-size': '2.1vh',
                           }"
-                            :class="[this.perdidos.Ontem.somaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                            :class="[this.perdidos.Ontem.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(produzidos.Ontem.somaDia, 1) }}</b>
                           </td>
                           <td v-if="ecoat" :style="{
@@ -420,7 +420,7 @@
                             padding: '00',
                             'font-size': '2.1vh',
                           }"
-                            :class="[this.perdidos.Ontem.somaDia >= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                            :class="[this.perdidos.Ontem.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                             <b>{{ arredondar(perdidos.Ontem.somaDia, 0) }}</b>
                           </td>
                           <td v-if="ecoat" :style="{
@@ -710,7 +710,7 @@
                     <!-- SOMA E MÉDIA-->
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Méd.'"
                       :valorP="arredondar(produzidos.Hoje.Turno1.media, 1)"
-                      :valorS="ecoat ? perdidos.Hoje.Turno1.media : 0" :tamanho="3" :metaP="produzidos.metaP"
+                      :valorS="ecoat ? arredondar(perdidos.Hoje.Turno1.media,1) : 0" :tamanho="3" :metaP="produzidos.metaP"
                       :metaS="perdidos.metaS" :turnoAtual="produzidos.turnoAtual" :turnoDisp="1" :ecoat="ecoat"
                       :mesclar="!ecoat" :fixo="true" :statusFdo="true" />
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Total'"
@@ -727,7 +727,7 @@
                   <div class="col-4 box">
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Méd.'"
                       :valorP="arredondar(produzidos.Hoje.Turno2.media, 1)"
-                      :valorS="ecoat ? perdidos.Hoje.Turno2.media : 0" :tamanho="3" :metaP="produzidos.metaP"
+                      :valorS="ecoat ? arredondar(perdidos.Hoje.Turno2.media,1) : 0" :tamanho="3" :metaP="produzidos.metaP"
                       :metaS="perdidos.metaS" :turnoAtual="produzidos.turnoAtual" :turnoDisp="2" :ecoat="ecoat"
                       :mesclar="!ecoat" :fixo="true" :statusFdo="true" />
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Total'"
@@ -744,7 +744,7 @@
                   <div class="col-4 box">
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Méd.'"
                       :valorP="arredondar(produzidos.Hoje.Turno3.media, 1)"
-                      :valorS="ecoat ? perdidos.Hoje.Turno3.media : 0" :tamanho="3" :metaP="produzidos.metaP"
+                      :valorS="ecoat ? arredondar(perdidos.Hoje.Turno3.media,1) : 0" :tamanho="3" :metaP="produzidos.metaP"
                       :metaS="perdidos.metaS" :turnoAtual="produzidos.turnoAtual" :turnoDisp="3" :ecoat="ecoat"
                       :mesclar="!ecoat" :fixo="true" :statusFdo="true" />
                     <Display :corFundoR="corHoje" :txtCor="txtHoje" :tag="'Total'"
@@ -860,11 +860,11 @@
                               <b>{{ arredondar(produzidos.Hoje.somaDia, 1) }}</b>
                             </td>
                             <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
-                              :class="[ this.perdidos.Hoje.somaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                              :class="[this.perdidos.Hoje.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                               <b>{{ arredondar(produzidos.Hoje.somaDia, 1) }}</b>
                             </td>
                             <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00' }"
-                              :class="[ this.perdidos.Hoje.somaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
+                              :class="[this.perdidos.Hoje.mediaDia <= this.perdidos.metaS.split(' ')[2] ? 'fonteOK' : 'fonteNOK']">
                               <b>{{ arredondar(perdidos.Hoje.somaDia, 0) }}</b>
                             </td>
                             <td v-if="ecoat" class="fonteMaior" :style="{ margin: '00', padding: '00', }"
