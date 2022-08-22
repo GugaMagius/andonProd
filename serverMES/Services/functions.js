@@ -38,17 +38,12 @@ module.exports.reduceDatasul = reduceDatasul
 // Função para solicitar dados do banco de dados
 async function solicitaBD(queryQtd, queryHt, msg, setor) {
 
-
-    if (setor === "ecoat") {
-
-
         let promiseQtd = new Promise(
             async function (resolve, reject) {
 
                 await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), msg).then(res => {
                     pool.exec('dadosComp', [res, false, main.eItemsList(), config]).then(
                         resPool => {
-
                             resolve(resPool)
                         }
                     )
@@ -64,7 +59,6 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
                     //if (res==={}){resolve("vazia")}
                     pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
                         resPool => {
-
                             resolve(resPool)
                         }
                     )
@@ -76,13 +70,15 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
 
         Promise.all([promiseQtd, promiseHt]).then((res) => {
 
-            ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
+            calculaMedia(res[0], res[1], msg)
+
+            //ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
 
         }
 
         )
 
-    }
+
 }
 module.exports.solicitaBD = solicitaBD
 
