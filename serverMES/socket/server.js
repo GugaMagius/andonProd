@@ -9,16 +9,11 @@ var express = require('express')
 var app = express()
 app.use(cors());
 const http = require('http').createServer(app)
-const ioClient = require('../socket/client')
-ioClient
 const Functions = require('../Services/functions')
 const versaoMES = require('../package.json').version
 const clientEcoat = require('./client')
-const bdMES = require('../BD/MES')
 const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
-
-const main = require('../server')
 
 var dadosServer = {}
 module.exports.dadosServer = dadosServer

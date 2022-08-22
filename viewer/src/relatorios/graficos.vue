@@ -1,6 +1,6 @@
 <template>
   <div class="painel">
-    
+
     <div class="p-grid menu">
       <div class="col-12 inline">
         <div class="p-fluid seletores grid">
@@ -50,8 +50,8 @@
           <div class="selectCT field col-2 md:col-2">
             <span class="p-float-label">
               <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-                v-model="selecCT" @change="atualizaMenu()" :options="Object.values(listaFCTs)" optionValue="idresource"
-                optionLabel="ct" :filter="true" />
+                v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTs)"
+                optionValue="idresource" optionLabel="ct" :filter="true" />
               <label for="selCT"> Centro de Trabalho: </label>
             </span>
           </div>
@@ -441,11 +441,6 @@ export default {
     },
     atualizaMenu(seletor) {
 
-      if (this.selecCT.includes("ecoat")) {
-        this.selecCT = ["ecoat"]
-      }
-
-
       if (seletor === "Depto") {
 
         if (this.metaPor === "CT") {
@@ -492,7 +487,6 @@ export default {
 
           this.atualizaFCTs()
 
-
         } else {
 
           this.atualizaFCTs()
@@ -501,20 +495,36 @@ export default {
 
         }
 
-      } else if (seletor === "CT") {
+      } else {
 
         if (this.selecCT.length === 0) {
 
-          this.atualizaFCTs()
+          this.selecCT = []
+          
+          this.atualizaFCTs();
+
+          //;this.atualizaFCTs()
 
         } else {
 
-          this.atualizaFCTs()
+          // Remove o E-coat caso tenha selecionado o E-coat e mais algum outro setor
+          if (this.selecCT.indexOf("ecoat") != -1 && this.selecCT.length > 1) {
+
+            this.selecCT.splice(this.selecCT.indexOf("ecoat"), 1);
+
+          }
+          // Remove o Enganchamento caso tenha selecionado o Enganchamento e mais algum outro setor
+          if (this.selecCT.indexOf("EE") != -1 && this.selecCT.length > 1) {
+
+            this.selecCT.splice(this.selecCT.indexOf("EE"), 1);
+
+          }
+
+          this.atualizaFCTs();
+
+          //this.atualizaFCTs()
 
         }
-
-      } else {
-
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
         this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
@@ -572,9 +582,9 @@ export default {
 
     },
 
-teste(){
-console.log(moment())
-},
+    teste() {
+      console.log(moment())
+    },
     // Realiza a consulta dos dados no banco de dados e configura as penas do gráfico
     consultaDados() {
       if (this.selecPeriodo.code === undefined) {
