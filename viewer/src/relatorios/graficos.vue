@@ -204,6 +204,7 @@ export default {
     id: String,
     listaCTsReceb: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
+    metas: Object, // Metas por Depto e por CT
   },
 
   computed: {
@@ -211,6 +212,7 @@ export default {
       return this.selecCT.includes('ecoat') ? true : false
     },
   },
+
 
   data() {
     return {
@@ -221,6 +223,8 @@ export default {
       listaFCCs: [],
       listaDeptos: [],
       listaFDeptos: [],
+      metaGrafico: 0,
+      metasSelec: {},
 
       larguraGraf: '',
       alturaGraf: '',
@@ -374,10 +378,30 @@ export default {
         this.calculaMedia(this.basicData.datasets[0].data, this.basicData.labels);
 
       }
+
+      // Verifica metas
+      if (this.selecDepto.length === 1){
+        this.metaGraf = this.meta["metaDepto"][this.selecDepto[0]][`meta${this.unidade}`]
+      } else if (this.selecDepto.length > 1) {
+        this.metasSelec = this.selecDepto.reduce((acc, elemento, index)=>{
+          //let metaAtual = 
+          //let metaAtual = this.meta[this.selecDepto[0][`meta${this.unidade}`]]
+          acc = acc || {soma: 0, media: 0}
+          acc["soma"] = acc["soma"] + this.meta["metaDepto"][elemento][`meta${this.unidade}`]
+          acc["media"] = acc["media"] = acc["soma"] / index
+        },0)
+      }
     },
 
   },
   methods: {
+    verificaMeta(){
+    if (this.Turno1m >= this.Meta) {
+      this.basicData.datasets[1].backgroundColor[0] = this.corOK;
+    } else {
+      this.basicData.datasets[1].backgroundColor[0] = this.corNOK;
+    }
+    },
     diaSemana(data) {
       if (data.substr(6, 2) > 0) {
         let aa = data.substr(2, 2);
@@ -500,10 +524,8 @@ export default {
         if (this.selecCT.length === 0) {
 
           this.selecCT = []
-          
-          this.atualizaFCTs();
 
-          //;this.atualizaFCTs()
+          this.atualizaFCTs();
 
         } else {
 
@@ -520,9 +542,7 @@ export default {
 
           }
 
-          this.atualizaFCTs();
-
-          //this.atualizaFCTs()
+          //this.atualizaFCTs();
 
         }
 

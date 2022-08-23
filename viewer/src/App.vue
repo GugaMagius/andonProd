@@ -102,8 +102,8 @@ export default {
 
     // Resposta com a lista de Centros de trabalhos
     sListaCTs(lista) {
-      lista.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, Depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
-      lista.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, Depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
+      lista.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
+      lista.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
 
       Promise.resolve(this.listaCTs = lista.reduce((acc, el) => {
         acc[el.idresource] = el
