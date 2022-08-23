@@ -1,6 +1,6 @@
 <template>
   <div class="meta">
-    
+
     <div class="linhaSuperior grid">
       <!-- Seleção de Unidade  -->
       <div class="inline col-6">
@@ -16,14 +16,14 @@
       </div>
     </div>
 
-      <!-- Seletores de departamento/CC/CT -->
+    <!-- Seletores de departamento/CC/CT -->
     <div class="p-fluid seletores grid" v-if="metaPor != 'depto'">
       <!-- Seleção do Departamento -->
       <div class="selectDepto col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
-            optionValue="idarea" optionLabel="Depto" :filter="true" />
+            optionValue="idarea" optionLabel="depto" :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -33,7 +33,7 @@
       <div class="selectMGrp col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="CC"
+            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
             :filter="true" />
           <label for="selCC"> Centro de Custo: </label>
         </span>
@@ -45,7 +45,7 @@
         <span class="p-float-label">
           <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="idresource"
-            optionLabel="CT" :filter="true" />
+            optionLabel="ct" :filter="true" />
           <label for="selCT"> Centro de Trabalho: </label>
         </span>
       </div>
@@ -64,12 +64,12 @@
           <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
           <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
           <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+          <Column field="metakg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
             </template>
           </Column>
-          <Column field="metaM2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+          <Column field="metam2" header="Meta (m2)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
             </template>
@@ -85,12 +85,12 @@
           scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
           responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
           <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metaKg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+          <Column field="metakg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
             </template>
           </Column>
-          <Column field="metaM2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+          <Column field="metam2" header="Meta (m2)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
             </template>
@@ -136,7 +136,7 @@ export default {
 
   mounted: function () {
     this.toinitVar();
-    this.metasEnv = this.metasRec
+
     this.atualizaConfig();
 
   },
@@ -150,8 +150,7 @@ export default {
 
     },
     metasRec() {
-      this["metasEnv"]["metaCT"] = this.metasRec.metaCT || {};
-      this["metasEnv"]["metaDepto"] = this.metasRec.metaDepto || {};
+
       this.atualizaConfig();
     }
 
@@ -168,9 +167,12 @@ export default {
   methods: {
 
     atualizaConfig() {
+
       try {
 
         if (this.metasRec.metaDepto != undefined) {
+
+          this["metasEnv"]["metaDepto"] = this.metasRec.metaDepto;
 
           Object.keys(this.metasRec.metaDepto).forEach(element => {
 
@@ -178,8 +180,15 @@ export default {
 
           })
 
+        } else {
+
+          //this["metasEnv"]["metaDepto"] = {}
+
         }
+
         if (this.metasRec.metaCT != undefined) {
+
+          this["metasEnv"]["metaCT"] = this.metasRec.metaCT;
 
           Object.keys(this.metasRec.metaCT).forEach(element => {
 
@@ -187,7 +196,12 @@ export default {
 
           })
 
+        } else {
+
+          //this["metasEnv"]["metaCT"] = {}
+
         }
+
       } catch (err) {
         let tempoTentativa = 2000
         console.log("falha ao tentar atualizar variáveis. Erro: ", err, " - Iniciando nova tentativa em ", tempoTentativa, " segundos")
@@ -199,7 +213,10 @@ export default {
     onCellEditComplete(event) {
       let { data, newValue, field } = event;
 
+
+
       if (this.metaPor === "depto") {
+        this["metasEnv"]["metaDepto"] = this["metasEnv"]["metaDepto"] || {}
         this["metasEnv"]["metaDepto"][data.idarea] = this["metasEnv"]["metaDepto"][data.idarea] || {}
         this["metasEnv"]["metaDepto"][data.idarea][field] = newValue || 0
         this.listaFDeptos[data.idarea][field] = newValue
@@ -207,6 +224,7 @@ export default {
 
       } else {
 
+        this["metasEnv"]["metaCT"] = this["metasEnv"]["metaCT"] || {}
         this["metasEnv"]["metaCT"][data.idresource] = this["metasEnv"]["metaCT"][data.idresource] || {}
         this["metasEnv"]["metaCT"][data.idresource][field] = newValue || 0
         this.listaFCTs[data.idresource][field] = newValue
@@ -216,6 +234,7 @@ export default {
 
 
     },
+
     toinitVar() { // TimeOut para inicializar variáveis
 
       if (this.listaCTsRecebC === true) {
@@ -241,10 +260,10 @@ export default {
       this.listaFCTsM = this.listaFCTs
 
       // Filtra Departamentos disponíveis e elimina duplicados
-      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idarea] = index; return acc}, {})
+      this.listaDeptos = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idarea] = index; return acc }, {})
 
       // Filtra Centros de Custo (Setores) e elimina duplicados
-      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc}, {})
+      this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc }, {})
 
       this.listaFDeptos = this.listaDeptos
       this.listaFCCs = this.listaCCs
@@ -288,10 +307,10 @@ export default {
 
         }
 
- 
-          this.selecCT = []
 
-          this.selecCC = []
+        this.selecCT = []
+
+        this.selecCC = []
 
         if (this.selecDepto.length === 0) {
 
@@ -325,7 +344,7 @@ export default {
 
         this.selecDepto = [] // Zera marcação do seletor de departamentos
 
-          this.selecCT = []
+        this.selecCT = []
 
         if (this.selecCC.length === 0) {
 

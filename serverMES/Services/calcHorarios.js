@@ -30,7 +30,7 @@ function verifHora(horaRec, turno) {
             return { turno: 0, dif: tempo }
         }
 
-    } else if (moment(horaComp).isBetween(Inicio, Fim)) {
+    } else if (moment(horaComp).isSameOrAfter(Inicio) && moment(horaComp).isBefore(Fim)) {
         tempo = parseFloat(moment(horaComp).diff(Inicio, "minute")) / 60
         return { turno: turno, dif: tempo }
     } else {

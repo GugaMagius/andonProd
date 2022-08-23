@@ -1,6 +1,6 @@
 <template>
   <div class="painel">
-
+    {{metaGraf}}
     <div class="p-grid menu">
       <div class="col-12 inline">
         <div class="p-fluid seletores grid">
@@ -14,6 +14,7 @@
               <label for="dataInicial"> Data Inicial: </label>
             </span>
           </div>
+
           <!-- Data final -->
           <div class="field col-1 md:col-1">
             <span class="p-float-label">
@@ -23,7 +24,6 @@
               <label for="dataFinal"> Data Final: </label>
             </span>
           </div>
-
 
           <!-- Seleção do Departamento -->
           <div class="selectDepto col-2 field col-3 md:col-2">
@@ -204,6 +204,7 @@ export default {
     id: String,
     listaCTsReceb: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
+    metas: Object, // Metas por Depto e por CT
   },
 
   computed: {
@@ -211,6 +212,7 @@ export default {
       return this.selecCT.includes('ecoat') ? true : false
     },
   },
+
 
   data() {
     return {
@@ -221,6 +223,8 @@ export default {
       listaFCCs: [],
       listaDeptos: [],
       listaFDeptos: [],
+      metaGrafico: 0,
+      metasSelec: {},
 
       larguraGraf: '',
       alturaGraf: '',
@@ -267,6 +271,8 @@ export default {
           {
             label: "Produção",
             backgroundColor: [],
+            borderColor: [],
+            borderWidth: [],
             data: [0],
           },
         ],
@@ -343,6 +349,7 @@ export default {
 
         this.aguarde = false;
         this.dadosRecebidos = true;
+        alert("Nenhum dado retornado!")
 
       } else if (data.parametros.id === this.id) {
         console.log(data.dadosQtd)
@@ -372,12 +379,22 @@ export default {
         }, 250)
 
         this.calculaMedia(this.basicData.datasets[0].data, this.basicData.labels);
-
       }
+
+
+
+
     },
 
   },
   methods: {
+    verificaMeta() {
+      if (this.Turno1m >= this.Meta) {
+        this.basicData.datasets[1].backgroundColor[0] = this.corOK;
+      } else {
+        this.basicData.datasets[1].backgroundColor[0] = this.corNOK;
+      }
+    },
     diaSemana(data) {
       if (data.substr(6, 2) > 0) {
         let aa = data.substr(2, 2);
@@ -500,10 +517,8 @@ export default {
         if (this.selecCT.length === 0) {
 
           this.selecCT = []
-          
-          this.atualizaFCTs();
 
-          //;this.atualizaFCTs()
+          this.atualizaFCTs();
 
         } else {
 
@@ -520,9 +535,7 @@ export default {
 
           }
 
-          this.atualizaFCTs();
-
-          //this.atualizaFCTs()
+          //this.atualizaFCTs();
 
         }
 
@@ -536,18 +549,32 @@ export default {
     calculaMedia(dados, labels) {
       for (const [index, label] of labels.entries()) {
         if (this.diaSemana(label) === 6) {
-          this.basicData.datasets[0].backgroundColor[index] = "yellow";
+          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[0].borderColor[index] = "yellow"
+          this.basicData.datasets[0].borderWidth[index] = 3
         } else if (this.diaSemana(label) === 0) {
-          this.basicData.datasets[0].backgroundColor[index] = "coral";
+          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[0].borderColor[index] = "coral"
+          this.basicData.datasets[0].borderWidth[index] = 3
         } else {
-          this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[0].borderColor[index] = "#42A5F5"
+
+          this.basicData.datasets[0].borderWidth[index] = 0
         }
         this.total = this.basicData.datasets[0].data.reduce(
-          (acc, index) => parseFloat(acc) + parseFloat(index)
+          (acc, index) => {
+            acc = acc || 0.0
+            if (index > 0) {
+              acc = parseFloat(acc) + parseFloat(index)
+            }
+            return acc
+          },
+          0.0
         );
-        this.media = (
-          this.total / this.basicData.datasets[0].data.length
-        ).toFixed(1);
+        this.media = parseFloat((
+          this.total / parseInt(this.basicData.datasets[0].data.length)
+        ).toFixed(1));
       }
     },
 
@@ -587,6 +614,7 @@ export default {
     },
     // Realiza a consulta dos dados no banco de dados e configura as penas do gráfico
     consultaDados() {
+      // Prepara configuração pra enviar para o servidor consultar o BD
       if (this.selecPeriodo.code === undefined) {
         alert("Selecionar o Período do Gráfico");
       } else if (this.selecCT === undefined || this.selecCT === null || this.selecCT === [] || this.selecCT.length <= 0) {
@@ -610,12 +638,31 @@ export default {
           CT: this.selecCT, // Configuração de qual CT está solicitando
           periodo: this.selecPeriodo.code, // Configuração de qual periodo está sendo solicitado (Dia / Hora / Mês)
           unidade: this.unidade, // Unidade selecionada (m2 / kg)
-          dtInicio: moment(this.dataInicio).format("YYYY-MM-DD 06:00:00"), // Data inicial para os dados solicitados
-          dtFim: moment(this.dataFim).add(1, "days").format("YYYY-MM-DD 05:59:00"), // Data final para os dados solicitados
+          dtInicio: moment.utc(this.dataInicio).format("YYYY-MM-DD 06:00:00"), // Data inicial para os dados solicitados
+          dtFim: moment.utc(this.dataFim).add(1, "days").format("YYYY-MM-DD 05:59:00"), // Data final para os dados solicitados
           turnos: this.selecTurno, // Turnos selecionados
           ht: this.periodo,
           id: this.id // ID do cliente que está solicitando os dados
         });
+      }
+
+     
+      // Verifica e calcula metas
+      if (this.selecDepto.length === 1) {
+        this.metaGraf = this.metas["metaDepto"][this.selecDepto[0]][`meta${this.unidade}`]
+        this.metasSelec = {}
+      } else if (this.selecDepto.length > 1) {
+        this.metasSelec = this.selecDepto.reduce((acc, elemento, index) => {
+
+          console.log("valor do elemento: ", elemento)
+          console.log("valor do ACC: ", acc)
+
+          acc = acc || { soma: 0, media: 0 }
+          acc["soma"] = acc["soma"] + this.metas["metaDepto"][elemento][`meta${this.unidade}`]
+          acc["media"] = acc["media"] = acc["soma"] / (index + 1)
+          return acc
+        }, 0)
+        this.metaGraf = this.metasSelec.media
       }
     },
 

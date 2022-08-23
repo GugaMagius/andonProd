@@ -5,7 +5,7 @@
     :ecoat="true"
     :unidMedia="'(bast/h)'"
     :unidQtd="'(bast)'"
-    :sufixoMeta="' bast/h'"
+    :sufixoMeta="' %'"
     :setor="'LE'"
     />
   </div>
@@ -18,15 +18,18 @@ export default {
   components: {
     TelaAndon
   },
+  
   props: {
     dadosServer: Object, // Dados completos recebidos do servidor
   },
+
   data() {
     return {
       performance_LE: {},
       dadosServerLE: {}
     }
   },
+
   watch: {
     dadosServer() {
       

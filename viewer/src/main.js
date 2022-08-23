@@ -99,5 +99,4 @@ app.component('Chart', Chart);
 //app.component(ChartDataLabels)
 
 
-
 app.mount('#app');

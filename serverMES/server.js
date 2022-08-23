@@ -198,7 +198,7 @@ function respostaBD(string, destino, BD) {
                                 let horaReg2d = moment.utc(index.hora, "HH:mm:ss").format("HH")
                                 let diaReg2d = moment.utc(index.dtmov, "DD/MM/AAAA HH:mm:ss").format("DD")
                                 let horaRegCmp = moment.utc(index.hora, "HH:mm:ss").format(formato) // Hora do registro completa
-                                let diaHoje2d = moment(horaAtualCmp).isBefore(inicioDia) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
+                                let diaHoje2d = moment(horaAtualCmp, formato).isBefore(moment(inicioDia,formato)) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
                                 let diaOntem2d = moment().subtract(1, "days").format("DD")
                                 let turnoReg = calcHorarios.testeTurno(horaRegCmp).turno
 
@@ -256,9 +256,9 @@ function respostaBD(string, destino, BD) {
 
                                         acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] = acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] || 0
                                         acc[quando][`Turno${turnoReg}`]["soma"] = acc[quando][`Turno${turnoReg}`]["soma"] || 0
+
                                         acc[quando][`Turno${turnoReg}`]["horarios"][horaReg2d] += regAtualCalc
                                         acc[quando][`Turno${turnoReg}`]["soma"] += regAtualCalc
-
 
                                     } catch (err) {
                                         console.log("falha ao tentar compilar dados: ", err, " - Dados: ", index)

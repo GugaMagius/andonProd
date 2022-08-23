@@ -11,7 +11,6 @@ app.use(cors());
 const http = require('http').createServer(app)
 const Functions = require('../Services/functions')
 const versaoMES = require('../package.json').version
-const clientEcoat = require('./client')
 const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
 
@@ -121,15 +120,6 @@ try {
         console.log('New connection', socket.id)
 
         socket.emit("id", socket.id)
-
-        // Função para receber a versão do serverSup e enviar os valores ao cliente
-        clientEcoat.enviaVersSup().then(
-
-            function (res) {
-                socket.emit("Versoes", [versaoMES, res])
-            }
-        )
-
 
         socket.on("disconnecting", function () {
             console.log(`Cliente ${socket.id} desconectando`)
