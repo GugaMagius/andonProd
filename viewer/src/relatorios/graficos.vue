@@ -533,7 +533,6 @@ export default {
 
         this.$refs.selectCT.filterValue = null;
 
-        //this.selecDepto = [] // Zera marcação do seletor de departamentos ## Não zerar para não afetar as metas selecionadas
 
         this.selecCT = []
 
@@ -574,12 +573,8 @@ export default {
 
           }
 
-          //this.atualizaFCTs();
 
         }
-
-        // this.selecDepto = [] // Zera marcação do seletor de departamentos  ### não zerar para não perder a configuração das metas
-        // this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
 
       }
 

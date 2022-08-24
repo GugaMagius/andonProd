@@ -58,15 +58,6 @@ apiZeno.getDataSQL(queryCTs, connMES).then(
         listaCT = res[0]
     }
 )
-/*
-bdMES.selectBD(queryCTs).then(
-    function (res) {
-        //listaCT.push({ IDResource: "EE", Name: "ENGANCHAMENTO E-COAT" })
-        listaCT = res[0].recordset
-    }
-)
-
-*/
 //**************************************/
 
 // ########################################################################
@@ -121,6 +112,9 @@ try {
 
         console.log('New connection', socket.id)
 
+        
+        console.log("SOLICITADO CONFIGURAÇÃO")
+
         socket.emit("id", socket.id)
 
         socket.on("disconnecting", function () {
@@ -149,7 +143,6 @@ try {
 
                     socket.emit("respostaLog", storage.getLS("log"))
                 
-            
         })
 
 
@@ -166,6 +159,7 @@ try {
 
             try {
                 respConfig = storage.getLS("metas")
+                console.log("leitura das metas", respConfig)
 
             } catch (err) {
                 let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
