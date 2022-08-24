@@ -1,6 +1,5 @@
 <template>
   <div class="painel">
-    {{metaGraf}}
     <div class="p-grid menu">
       <div class="col-12 inline">
         <div class="p-fluid seletores grid">
@@ -68,7 +67,8 @@
           <!-- Valor Total -->
           <div class="field col-1 md:col-1">
             <span v-if="dadosRecebidos && mostraTotal" class="p-float-label">
-              <InputNumber id="total" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="total"
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ', color: statusMedia }" v-model="total"
                 readonly="true" :suffix="sufixoTot" />
               <label for="total"> Total: </label>
             </span>
@@ -77,7 +77,8 @@
           <!-- Valor Médio dos dados selecionados -->
           <div class="field col-1 md:col-1">
             <span v-if="dadosRecebidos" class="p-float-label">
-              <InputNumber id="media" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="media"
+              <InputNumber id="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ', color: statusMedia }" v-model="media"
                 readonly="true" :suffix="sufixo" />
               <label for="media"> Média: </label>
             </span>
@@ -125,7 +126,7 @@
 
               <br>
               <!-- Seleção do período  -->
-              Período:
+              Totalizador:
               <div class="checkbox inline">
                 <RadioButton id="total" name="unid" value="total" v-model="periodo" />
                 <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
@@ -141,6 +142,8 @@
             <div class="inline col-3">
               <Button label="Atualizar" @click="consultaDados" />
             </div>
+            <div v-if="periodo === 'media' && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{ metaGraf }} {{ sufixo }}</div>
+
 
 
           </div>
@@ -196,6 +199,22 @@ export default {
 
       this.inicializaMenu();
 
+    },
+
+    media() {
+
+      if (this.media >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+        this.statusMedia = this.corOK
+        this.basicData.datasets[0].borderWidth = 3;
+      } else if (this.media < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+        this.statusMedia = this.corNOK
+        this.basicData.datasets[0].borderWidth = 3;
+      } else {
+        this.statusMedia = ''
+        this.basicData.datasets[0].borderWidth = 0;
+        this.basicData.datasets[0].data = []
+
+      }
     }
 
   },
@@ -226,8 +245,13 @@ export default {
       metaGrafico: 0,
       metasSelec: {},
 
+      statusMedia: '',
+
       larguraGraf: '',
       alturaGraf: '',
+
+      corOK: "#42A500",
+      corNOK: "#ff0000",
 
       mostraTotal: false, // Indica quando é para mostrar o totalizador de produção 
       periodo: 'total',
@@ -239,15 +263,6 @@ export default {
       dataFim: "",
       msg: "",
       aguarde: "",
-      coresPenas: [
-        "#42A5F5",
-        "#7E57C2",
-        "#66BB6A",
-        "#FFCA28",
-        "#AB47BC",
-        "#26A69A",
-        "#EC407A",
-      ],
       selecPeriodo: {},
       selecTurno: [],
       selecCT: [],
@@ -269,6 +284,18 @@ export default {
         labels: ["1"],
         datasets: [
           {
+            type: "line",
+            label: "Meta",
+            borderColor: "rgb(47, 103, 255)",
+            borderWidth: 2,
+            radius: 0,
+            data: [0],
+            datalabels: {
+              display: false,
+            },
+          },
+          {
+            type: "bar",
             label: "Produção",
             backgroundColor: [],
             borderColor: [],
@@ -352,7 +379,6 @@ export default {
         alert("Nenhum dado retornado!")
 
       } else if (data.parametros.id === this.id) {
-        console.log(data.dadosQtd)
 
         this.dadosRecebidos = true;
 
@@ -365,9 +391,10 @@ export default {
           this.mostraTotal = true;
           unidGrafico = "dadosQtd";
         }
-
         this.basicData.labels = Object.keys(data[unidGrafico]);
-        this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
+        this.basicData.datasets[1].data = Object.values(data[unidGrafico]);
+
+        this.verificaMeta();
 
         setTimeout(() => {
 
@@ -377,23 +404,35 @@ export default {
           this.aguarde = false;
 
         }, 250)
+        //})
 
-        this.calculaMedia(this.basicData.datasets[0].data, this.basicData.labels);
+        this.calculaTotal(this.basicData.datasets[1].data, this.basicData.labels);
       }
-
-
-
 
     },
 
   },
+
+
   methods: {
     verificaMeta() {
-      if (this.Turno1m >= this.Meta) {
-        this.basicData.datasets[1].backgroundColor[0] = this.corOK;
-      } else {
-        this.basicData.datasets[1].backgroundColor[0] = this.corNOK;
-      }
+      return Promise.resolve(
+
+        //Object.values(data["media"]).forEach((element, index) => {
+          this.basicData.datasets[1].data.forEach((element, index) => {
+          if (this.periodo !== "media" || !this.metaGraf > 0) {
+            this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
+          } else {
+            this.basicData.datasets[0].data[index] = this.metaGraf
+            if (element >= this.metaGraf) {
+              this.basicData.datasets[1].backgroundColor[index] = this.corOK;
+            } else {
+              this.basicData.datasets[1].backgroundColor[index] = this.corNOK;
+            }
+          }
+        })
+      )
+
     },
     diaSemana(data) {
       if (data.substr(6, 2) > 0) {
@@ -494,7 +533,7 @@ export default {
 
         this.$refs.selectCT.filterValue = null;
 
-        this.selecDepto = [] // Zera marcação do seletor de departamentos
+        //this.selecDepto = [] // Zera marcação do seletor de departamentos ## Não zerar para não afetar as metas selecionadas
 
         this.selecCT = []
 
@@ -539,30 +578,34 @@ export default {
 
         }
 
-        this.selecDepto = [] // Zera marcação do seletor de departamentos
-        this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
+        // this.selecDepto = [] // Zera marcação do seletor de departamentos  ### não zerar para não perder a configuração das metas
+        // this.selecCC = [] // Zera marcação do seletor de Centro de Custo (Setor)
 
       }
 
     },
 
-    calculaMedia(dados, labels) {
-      for (const [index, label] of labels.entries()) {
-        if (this.diaSemana(label) === 6) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].borderColor[index] = "yellow"
-          this.basicData.datasets[0].borderWidth[index] = 3
-        } else if (this.diaSemana(label) === 0) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].borderColor[index] = "coral"
-          this.basicData.datasets[0].borderWidth[index] = 3
-        } else {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].borderColor[index] = "#42A5F5"
+    calculaTotal(dados, labels) {
+      //for (const [index, label] of labels.entries()) {
 
-          this.basicData.datasets[0].borderWidth[index] = 0
+      labels.forEach((label, index) => {
+        console.log("Label: ", label, " - Index: ", index)
+        if (this.diaSemana(label) === 6) {
+          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[1].borderColor[index] = "yellow"
+          this.basicData.datasets[1].borderWidth[index] = 3
+        } else if (this.diaSemana(label) === 0) {
+          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[1].borderColor[index] = "coral"
+          this.basicData.datasets[1].borderWidth[index] = 3
+        } else {
+          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[1].borderColor[index] = "#42A5F5"
+
+          this.basicData.datasets[1].borderWidth[index] = 0
         }
-        this.total = this.basicData.datasets[0].data.reduce(
+
+        this.total = this.basicData.datasets[1].data.reduce(
           (acc, index) => {
             acc = acc || 0.0
             if (index > 0) {
@@ -571,17 +614,21 @@ export default {
             return acc
           },
           0.0
-        );
+        )
         this.media = parseFloat((
-          this.total / parseInt(this.basicData.datasets[0].data.length)
+          this.total / parseInt(this.basicData.datasets[1].data.length)
         ).toFixed(1));
+
+
       }
+      )
+
     },
 
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
 
-      var dados = this.basicData.datasets[0].data.reduce(function (
+      var dados = this.basicData.datasets[1].data.reduce(function (
         acc,
         element,
         index
@@ -602,19 +649,24 @@ export default {
       }, []);
 
 
-      this.basicData.datasets[0].data = dados;
+      this.basicData.datasets[1].data = dados;
       this.basicData.labels = labels;
 
-      this.calculaMedia(dados, labels);
+      
+        this.verificaMeta();
+
+      this.calculaTotal(dados, labels);
+
+      
 
     },
 
-    teste() {
-      console.log(moment())
-    },
     // Realiza a consulta dos dados no banco de dados e configura as penas do gráfico
     consultaDados() {
       // Prepara configuração pra enviar para o servidor consultar o BD
+
+      this.metaGraf = 0 // Zera a meta atual
+
       if (this.selecPeriodo.code === undefined) {
         alert("Selecionar o Período do Gráfico");
       } else if (this.selecCT === undefined || this.selecCT === null || this.selecCT === [] || this.selecCT.length <= 0) {
@@ -630,7 +682,7 @@ export default {
         this.options.scales.y.title.text = this.sufixo;
 
         this.basicData.labels = []; // Apaga labels atuais
-        this.basicData.datasets[0].data = []; // Apaga datasets atuais
+        this.basicData.datasets[1].data = []; // Apaga datasets atuais
         this.msg =
           "Solicitando atualização dos dados para os CTs selecionados... "
         this.$socket.emit("solicitaDados", {
@@ -646,7 +698,7 @@ export default {
         });
       }
 
-     
+
       // Verifica e calcula metas
       if (this.selecDepto.length === 1) {
         this.metaGraf = this.metas["metaDepto"][this.selecDepto[0]][`meta${this.unidade}`]
@@ -742,5 +794,9 @@ export default {
 
 .selectTurno {
   margin: 1%;
+}
+
+.vertical {
+  padding-top: 2vh
 }
 </style>

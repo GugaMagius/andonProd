@@ -65,6 +65,7 @@ bdMES.selectBD(queryCTs).then(
         listaCT = res[0].recordset
     }
 )
+
 */
 //**************************************/
 
@@ -73,6 +74,7 @@ bdMES.selectBD(queryCTs).then(
 //                     Início da conexão com o SOCKET 
 // ************************************************************************
 // ########################################################################
+
 try {
 
     // Função para envio dos dados para os clientes (TODOS OS CLIENTES)
