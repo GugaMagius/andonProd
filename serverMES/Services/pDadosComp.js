@@ -26,10 +26,10 @@ async function dadosComp(respBD, ht, list, config) {
 
         // Formata dataIndex de acordo com as datas recebidas
         var dataIndex = ''
-        let ano = moment(dataElement).format("YYYY")
-        let mes = moment(dataElement).format("MM")
-        let dia = moment(dataElement).format("DD")
-        let hora = moment(dataElement).format("HH")
+        let ano = moment.utc(dataElement).format("YYYY")
+        let mes = moment.utc(dataElement).format("MM")
+        let dia = moment.utc(dataElement).format("DD")
+        let hora = moment.utc(dataElement).format("HH")
 
         if (respBD[1].periodo === "hora") {
             dataIndex = `${ano}${mes}${dia}${hora}`

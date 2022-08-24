@@ -42,6 +42,8 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
             async function (resolve, reject) {
 
                 await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), msg).then(res => {
+                    if (res==={}){resolve("vazia")}
+                    console.log("RESPOSTA DO BD: ", res)
                     pool.exec('dadosComp', [res, false, main.eItemsList(), config]).then(
                         resPool => {
                             resolve(resPool)
@@ -56,7 +58,7 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
             function (resolve, reject) {
 
                 apiZeno.getDataSQL(queryHt, main.seletorConexaoBD(), msg).then(res => {
-                    //if (res==={}){resolve("vazia")}
+                    if (res==={}){resolve("vazia")}
                     pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
                         resPool => {
                             resolve(resPool)
@@ -69,10 +71,13 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
 
 
         Promise.all([promiseQtd, promiseHt]).then((res) => {
-
-            calculaMedia(res[0], res[1], msg)
-
-            //ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
+            console.log("Respostas: ")
+            
+            if (res[0] === {}) {
+                ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
+            } else {
+                calculaMedia(res[0], res[1], msg)
+            }
 
         }
 
