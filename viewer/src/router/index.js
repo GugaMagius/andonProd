@@ -8,6 +8,7 @@ import Mosaico from "@/telas/Mosaico.vue";
 import Service from "@/telas/Service.vue";
 import Graficos from "@/relatorios/graficos.vue";
 import Metas from "@/panels/metas.vue";
+import SelecaoCTs from "@/panels/selecaocts.vue";
 import Logs from "@/panels/logs.vue";
 import Testes from "@/panels/testes.vue";
 //import Andon from "@/components/telaAndon";
@@ -66,6 +67,12 @@ const routes = [
               path: 'metas',
               components: {
                 panel: Metas,
+              }
+            },
+            {
+              path: 'selecaocts',
+              components: {
+                panel: SelecaoCTs,
               }
             },
             {

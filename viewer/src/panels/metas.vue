@@ -1,5 +1,5 @@
 <template>
-  <div class="meta">
+  <div class="principal">
 
     <div class="linhaSuperior grid">
       <!-- Seleção de Unidade  -->
@@ -220,7 +220,7 @@ export default {
         this["metasEnv"]["metaDepto"][data.idarea] = this["metasEnv"]["metaDepto"][data.idarea] || {}
         this["metasEnv"]["metaDepto"][data.idarea][field] = newValue || 0
         this.listaFDeptos[data.idarea][field] = newValue
-        this.$socket.emit("gravarConfig", this.metasEnv)
+        this.$socket.emit("gravarConfig", [this.metasEnv, "metas"])
 
       } else {
 
@@ -228,7 +228,7 @@ export default {
         this["metasEnv"]["metaCT"][data.idresource] = this["metasEnv"]["metaCT"][data.idresource] || {}
         this["metasEnv"]["metaCT"][data.idresource][field] = newValue || 0
         this.listaFCTs[data.idresource][field] = newValue
-        this.$socket.emit("gravarConfig", this.metasEnv)
+        this.$socket.emit("gravarConfig", [this.metasEnv, "metas"])
 
       }
 
@@ -244,13 +244,6 @@ export default {
         setTimeout(this.toinitVar, 2000)
       }
 
-    },
-
-    gravar() {
-      this.$socket.emit("gravarConfig", this.valorGravar)
-    },
-    ler() {
-      this.$socket.emit("leituraConfig")
     },
     initVar() {
 
@@ -408,7 +401,7 @@ export default {
   padding: 1.1%;
 }
 
-.meta {
+.principal {
   overflow-x: hidden;
 }
 </style>

@@ -21,6 +21,7 @@ export default {
     return {
       itemsMenu: [
         { label: 'Metas', icon: 'pi pi-fw pi-chart-line', to: '/service/metas' },
+        { label: 'Seleção CTs', icon: 'pi pi-fw pi-list', to: '/service/selecaocts' },
         { label: 'Log', icon: 'pi pi-fw pi-exclamation-circle', to: '/service/logs' },
         { label: 'Testes', icon: 'pi pi-fw pi-cog', to: '/service/testes' }
       ]

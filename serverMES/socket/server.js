@@ -133,23 +133,11 @@ try {
 
         })
 
-        socket.on("gravaLog", function (msg) {
-            console.log("Escrevendo o arquivo com a mensagem: ", msg)
-
-            storage.setLS("log", msg)
-        })
-
-        socket.on("lerLog", function () {
-
-                    socket.emit("respostaLog", storage.getLS("log"))
-                
-        })
-
 
         // Socket para inserir novo valor no banco de dados NeDB
-        socket.on("gravarConfig", function (dados) {
-            console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)}`)
-            storage.setLS("metas", dados)
+        socket.on("gravarConfig", function ([dados, arquivo]) {
+            console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)} no arquivo: ${arquivo}`)
+            storage.setLS(arquivo, dados)
         })
 
 
@@ -158,15 +146,17 @@ try {
             let respConfig = {}
 
             try {
-                respConfig = storage.getLS("metas")
+                respConfig["metas"] = storage.getLS("metas")
+                respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
                 console.log("leitura das metas", respConfig)
 
             } catch (err) {
                 let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
                 storage.setLS("log", msg)
+            } finally {
+                socket.emit("respStorage", respConfig)
             }
 
-            socket.emit("respStorage", respConfig)
         }
         leituraConfig();
 

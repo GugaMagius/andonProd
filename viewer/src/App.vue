@@ -19,7 +19,7 @@
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
       <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb"
-        :setor="$route.params.Setor" :metas="metas" />
+        :setor="$route.params.Setor" :metas="metas" :selecaoCTs="selecaoCTs" />
     </div>
 
     <!-- RODAPÉ -->
@@ -66,6 +66,7 @@ export default {
       fdoHoje: "var(--surface-0)",
       setorAndon: '',       
       metas: {}, // Valores temporários de metas
+      selecaoCTs: {},
     };
   },
   methods: {
@@ -96,7 +97,8 @@ export default {
     // Resposta do storage com as configurações
     respStorage(valor) {
 
-        this.metas = valor
+        this.metas = valor.metas
+        this.selecaoCTs = valor.selecaoCTs
 
     },
 
