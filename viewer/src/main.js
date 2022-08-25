@@ -8,13 +8,10 @@ import router from './router'
 //import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 
-
 import 'primevue/resources/themes/lara-light-blue/theme.css' // Theme
 import 'primevue/resources/primevue.min.css'; //core css
 import 'primeicons/primeicons.css';  //icons
 import 'primeflex/primeflex.css'; // Primeflex
-
-
 
 
 // Components

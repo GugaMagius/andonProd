@@ -125,6 +125,9 @@ try {
         // Atualiza lista de MGrps e CTs no cliente
         socket.emit("sListaCTs", listaCT)
 
+        // Envia versão do serverMES
+        socket.emit("versao", versaoMES)
+
 
         /*********************************************************************** */
 
@@ -193,15 +196,15 @@ try {
                     await Functions.solicitaBD(queryQtd, queryHt, parametros, "ecoat")
                 } else if (parametros.CT.includes("EE")) {
                     queryQtd = "set dateformat ymd select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP as data, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
-                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(31) and rsev.ShiftDtStart between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(31) and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 } else if (parametros.CT === '') {
                     console.log("Nenhum CT selecionado")
                 } else if (parametros.CT === undefined) {
                     console.log("Nenhum CT selecionado")
                 } else {
-                    queryQtd = "set dateformat ymd select me.DtMov, me.DtTimeStamp as data, convert(time, me.DtTimeStamp) Hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and me.DtTimeStamp between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
-                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and rsev.ShiftDtStart between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryQtd = "set dateformat ymd select me.DtMov, me.DtTimeStamp as data, convert(time, me.DtTimeStamp) Hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and me.DtTimeStamp between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "' and (me.UndoIDMovEv is null or(me.UndoIDMovEv is not null and me.RelatedIDMovEv is not null))"
+                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 }
 

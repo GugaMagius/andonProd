@@ -6,12 +6,9 @@ const moment = require('moment')
 
 const calcHorarios = require('../Services/calcHorarios')
 
-
-async function dadosComp(respBD, ht, list, config) {
+async function dadosComp(respBD, ht, list) {
 
     console.log("Iniciando Compilação dos dados recebidos! Horas trabalhadas? ", ht, "Data-hora: ", new Date())
-
-
 
     // Calcular início e fim da coleta de dados e criar os index para cada hora se for por hora ou index do dia se for dia, ou mês se for mês
     // Gráfico tem que ser pelos index do intervalo total
@@ -41,7 +38,7 @@ async function dadosComp(respBD, ht, list, config) {
 
         if ( // Verifica se o turno foi selecionado para o horário do index atual
 
-            turnosSelec.includes("t" + calcHorarios.testeTurno(horaElement).turno)
+            turnosSelec.includes("t" + index.shift) || (turnosSelec.includes("t"+ calcHorarios.testeTurno()))
 
         ) {
 
@@ -65,8 +62,6 @@ async function dadosComp(respBD, ht, list, config) {
                     if (moment(horaHtFim, formatoCompleto).isValid()) {
 
                         acc[dataIndex] = acc[dataIndex] || parseFloat(0.0)
-
-                        let valorAnt = acc[dataIndex]
           
                         // Se a hora final for maior do que a hora inicial e o relatório pede por hora e hora
                         if (!moment(horaIniInt).isSame(horaFimInt) && respBD[1].periodo === "hora") {//!moment(horaHtInicio).isSame(horaHtFim) ){ // && respBD[1].periodo === "hora") {
@@ -94,7 +89,6 @@ async function dadosComp(respBD, ht, list, config) {
 
                             }
 
-                            //console.log("Valor da diferneça da hora: ", parseFloat(acc[dataIndex]-valorAnt), horaHtInicio, horaHtFim)
      
                         } else {
 
@@ -104,11 +98,9 @@ async function dadosComp(respBD, ht, list, config) {
                             acc[dataIndex] += difHora;
 
 
-                            //console.log("DIFERENÇA DE TEMPO: ", acc[dataIndex]-valorAnt, " - Hora Inicio: ", horaHtInicio, " - Hora Fim: ", horaHtFim)
 
                         }
 
-                        //console.log("DIFERENÇA DE TEMPO: ", acc[dataIndex], " - Hora Inicio: ", horaHtInicio, " - Hora Fim: ", horaHtFim)
 
                     }
 

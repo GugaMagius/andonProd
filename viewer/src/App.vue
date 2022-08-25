@@ -50,6 +50,7 @@ export default {
       listaCTs: [], // Lista completa de MGrps consultadas no BD do MES
       listaRecReceb: false, // Sinaliza se os dados dos MGrps foram recebidos para mostrar o formulário
       versaoViewer: '',
+      versaoMES: '',
       dadosServer: {},
       dadosRecebidos: false,
       socketMessage: "Valor inicial",
@@ -143,12 +144,9 @@ export default {
     },
 
     // Resposta com as versões dos servers
-    Versoes([versaoMES, versaoSUP]) {
-      console.log("VersãoMES: ", versaoMES, "VersãoSup: ", versaoSUP, "Versão Viewer: ", this.versaoViewer)
+    versao(versaoMES) {
+      console.log("VersãoMES: ", versaoMES, "Versão Viewer: ", this.versaoViewer)
       this.versaoMES = versaoMES
-      this.versaoSUP = versaoSUP
-
-
     },
 
     // Atualização de dados do server para os clientes

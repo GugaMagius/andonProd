@@ -103,7 +103,6 @@
         </DataTable>
       </ScrollPanel>
     </div>
-    {{metasRec}}
 
   </div>
 

@@ -4,11 +4,7 @@ const config = require('../configuracao')
 
 const main = require('../server')
 
-const bdMES = require('../BD/MES')
-
 const ioSocket = require('../socket/server')
-
-const path = require('path');
 
 var fs = require('fs');
 
@@ -19,8 +15,6 @@ const pool = workerpool.pool(__dirname + '/pDadosComp.js');
 const storage = require('../Services/storage')
 
 const apiZeno = require('../BD/apiZeno')
-
-const moment = require('moment')
 
 // Função para organizar dados do datasul em uma variável objeto
 function reduceDatasul(dados) {
@@ -70,9 +64,7 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
         )
 
 
-        Promise.all([promiseQtd, promiseHt]).then((res) => {
-            console.log("Respostas: ")
-            
+        Promise.all([promiseQtd, promiseHt]).then((res) => {            
             if (res[0] === {}) {
                 ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
             } else {
