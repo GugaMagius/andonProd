@@ -422,12 +422,15 @@ export default {
           this.basicData.datasets[1].data.forEach((element, index) => {
           if (this.periodo !== "media" || !this.metaGraf > 0) {
             this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
+            this.basicData.datasets[1].borderColor[index] = "#42A5F5";
           } else {
             this.basicData.datasets[0].data[index] = this.metaGraf
             if (element >= this.metaGraf) {
               this.basicData.datasets[1].backgroundColor[index] = this.corOK;
+              this.basicData.datasets[1].borderColor[index] = this.corOK;
             } else {
               this.basicData.datasets[1].backgroundColor[index] = this.corNOK;
+              this.basicData.datasets[1].borderColor[index] = this.corNOK;
             }
           }
         })
@@ -586,17 +589,15 @@ export default {
       labels.forEach((label, index) => {
                 if (this.diaSemana(label) === 6) {
           //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[1].borderColor[index] = "yellow"
-          this.basicData.datasets[1].borderWidth[index] = 3
+          this.basicData.datasets[1].backgroundColor[index] = "yellow"
+          this.basicData.datasets[1].borderWidth[index] = 5
         } else if (this.diaSemana(label) === 0) {
           //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[1].borderColor[index] = "coral"
-          this.basicData.datasets[1].borderWidth[index] = 3
+          this.basicData.datasets[1].backgroundColor[index] = "coral"
+          this.basicData.datasets[1].borderWidth[index] = 5
         } else {
-          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[1].borderColor[index] = "#42A5F5"
-
           this.basicData.datasets[1].borderWidth[index] = 0
+
         }
 
         this.total = this.basicData.datasets[1].data.reduce(
@@ -642,16 +643,12 @@ export default {
         return acc;
       }, []);
 
-
       this.basicData.datasets[1].data = dados;
       this.basicData.labels = labels;
-
       
         this.verificaMeta();
 
       this.calculaTotal(dados, labels);
-
-      
 
     },
 
@@ -694,17 +691,13 @@ export default {
 
 
       // Verifica e calcula metas
-      if (this.selecDepto.length === 1) {
-        this.metaGraf = this.metas["metaDepto"][this.selecDepto[0]][`meta${this.unidade}`]
+      if (this.selecCC.length === 1) {
+        this.metaGraf = this.metas["metaCC"][this.selecCC[0]][`meta${this.unidade}`]
         this.metasSelec = {}
-      } else if (this.selecDepto.length > 1) {
-        this.metasSelec = this.selecDepto.reduce((acc, elemento, index) => {
-
-          console.log("valor do elemento: ", elemento)
-          console.log("valor do ACC: ", acc)
-
+      } else if (this.selecCC.length > 1) {
+        this.metasSelec = this.selecCC.reduce((acc, elemento, index) => {
           acc = acc || { soma: 0, media: 0 }
-          acc["soma"] = acc["soma"] + this.metas["metaDepto"][elemento][`meta${this.unidade}`]
+          acc["soma"] = acc["soma"] + this.metas["metaCC"][elemento][`meta${this.unidade}`]
           acc["media"] = acc["media"] = acc["soma"] / (index + 1)
           return acc
         }, 0)

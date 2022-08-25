@@ -53,13 +53,13 @@ const routes = [
     },
     {
         path: "/graficos",
-        name: "- Graficos",
+        name: "- Produtividade",
         component: Graficos,
         props: true
     },
     {
         path: "/service",
-        name: "- Service",
+        name: "- Configurações",
         component: Service,
         props: true,
         children: [

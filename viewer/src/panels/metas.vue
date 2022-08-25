@@ -6,8 +6,8 @@
       <div class="inline col-6">
         <div class="radiobutton inline ">
           Meta por:
-          <RadioButton class="radiobutton" id="depto" name="depto" value="depto" v-model="metaPor" />
-          <label for="depto">Departamento</label>
+          <RadioButton class="radiobutton" id="cc" name="cc" value="cc" v-model="metaPor" />
+          <label for="cc">Centro de Custo</label>
         </div>
         <div class="radiobutton inline">
           <RadioButton class="radiobutton" id="CT" name="CT" value="CT" v-model="metaPor" />
@@ -17,13 +17,13 @@
     </div>
 
     <!-- Seletores de departamento/CC/CT -->
-    <div class="p-fluid seletores grid" v-if="metaPor != 'depto'">
+    <div class="p-fluid seletores grid" v-if="metaPor != 'cc'">
       <!-- Seleção do Departamento -->
       <div class="selectDepto col-3 field">
         <span class="p-float-label">
           <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
             v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
-            optionValue="idarea" optionLabel="depto" :filter="true" />
+            optionValue="idarea" optionLabel="cc" :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -81,10 +81,10 @@
           </Column>
         </DataTable>
         <!-- Se meta por Departamento -->
-        <DataTable v-if="metaPor === 'depto'" :value="listaFDeptos" editMode="cell" :scrollable="true"
+        <DataTable v-if="metaPor === 'cc'" :value="listaFCCs" editMode="cell" :scrollable="true"
           scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
           responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="cc" header="Departamento" style="min-width:15%" :sortable="true"></Column>
           <Column field="metakg" header="Meta (kg)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputNumber v-model="data[field]" autofocus />
@@ -103,6 +103,7 @@
         </DataTable>
       </ScrollPanel>
     </div>
+    {{metasRec}}
 
   </div>
 
@@ -126,10 +127,10 @@ export default {
       selecDepto: [],  // Departamentos Selecionados
       valorGravar: '',
       respConfig: '',
-      metaPor: "depto", // Seletor para configuração da meta, Por DEPARTAMENTO ou por CENTRO DE TRABALHO
+      metaPor: "cc", // Seletor para configuração da meta, Por DEPARTAMENTO ou por CENTRO DE TRABALHO
       metasEnv: { // Arquivo de metas para enviar ao server
         metaCT: {}, // Valores temporários de meta por Centro de Trabalho
-        metaDepto: {} // Valores temporários de meta por departamento
+        metaCC: {} // Valores temporários de meta por departamento
       }
     }
   },
@@ -170,21 +171,17 @@ export default {
 
       try {
 
-        if (this.metasRec.metaDepto != undefined) {
+        if (this.metasRec.metaCC != undefined) {
 
-          this["metasEnv"]["metaDepto"] = this.metasRec.metaDepto;
+          this["metasEnv"]["metaCC"] = this.metasRec.metaCC;
 
-          Object.keys(this.metasRec.metaDepto).forEach(element => {
+          Object.keys(this.metasRec.metaCC).forEach(element => {
 
-            this.listaFDeptos[element] = Object.assign(this.listaFDeptos[element], this.metasRec.metaDepto[element])
+            this.listaFCCs[element] = Object.assign(this.listaFCCs[element], this.metasRec.metaCC[element])
 
           })
 
-        } else {
-
-          //this["metasEnv"]["metaDepto"] = {}
-
-        }
+        } 
 
         if (this.metasRec.metaCT != undefined) {
 
@@ -215,11 +212,11 @@ export default {
 
 
 
-      if (this.metaPor === "depto") {
-        this["metasEnv"]["metaDepto"] = this["metasEnv"]["metaDepto"] || {}
-        this["metasEnv"]["metaDepto"][data.idarea] = this["metasEnv"]["metaDepto"][data.idarea] || {}
-        this["metasEnv"]["metaDepto"][data.idarea][field] = newValue || 0
-        this.listaFDeptos[data.idarea][field] = newValue
+      if (this.metaPor === "cc") {
+        this["metasEnv"]["metaCC"] = this["metasEnv"]["metaCC"] || {}
+        this["metasEnv"]["metaCC"][data.idsector] = this["metasEnv"]["metaCC"][data.idsector] || {}
+        this["metasEnv"]["metaCC"][data.idsector][field] = newValue || 0
+        this.listaFCCs[data.idsector][field] = newValue
         this.$socket.emit("gravarConfig", [this.metasEnv, "metas"])
 
       } else {
