@@ -1,63 +1,62 @@
 <template>
-  <div class="principal"> 
+  <div class="principal">
 
 
-  <!-- Seletores de departamento/CC/CT -->
-  <div class="p-fluid seletores grid">
-    <!-- Seleção do Departamento -->
-    <div class="selectDepto col-3 field">
-      <span class="p-float-label">
-        <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecDepto"
-          @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)" optionValue="idarea" optionLabel="depto"
-          :filter="true" />
-        <label for="selDepto"> Departamento: </label>
-      </span>
+    <!-- Seletores de departamento/CC/CT -->
+    <div class="p-fluid seletores grid">
+      <!-- Seleção do Departamento -->
+      <div class="selectDepto col-3 field">
+        <span class="p-float-label">
+          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
+            optionValue="idarea" optionLabel="depto" :filter="true" />
+          <label for="selDepto"> Departamento: </label>
+        </span>
+      </div>
+
+
+      <!-- Seleção do MGrp (Setor - Centro de Custo) -->
+      <div class="selectMGrp col-3 field">
+        <span class="p-float-label">
+          <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
+            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
+            :filter="true" />
+          <label for="selCC"> Centro de Custo: </label>
+        </span>
+      </div>
+
+
+      <!-- Seleção do CT -->
+      <div class="selectCT col-5 field">
+        <span class="p-float-label">
+          <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+            v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="idresource"
+            optionLabel="ct" :filter="true" />
+          <label for="selCT"> Centro de Trabalho: </label>
+        </span>
+      </div>
     </div>
- 
+    
 
-    <!-- Seleção do MGrp (Setor - Centro de Custo) -->
-    <div class="selectMGrp col-3 field">
-      <span class="p-float-label">
-        <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-          @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
-          :filter="true" />
-        <label for="selCC"> Centro de Custo: </label>
-      </span>
+    <!-- Data Table com checkbox -->
+    <div>
+      <ScrollPanel style="width: 100%; height: 70vh" class="custom">
+        <!-- Se meta por Centro de Trabalho -->
+        <DataTable :value="listaFCTs" editMode="cell" :scrollable="true" scrollHeight="flex"
+          @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
+          sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
+          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
+          <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
+          <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
+          <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
+          <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
+            <template #body="{ data, field }">
+              <Checkbox v-model="data[field]" value="check" />
+            </template>
+          </Column>
+        </DataTable>
+      </ScrollPanel>
     </div>
-
-
-    <!-- Seleção do CT -->
-    <div class="selectCT col-5 field">
-      <span class="p-float-label">
-        <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-          v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="idresource"
-          optionLabel="ct" :filter="true" />
-        <label for="selCT"> Centro de Trabalho: </label>
-      </span>
-    </div>
-
-  </div>
-
-
-  <!-- Data Table editável -->
-  <div>
-    <ScrollPanel style="width: 100%; height: 70vh" class="custom">
-      <!-- Se meta por Centro de Trabalho -->
-      <DataTable  :value="listaFCTs" editMode="cell" :scrollable="true" scrollHeight="flex"
-        @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
-        sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-        <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-        <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
-        <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
-        <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-        <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
-          <template #editor="{ data, field }">
-            <Checkbox v-model="data[field]" :binary="true" />
-          </template>
-        </Column>
-      </DataTable>
-    </ScrollPanel>
-  </div>
   </div>
 
 </template>
@@ -69,6 +68,7 @@ export default {
   name: "SelecaoCTs",
   data: function () {
     return {
+      teste: false,
       listaFCTs: {}, // Lista de Centros de Trabalho Filtrados para DataTable
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [], // Lista de Centros de Custo
@@ -148,12 +148,12 @@ export default {
       `)
 
 
-        //this["ctsSelecEnv"][data.idresource] = this["ctsSelecEnv"][data.idresource] || {}
-        this["ctsSelecEnv"][data.idresource] = !this["ctsSelecEnv"][data.idresource]
-        this.listaFCTs[data.idresource][field] = this["ctsSelecEnv"][data.idresource]
-        //this.$socket.emit("gravarConfig", [this.ctsSelecEnv, "selecaoCTs"])
+      //this["ctsSelecEnv"][data.idresource] = this["ctsSelecEnv"][data.idresource] || {}
+      this["ctsSelecEnv"][data.idresource] = !this["ctsSelecEnv"][data.idresource]
+      this.listaFCTs[data.idresource][field] = this["ctsSelecEnv"][data.idresource]
+      //this.$socket.emit("gravarConfig", [this.ctsSelecEnv, "selecaoCTs"])
 
-      
+
     },
 
     toinitVar() { // TimeOut para inicializar variáveis
