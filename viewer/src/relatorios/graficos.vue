@@ -432,6 +432,7 @@ export default {
               this.basicData.datasets[1].backgroundColor[index] = this.corNOK;
               this.basicData.datasets[1].borderColor[index] = this.corNOK;
             }
+
           }
         })
       )
@@ -681,8 +682,8 @@ export default {
           CT: this.selecCT, // Configuração de qual CT está solicitando
           periodo: this.selecPeriodo.code, // Configuração de qual periodo está sendo solicitado (Dia / Hora / Mês)
           unidade: this.unidade, // Unidade selecionada (m2 / kg)
-          dtInicio: moment.utc(this.dataInicio).format("YYYY-MM-DD 06:00:00"), // Data inicial para os dados solicitados
-          dtFim: moment.utc(this.dataFim).add(1, "days").format("YYYY-MM-DD 05:59:00"), // Data final para os dados solicitados
+          dtInicio: moment.utc(this.dataInicio).format("YYYY-MM-DD 00:00:00"), // Data inicial para os dados solicitados
+          dtFim: moment.utc(this.dataFim).format("YYYY-MM-DD 23:59:59"), // Data final para os dados solicitados
           turnos: this.selecTurno, // Turnos selecionados
           ht: this.periodo,
           id: this.id // ID do cliente que está solicitando os dados

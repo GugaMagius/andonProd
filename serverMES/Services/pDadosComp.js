@@ -16,29 +16,33 @@ async function dadosComp(respBD, ht, list) {
     const turnosSelec = respBD[1].turnos
 
 
-    return respBD[0].reduce(function (acc, index) {
-        let dataElement = moment.utc(index["data"], "DD/MM/YYYY HH:mm:ss")
-        let horaElement = moment.utc(dataElement).format("HH:mm:ss")
 
+    return respBD[0].reduce(function (acc, index) {
+        
+        let dataElement = moment.utc(index["dtmov"], "DD/MM/YYYY HH:mm:ss")
+        let horaElement = index["hora"]
 
         // Formata dataIndex de acordo com as datas recebidas
         var dataIndex = ''
         let ano = moment.utc(dataElement).format("YYYY")
         let mes = moment.utc(dataElement).format("MM")
         let dia = moment.utc(dataElement).format("DD")
-        let hora = moment.utc(dataElement).format("HH")
+        let hora = moment.utc(horaElement).format("HH")
+
 
         if (respBD[1].periodo === "hora") {
             dataIndex = `${ano}${mes}${dia}${hora}`
         } else if (respBD[1].periodo === "dia") {
             dataIndex = `${ano}${mes}${dia}`
+
         } else {
             dataIndex = `${ano}${mes}`
         }
 
         if ( // Verifica se o turno foi selecionado para o horário do index atual
 
-            turnosSelec.includes("t" + index.shift) || (turnosSelec.includes("t"+ calcHorarios.testeTurno()))
+        (turnosSelec.includes("t" + calcHorarios.testeTurno(horaElement).turno) && respBD[1]["CT"].includes("ecoat")) ||
+            turnosSelec.includes("t" + index.shift)
 
         ) {
 

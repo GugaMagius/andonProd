@@ -113,8 +113,6 @@ try {
         console.log('New connection', socket.id)
 
         
-        console.log("SOLICITADO CONFIGURAÇÃO")
-
         socket.emit("id", socket.id)
 
         socket.on("disconnecting", function () {
@@ -151,7 +149,6 @@ try {
             try {
                 respConfig["metas"] = storage.getLS("metas")
                 respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
-                console.log("leitura das metas", respConfig)
 
             } catch (err) {
                 let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
@@ -181,7 +178,6 @@ try {
 
         // Solicitação de dados pelo cliente
         socket.on("solicitaDados", function (msg) {
-            console.log("solicitado dados: ", msg)
 
             // Para criar para outros MGrps, consultar a tabela [TBLResource], montar grupos conforme o campo [IDManagerGrp] e nome do grupo na tabela [TBLManagerGrp]
 
@@ -191,24 +187,25 @@ try {
             async function sectorSelect(parametros) {
 
                 if (parametros.CT.includes('ecoat')) {
-                    queryQtd = "select data, convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
-                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource = 31 and rsev.ShiftDtStart between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryQtd = "select convert(time, data) Hora, CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END DtMov from cicloEcoat where CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END >= '" + parametros.dtInicio + "' and CASE WHEN DATEPART(hh,data)<6 then data-1 ELSE data END <= '" + parametros.dtFim + "'"
+                    queryHt = "set dateformat ymd select pev.DtProd as DtMov, convert(time, rsev.ShiftDtStart) as hora, pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(31) and DtProd >= '" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros, "ecoat")
+                    //console.log(queryQtd)
                 } else if (parametros.CT.includes("EE")) {
-                    queryQtd = "set dateformat ymd select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP as data, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
-                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(31) and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryQtd = "set dateformat ymd select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END >= '" + parametros.dtInicio + "' and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END <= '" + parametros.dtFim + "'"
+                    //queryQtd = "set dateformat ymd select ctbl.IDWOGRP, item.Code, ctbl.IDBastidor, ctbl.Quantidade AS MovQty, ctbl.DTTIMESTAMP as data, convert(time, ctbl.DTTIMESTAMP) Hora, CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END as DtMov from CTBLWOGRP ctbl inner join TBLWOHD op on (op.Code = ctbl.WOCODE) inner join TBLProduct item on (item.IDProduct = op.IDProduct) where ctbl.IDBastidor is not null  and CASE WHEN DATEPART(hh,ctbl.DTTIMESTAMP)<6 then ctbl.DTTIMESTAMP-1 ELSE ctbl.DTTIMESTAMP END between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryHt = "set dateformat ymd select pev.DtProd as DtMov, convert(time, rsev.ShiftDtStart) as hora, pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(31) and DtProd >= '" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 } else if (parametros.CT === '') {
                     console.log("Nenhum CT selecionado")
                 } else if (parametros.CT === undefined) {
                     console.log("Nenhum CT selecionado")
                 } else {
-                    queryQtd = "set dateformat ymd select me.DtMov, me.DtTimeStamp as data, convert(time, me.DtTimeStamp) Hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and me.DtTimeStamp between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "' and (me.UndoIDMovEv is null or(me.UndoIDMovEv is not null and me.RelatedIDMovEv is not null))"
-                    queryHt = "set dateformat ymd select rsev.ShiftDtStart as data,pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd between '" + parametros.dtInicio + "' and '" + parametros.dtFim + "'"
+                    queryQtd = "set dateformat ymd select me.DtMov, me.DtTimeStamp, convert(time, me.DtTimeStamp) hora, me.Shift, me.MovQty, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and DtMov >= '" + parametros.dtInicio + "' and DtMov <= '" + parametros.dtFim + "' and (me.UndoIDMovEv is null or(me.UndoIDMovEv is not null and me.RelatedIDMovEv is not null))"
+                    queryHt = "set dateformat ymd select pev.DtProd as DtMov, convert(time, rsev.ShiftDtStart) as hora, pev.IDResource,TBLResource.Code,TBLResource.Nickname,rsev.ShiftDtStart,rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >= '" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, parametros)
                 }
-
-
+                
             }
             sectorSelect(msg);
 

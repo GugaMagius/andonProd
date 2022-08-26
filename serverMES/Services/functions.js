@@ -32,17 +32,21 @@ module.exports.reduceDatasul = reduceDatasul
 // Função para solicitar dados do banco de dados
 async function solicitaBD(queryQtd, queryHt, msg, setor) {
 
+    console.log(queryQtd)
+
         let promiseQtd = new Promise(
             async function (resolve, reject) {
 
                 await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), msg).then(res => {
-                    if (res==={}){resolve("vazia")}
-                    console.log("RESPOSTA DO BD: ", res)
+                    if (res[0]==={} || res[0] === undefined || res[0] === null){
+                        console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryQtd)
+                        resolve("vazia")}
                     pool.exec('dadosComp', [res, false, main.eItemsList(), config]).then(
                         resPool => {
                             resolve(resPool)
                         }
                     )
+                    .catch(err=>{reject(err)})
                 })
 
             }
@@ -52,20 +56,24 @@ async function solicitaBD(queryQtd, queryHt, msg, setor) {
             function (resolve, reject) {
 
                 apiZeno.getDataSQL(queryHt, main.seletorConexaoBD(), msg).then(res => {
-                    if (res==={}){resolve("vazia")}
+                    if (res[0]==={} || res[0] === undefined || res[0] === null){
+                        console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHt)
+                        resolve("vazia")}
                     pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
                         resPool => {
                             resolve(resPool)
                         }
                     )
+                    .catch(err=>{reject(err)})
                 })
 
             }
         )
 
 
-        Promise.all([promiseQtd, promiseHt]).then((res) => {            
-            if (res[0] === {}) {
+        Promise.all([promiseQtd, promiseHt]).then((res) => {
+            if (res[0]==={} || res[0] === undefined || res[0] === null){
+                console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
                 ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'parametros': msg })
             } else {
                 calculaMedia(res[0], res[1], msg)
