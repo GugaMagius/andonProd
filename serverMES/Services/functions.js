@@ -32,8 +32,6 @@ module.exports.reduceDatasul = reduceDatasul
 // Função para solicitar dados do banco de dados
 async function solicitaBD(queryQtd, queryHt, msg, setor) {
 
-    console.log(queryQtd)
-
         let promiseQtd = new Promise(
             async function (resolve, reject) {
 

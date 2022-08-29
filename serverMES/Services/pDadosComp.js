@@ -20,7 +20,8 @@ async function dadosComp(respBD, ht, list) {
     return respBD[0].reduce(function (acc, index) {
         
         let dataElement = moment.utc(index["dtmov"], "DD/MM/YYYY HH:mm:ss")
-        let horaElement = index["hora"]
+        let horaElement = moment.utc(index["hora"], "DD/MM/YYYY HH:mm:ss")
+
 
         // Formata dataIndex de acordo com as datas recebidas
         var dataIndex = ''
@@ -41,7 +42,7 @@ async function dadosComp(respBD, ht, list) {
 
         if ( // Verifica se o turno foi selecionado para o horário do index atual
 
-        (turnosSelec.includes("t" + calcHorarios.testeTurno(horaElement).turno) && respBD[1]["CT"].includes("ecoat")) ||
+        (turnosSelec.includes("t" + calcHorarios.testeTurno(horaElement).turno) && (respBD[1]["CT"].includes("EE") || respBD[1]["CT"].includes("ecoat"))) ||
             turnosSelec.includes("t" + index.shift)
 
         ) {
@@ -95,8 +96,6 @@ async function dadosComp(respBD, ht, list) {
 
      
                         } else {
-
-                            //let difHora = new Date(index.shiftdtend - index.shiftdtstart) / 1000 / 60 / 60;
                             let difHora = parseFloat(moment(horaHtFim, formatoCompleto).diff(moment(horaHtInicio, formatoCompleto), "seconds")) / 60 / 60
 
                             acc[dataIndex] += difHora;
