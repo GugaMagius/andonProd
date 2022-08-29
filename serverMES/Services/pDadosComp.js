@@ -117,11 +117,17 @@ async function dadosComp(respBD, ht, list) {
                 return acc
 
             } else {
+                let quantidade = 0.0
+                if (index.undoidmovev !== '' && index.relatedidmovev === '') {
+                    quantidade = parseFloat(index["movqty"]) * (-1)
+                } else {
+                    quantidade = parseFloat(index["movqty"])
+                }
 
                 try {
                     if (list[index.code][respBD[1].unidade] > 0) {
 
-                        acc[dataIndex] = (parseFloat(acc[dataIndex]) + parseFloat(parseInt(index["movqty"]) * list[index.code][respBD[1].unidade])).toFixed(1)
+                        acc[dataIndex] = (parseFloat(acc[dataIndex]) + parseFloat(quantidade * parseFloat(list[index.code][respBD[1].unidade]))).toFixed(1)
 
 
                     } else {
