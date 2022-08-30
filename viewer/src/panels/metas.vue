@@ -180,7 +180,7 @@ export default {
 
           })
 
-        } 
+        }
 
         if (this.metasRec.metaCT != undefined) {
 

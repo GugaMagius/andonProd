@@ -67,7 +67,7 @@ export default {
       fdoHoje: "var(--surface-0)",
       setorAndon: '',       
       metas: {}, // Valores temporários de metas
-      selecaoCTs: {},
+      selecaoCTs: [],
     };
   },
   methods: {

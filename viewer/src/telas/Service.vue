@@ -2,7 +2,7 @@
   <div>
 <TabMenu :model="itemsMenu" />
 
-<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTs="listaCTs" :metasRec="metas"></router-view>
+<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTs="listaCTs" :metasRec="metas" :ctsSelecRec="selecaoCTs"></router-view>
 
   </div>
 
@@ -14,7 +14,8 @@ export default {
   props: {
     listaCTsReceb: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
-    metas: Object // Variavel com os valores de metas configurados (storage)
+    metas: Object, // Variavel com os valores de metas configurados (storage)
+    selecaoCTs: Array // Variável com a seleção de CTs utilizáveis nos relatórios
   },
 
   data: function () {

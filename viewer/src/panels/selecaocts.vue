@@ -42,21 +42,22 @@
     <div>
       <ScrollPanel style="width: 100%; height: 70vh" class="custom">
         <!-- Se meta por Centro de Trabalho -->
-        <DataTable :value="listaFCTs" editMode="cell" :scrollable="true" scrollHeight="flex"
-          @cell-edit-complete="onCellEditComplete" class="editable-cells-table" responsiveLayout="scroll"
+        <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" :scrollable="true" 
+          class="editable-cells-table" responsiveLayout="scroll" 
           sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
           <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
           <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
           <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
           <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
           <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
-            <template #body="{ data, field }">
-              <Checkbox v-model="data[field]" value="check" />
+            <template #body="{ data }">
+              <Checkbox @change="valorAlterado" v-model="ctsSelecEnv" :value="data['idresource']"/>
             </template>
           </Column>
         </DataTable>
       </ScrollPanel>
     </div>
+    {{ctsSelecEnv}}
   </div>
 
 </template>
@@ -68,7 +69,7 @@ export default {
   name: "SelecaoCTs",
   data: function () {
     return {
-      teste: false,
+      teste: [],
       listaFCTs: {}, // Lista de Centros de Trabalho Filtrados para DataTable
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [], // Lista de Centros de Custo
@@ -88,7 +89,7 @@ export default {
     this.toinitVar();
 
     this.atualizaConfig();
-
+    
   },
 
   watch: {
@@ -109,22 +110,38 @@ export default {
   props: {
     listaCTsRecebC: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Array, // Lista completa de Centros de trabalho consultadas no BD do MES
-    ctsSelecRec: Object // Variável com os valores dos CTs selecionados (Storage)
+    ctsSelecRec: Array // Variável com os valores dos CTs selecionados (Storage)
   },
 
 
   methods: {
+    selecionado(data) {
+      
+      return this.teste.includes(data.idresource) ? 'selecionado' : ''
+
+    },
+    valorAlterado() {
+      
+      this.$socket.emit("gravarConfig", [this["ctsSelecEnv"], "selecaoCTs"])
+
+
+    },
 
     atualizaConfig() {
 
+      
+    this.ctsSelecEnv = this.ctsSelecRec
+
       try {
+
 
         if (this.ctsSelecRec != undefined) {
 
 
           Object.keys(this.ctsSelecRec).forEach(element => {
 
-            this.listaFDeptos[element] = Object.assign(this.listaFDeptos[element], this.ctsSelecRec[element])
+            this.listaFCTs[element] = Object.assign(this.listaFCTs[element], this.ctsSelecRec[element])
+            console.log(this.listaFCTs[element])
 
           })
 
@@ -135,24 +152,6 @@ export default {
         console.log("falha ao tentar atualizar seleção de CTs. Erro: ", err, " - Iniciando nova tentativa em ", tempoTentativa, " segundos")
         setTimeout(this.atualizaConfig, tempoTentativa)
       }
-
-    },
-
-    onCellEditComplete(event) {
-      let { data, newValue, field } = event;
-
-      console.log(`
-      ${data}
-      ${newValue}
-      ${field}
-      `)
-
-
-      //this["ctsSelecEnv"][data.idresource] = this["ctsSelecEnv"][data.idresource] || {}
-      this["ctsSelecEnv"][data.idresource] = !this["ctsSelecEnv"][data.idresource]
-      this.listaFCTs[data.idresource][field] = this["ctsSelecEnv"][data.idresource]
-      //this.$socket.emit("gravarConfig", [this.ctsSelecEnv, "selecaoCTs"])
-
 
     },
 
@@ -315,6 +314,16 @@ export default {
   background-color: #1976d2;
   opacity: 1;
   transition: background-color .3s;
+}
+::v-deep(.selecionado) {
+    background-color: rgba(0,0,0,.15) !important;
+    text-decoration: line-through;
+}
+.selecionado {
+  background-color: aqua;
+}
+.naoselecionado {
+  background-color: blueviolet;
 }
 
 .radiobutton {
