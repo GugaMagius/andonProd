@@ -20,10 +20,8 @@ const calcHorarios = require('./Services/calcHorarios')
 const storage = require('./Services/storage')
 storage
 
-
-const connSuperv = "Data Source=MGU-SERVER02;Initial Catalog=SUPERVISORIO;User ID=gustavo;Password=magius@2021"
-
-const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
+const connMES = require('./configBD').connMES
+const connSuperv = require('./configBD').connSuperv
 
 function seletorConexaoBD(CTselect) {
 
@@ -54,8 +52,7 @@ function fEnviaEmailSemCad(lista) {
         )
         emailSemCadEnviado = true;
         semCadastro = []
-        */
-
+*/
 
     }
 }

@@ -7,7 +7,7 @@
           <!-- Data inicial -->
           <div class="field col-1 md:col-1  ">
             <span class="p-float-label">
-              <Calendar id="dataInicial" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+              <Calendar id="dataInicial" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
                 v-model="dataInicio" :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy" :monthNavigator="true"
                 :yearNavigator="true" :showButtonBar="true" autocomplete="off" />
               <label for="dataInicial"> Data Inicial: </label>
@@ -17,7 +17,7 @@
           <!-- Data final -->
           <div class="field col-1 md:col-1">
             <span class="p-float-label">
-              <Calendar id="dataFinal" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="dataFim"
+              <Calendar id="dataFinal" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }" v-model="dataFim"
                 :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy" :monthNavigator="true" :yearNavigator="true"
                 :showButtonBar="true" autocomplete="off" />
               <label for="dataFinal"> Data Final: </label>
@@ -27,7 +27,7 @@
           <!-- Seleção do Departamento -->
           <div class="selectDepto col-2 field col-3 md:col-2">
             <span class="p-float-label">
-              <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+              <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
                 v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
                 optionValue="idarea" optionLabel="depto" :filter="true" />
               <label for="selDepto"> Departamento: </label>
@@ -38,7 +38,7 @@
           <!-- Seleção do MGrp (Setor - Centro de Custo) -->
           <div class="selectMGrp col-2 field col-3 md:col-2">
             <span class="p-float-label">
-              <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
+              <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }" v-model="selecCC"
                 @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
                 :filter="true" />
               <label for="selCC"> Centro de Custo: </label>
@@ -48,7 +48,7 @@
           <!-- Seleção do CT -->
           <div class="selectCT field col-2 md:col-2">
             <span class="p-float-label">
-              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
                 v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTs)"
                 optionValue="idresource" optionLabel="ct" :filter="true" />
               <label for="selCT"> Centro de Trabalho: </label>
@@ -58,7 +58,7 @@
           <!-- Seleção do período -->
           <div class="field col-1 md:col-1">
             <span class="p-float-label">
-              <Dropdown v-model="selecPeriodo" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
+              <Dropdown v-model="selecPeriodo" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
                 :options="opcoesPeriodo" optionLabel="periodo" display="chip" />
               <label for="dataFinal"> Período: </label>
             </span>
@@ -68,17 +68,17 @@
           <div class="field col-1 md:col-1">
             <span v-if="dadosRecebidos && mostraTotal" class="p-float-label">
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ', color: statusMedia }" v-model="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="total"
                 readonly="true" :suffix="sufixoTot" />
               <label for="total"> Total: </label>
             </span>
           </div>
 
           <!-- Valor Médio dos dados selecionados -->
-          <div class="field col-1 md:col-1">
+          <div class="field col-1 md:col-2">
             <span v-if="dadosRecebidos" class="p-float-label">
               <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ', color: statusMedia }" v-model="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="media"
                 readonly="true" :suffix="sufixo" />
               <label for="media"> Média: </label>
             </span>
@@ -349,9 +349,10 @@ export default {
           datalabels: {
             anchor: "end",
             clamp: true,
-            align: "start",
+            offset: -1,
+            align: "end",
             display: "auto",
-            color: "white",
+            color: "#606075",
             font: {
               weight: "bold",
               size: 16,

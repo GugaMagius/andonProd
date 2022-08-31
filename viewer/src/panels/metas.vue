@@ -74,11 +74,13 @@
               <InputNumber v-model="data[field]" autofocus />
             </template>
           </Column>
+          <!--
           <Column field="altName" header="Nome Alternativo" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputText v-model="data[field]" autofocus />
             </template>
           </Column>
+          -->
         </DataTable>
         <!-- Se meta por Departamento -->
         <DataTable v-if="metaPor === 'cc'" :value="listaFCCs" editMode="cell" :scrollable="true"
@@ -95,11 +97,14 @@
               <InputNumber v-model="data[field]" autofocus />
             </template>
           </Column>
+
+          <!--
           <Column field="altName" header="Nome Alternativo" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
               <InputText v-model="data[field]" autofocus />
             </template>
           </Column>
+          -->
         </DataTable>
       </ScrollPanel>
     </div>

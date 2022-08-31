@@ -128,7 +128,7 @@ async function dadosComp(respBD, ht, list) {
 
 
                     } else {
-                        console.log(" ITEM NÃO CADASTRADO: ", index.code, " - Valor: ", list[index.code][respBD[1].unidade])
+                        console.log(" ITEM NÃO CADASTRADO: ", index.code, " - Valor: ", list[index.code][respBD[1].unidade], " - Unidade: ", respBD[1].unidade)
                     }
 
                 } catch (err) {

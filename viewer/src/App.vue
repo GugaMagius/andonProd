@@ -12,7 +12,7 @@
       <div>{{ isConnected ? "" : " *** Servidor Desconectado ***" }}</div>
 
       <div class="botaoinicio">
-        <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+        <Button type="button" icon="pi pi-bars" class="p-button-sm" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
         <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
       </div>
     </div>
