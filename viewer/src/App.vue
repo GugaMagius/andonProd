@@ -16,10 +16,11 @@
         <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
       </div>
     </div>
+
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
-      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTs" :listaCTsReceb="listaRecReceb"
-        :setor="$route.params.Setor" :metas="metas" :selecaoCTs="selecaoCTs" />
+      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTsGeral.selecionados" :listaCTsReceb="listaRecReceb"
+        :setor="$route.params.Setor" :metas="metas" :selecaoCTs="selecaoCTs" :listaCTsC="listaCTsGeral.completa" />
     </div>
 
     <!-- RODAPÉ -->
@@ -47,7 +48,7 @@ export default {
   data: function () {
     return {
       id: '',
-      listaCTs: [], // Lista completa de MGrps consultadas no BD do MES
+      listaCTsGeral: {}, // Lista com os Centros de Trablahos completa e selecionados
       listaRecReceb: false, // Sinaliza se os dados dos MGrps foram recebidos para mostrar o formulário
       versaoViewer: '',
       versaoMES: '',
@@ -108,16 +109,22 @@ export default {
       lista.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
       lista.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
 
-      Promise.resolve(this.listaCTs = lista.reduce((acc, el) => {
-        acc[el.idresource] = el
+      Promise.resolve(this.listaCTsGeral = lista.reduce((acc, el) => {
+
+
+        this.selecaoCTs.includes(el.idresource) ? acc["selecionados"][el.idresource] = el : null;
+        acc["completa"][el.idresource] = el;
+
         return acc
 
-      }, {}))
+      }, {selecionados: {}, completa: {}}))
         .then(
+          console.log(this.listaCTsGeral),
           this.listaRecReceb = true,
         )
 
     },
+
 
     connect() {
       // Fired when the socket connects.

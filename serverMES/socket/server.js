@@ -121,8 +121,6 @@ try {
 
         })
 
-        // Atualiza lista de MGrps e CTs no cliente
-        socket.emit("sListaCTs", listaCT)
 
         // Envia versão do serverMES
         socket.emit("versao", versaoMES)
@@ -148,6 +146,7 @@ try {
             let respConfig = {}
 
             try {
+
                 respConfig["metas"] = storage.getLS("metas")
                 respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
 
@@ -156,13 +155,15 @@ try {
                 storage.setLS("log", msg)
             } finally {
                 socket.emit("respStorage", respConfig)
+                // Atualiza lista de CTs no cliente
+                socket.emit("sListaCTs", listaCT)
             }
 
         }
         leituraConfig();
 
 
-        // Socket para ler valores do banco de dados NeDB 
+        // Socket para ler valores do arquivo de configuração
         socket.on("leituraConfig", leituraConfig)
 
 
