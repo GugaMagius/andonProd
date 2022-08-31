@@ -53,8 +53,18 @@ export default {
       dadosRecebidos: false
     };
   },
+  mounted() {
+    setTimeout(this.fDadosRecebidos, 250)
+  },
   watch: {
     dadosServer() {
+      this.fDadosRecebidos
+
+    }
+
+  },
+  methods: {
+    fDadosRecebidos() {
       if (this.dadosServer != undefined && this.dadosServer != {}) {
         this.dadosRecebidos = true
       }

@@ -190,7 +190,7 @@ export default {
     setTimeout(this.ajustaAltura(), 250)
 
 
-    this.inicializaMenu();
+    setTimeout(this.inicializaMenu, 800);
 
   },
   watch: {
@@ -562,25 +562,24 @@ export default {
 
           this.atualizaFCTs();
 
-        } else {
+        } 
 
-          // Remove o E-coat caso tenha selecionado o E-coat e mais algum outro setor
+      }
+
+                // Remove o E-coat caso tenha selecionado o E-coat e mais algum outro setor
           if (this.selecCT.indexOf("ecoat") != -1 && this.selecCT.length > 1) {
 
             this.selecCT.splice(this.selecCT.indexOf("ecoat"), 1);
+            delete this.listaFCTs.ecoat;
 
           }
           // Remove o Enganchamento caso tenha selecionado o Enganchamento e mais algum outro setor
           if (this.selecCT.indexOf("EE") != -1 && this.selecCT.length > 1) {
 
             this.selecCT.splice(this.selecCT.indexOf("EE"), 1);
+            delete this.listaFCTs.EE;
 
           }
-
-
-        }
-
-      }
 
     },
 
