@@ -151,16 +151,28 @@ try {
                 respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
 
             } catch (err) {
+
                 let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
                 storage.setLS("log", msg)
+
             } finally {
+
                 socket.emit("respStorage", respConfig)
                 // Atualiza lista de CTs no cliente
                 socket.emit("sListaCTs", listaCT)
+
             }
 
         }
         leituraConfig();
+
+
+        Promise.all([storage.getLSpromise("metas"), storage.getLSpromise("selecaoCTs")]).then((valores)=>{
+
+            //console.log("valor meta: ", valores[0], "- Valor lista: ", valores[1])
+            socket.emit('teste', [valores[0], valores[1], listaCT])
+
+        })
 
 
         // Socket para ler valores do arquivo de configuração

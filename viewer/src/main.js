@@ -46,7 +46,7 @@ import {ref} from 'vue';
 
 
 // teste! - Endereço de Ip para o socket com o servidor backend
-const adressSocket = 'http://10.41.0.243:3006' // ##teste Rodar local - desenvolvimento
+const adressSocket = 'http://10.41.1.114:3006' // ##teste Rodar local - desenvolvimento
 //const adressSocket = 'http://10.69.0.6:3006' // Rodar servidor - produção
 
 const SocketInstance  = {

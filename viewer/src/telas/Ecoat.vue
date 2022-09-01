@@ -27,19 +27,41 @@ export default {
     dadosServer: Object, // Dados completos recebidos do servidor
     metas: Object, // Arquivo de metas
   },
-  watch: {
-    metas() {
+  mounted() {
 
+    this.verificaDados();
+
+  },
+  data() {
+    return {
+
+      metaP: 0,
+      dadosRecebidosLE: false,
+      performance_LE: {},
+      dadosServerLE: {}
+
+    }
+  },
+  methods: {
+    verificaDados() {
       try {
-        if (this.metas['metaCC']['5001']['metaP'] !== undefined) {
+        if (this.metas['metaCC']['5001']['metaP'] !== undefined && this.dadosServer.produzidos_LE !== undefined) {
           this.metaP = this.metas['metaCC']['5001']['metaP']
+          this.calcPerformance();
+
+
+        } else {
+          console.log("Arquivos vazios, inidicando nova tentativa")
+        setTimeout(this.verificaDados, 1000) // Aguarda 1 segundo e tenta ler dados novamente
+          
         }
       } catch (err) {
-        console.log("Não foi possível ler a meta do setor do Ecoat")
+        console.log("Não foi possível ler os dados de meta ou produção", this.metas)
+        setTimeout(this.verificaDados, 10000) // Aguarda 10 segundos e tenta ler dados novamente
+
       }
-      this.dadosRecebidosLE = true;
     },
-    dadosServer() {
+    calcPerformance() {
       try {
         if (this.dadosServer.produzidos_LE != undefined) {
           this.dadosServerLE = this.dadosServer
@@ -94,7 +116,7 @@ export default {
 
           if (
             eval(
-              `${this.dadosServerLE.performance_LE["Hoje"]["total"]} >= ${this.metas['metaCC']['5001']['metaP']}`
+              `${this.dadosServerLE.performance_LE["Hoje"]["total"]} >= ${this.metaP}`
             )
           ) {
             this.metaPerfHoje = this.corOK;
@@ -104,7 +126,7 @@ export default {
 
           if (
             eval(
-              `${this.dadosServerLE.performance_LE["Ontem"]["total"]} >= ${this.metas['metaCC']['5001']['metaP']}`
+              `${this.dadosServerLE.performance_LE["Ontem"]["total"]} >= ${this.metaP}`
             )
           ) {
             this.metaPerfOntem = this.corOK;
@@ -116,16 +138,8 @@ export default {
         }
       } catch (err) {
         console.log("FALHA AO ATUALIZAR DADOS: ", err);
+        setTimeout(this.calcPerformance, 1000)
       }
-    }
-
-  },
-  data() {
-    return {
-      metaP: 0,
-      dadosRecebidosLE: false,
-      performance_LE: {},
-      dadosServerLE: {}
     }
   }
 

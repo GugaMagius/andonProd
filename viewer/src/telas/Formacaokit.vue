@@ -16,17 +16,30 @@ export default {
     dadosServer: Object, // Dados completos recebidos do servidor
     metas: Object, // Arquivo de metas
   },
-  watch: {
-    metas() {
+  mounted() {
 
+    this.verificaDados();
+
+  },
+  methods: {
+    verificaDados() {
       try {
-        if (this.metas['metaCC']['118']['metaS'] !== undefined) {
+        if (this.metas['metaCC']['118']['metaS'] !== undefined && this.dadosServer.dados_FK !== undefined) {
+          console.log("arquivos sendo atualizados")
           this.metaP = this.metas['metaCC']['118']['metaS']
+
+          this.dadosRecebidosFK = true;
+
+        } else {
+          console.log("Arquivos vazios, inidicando nova tentativa")
+        setTimeout(this.verificaDados, 1000) // Aguarda 1 segundo e tenta ler dados novamente
+          
         }
       } catch (err) {
-        console.log("Não foi possível ler a meta do setor de formação de Kits")
+        console.log("Não foi possível ler os dados de meta ou produção", this.metas)
+        setTimeout(this.verificaDados, 10000) // Aguarda 10 segundos e tenta ler dados novamente
+
       }
-      this.dadosRecebidosFK = true;
     }
 
   },
@@ -37,9 +50,11 @@ export default {
     }
   }
 
+
 };
 
 </script>
 
 <style scoped>
 </style>
+

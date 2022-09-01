@@ -50,5 +50,19 @@ function getLS(key) {
 
 }
 
-
 module.exports.getLS = getLS
+
+function getLSpromise(key) {
+
+  return new Promise(
+    function(resolve, reject) {
+      try {
+        resolve(JSON.parse(localStorage.getItem(key)))
+      } catch(err) {
+        reject(err)
+      }
+    }
+  )
+}
+
+module.exports.getLSpromise = getLSpromise

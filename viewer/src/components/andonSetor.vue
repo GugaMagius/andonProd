@@ -49,7 +49,7 @@ export default {
   },
 
   created() {
-    window.addEventListener("resize", this.myEventHandler);
+    window.addEventListener("suspend", this.myEventHandler);
   },
 
   mounted() {

@@ -253,6 +253,7 @@ export default {
       corOK: "#42A500",
       corNOK: "#ff0000",
 
+
       mostraTotal: false, // Indica quando é para mostrar o totalizador de produção 
       periodo: 'total',
       unidade: "m2",
@@ -293,6 +294,7 @@ export default {
             datalabels: {
               display: false,
             },
+            order: 1
           },
           {
             type: "bar",
@@ -301,6 +303,7 @@ export default {
             borderColor: [],
             borderWidth: [],
             data: [0],
+            order: 4
           },
         ],
       },

@@ -6,7 +6,7 @@
         <div class="telaReduzida col-12">
 
           <router-link to="/ecoat">
-            <Ecoat :dadosServer="dadosServer"/>
+            <Ecoat :dadosServer="dadosServer" :metas="metas"/>
           </router-link>
         </div>
       </div>
@@ -14,7 +14,7 @@
         <div class="col-12 titulo">Enganchamento</div>
         <div class="telaReduzida col-12">
           <router-link to="/enganchamento">
-            <Enganchamento :dadosServer="dadosServer"/>
+            <Enganchamento :dadosServer="dadosServer"  :metas="metas"/>
           </router-link>
         </div>
       </div>
@@ -22,7 +22,7 @@
         <div class="col-12 titulo">Pintura Pó</div>
         <div class="telaReduzida col-12">
           <router-link to="/pinturapo">
-            <PinturaPo :dadosServer="dadosServer" />
+            <PinturaPo :dadosServer="dadosServer"  :metas="metas"/>
           </router-link>
         </div>
       </div>
@@ -30,7 +30,7 @@
         <div class="col-12 titulo">Pintura Líquida</div>
         <div class="telaReduzida col-12">
           <router-link to="/pinturaliq">
-            <PinturaLiq :dadosServer="dadosServer" />
+            <PinturaLiq :dadosServer="dadosServer"  :metas="metas"/>
           </router-link>
         </div>
       </div>
@@ -79,6 +79,7 @@ export default {
   },
   props: {
     dadosServer: Object, // Pacote de dados do servidor
+    metas: Object, // Arquivo de metas
   },
 };
 </script>

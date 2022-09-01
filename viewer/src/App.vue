@@ -1,7 +1,7 @@
 <template>
   <div class="Principal">
-    
-    
+
+
     <!-- FAIXA DE TÍTULO (FIXA )-->
     <div class="Titulo">
       <div class="logo">
@@ -12,15 +12,17 @@
       <div>{{ isConnected ? "" : " *** Servidor Desconectado ***" }}</div>
 
       <div class="botaoinicio">
-        <Button type="button" icon="pi pi-bars" class="p-button-sm" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+        <Button type="button" icon="pi pi-bars" class="p-button-sm" @click="toggle" aria-haspopup="true"
+          aria-controls="overlay_menu" />
         <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
       </div>
     </div>
 
     <!-- CORPO DA PÁGINA -->
     <div class="RouterView">
-      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTsGeral.selecionados" :listaCTsReceb="listaRecReceb"
-        :setor="$route.params.Setor" :metas="metas" :selecaoCTs="selecaoCTs" :listaCTsC="listaCTsGeral.completa" />
+      <router-view :dadosServer="dadosServer" :id="id" :listaCTs="listaCTsGeral.selecionados"
+        :listaCTsReceb="listaRecReceb" :setor="$route.params.Setor" :metas="metas" :selecaoCTs="selecaoCTs"
+        :listaCTsC="listaCTsGeral.completa" />
     </div>
 
     <!-- RODAPÉ -->
@@ -66,7 +68,7 @@ export default {
       tamTxtH: 2.7,
       fdoOntem: "var(--surface-50)",
       fdoHoje: "var(--surface-0)",
-      setorAndon: '',       
+      setorAndon: '',
       metas: {}, // Valores temporários de metas
       selecaoCTs: [],
     };
@@ -82,7 +84,7 @@ export default {
 
   },
   sockets: {
-    msgServerClient(msg){
+    msgServerClient(msg) {
       console.log("Mensgem recebida do cliente: ", msg)
 
     },
@@ -99,8 +101,8 @@ export default {
     // Resposta do storage com as configurações
     respStorage(valor) {
 
-        this.metas = valor.metas
-        this.selecaoCTs = valor.selecaoCTs
+      this.metas = valor.metas
+      this.selecaoCTs = valor.selecaoCTs
 
     },
 
@@ -117,13 +119,38 @@ export default {
 
         return acc
 
-      }, {selecionados: {}, completa: {}}))
+      }, { selecionados: {}, completa: {} }))
         .then(
           console.log(this.listaCTsGeral),
-          this.listaRecReceb = true,
+          //this.listaRecReceb = true,
         )
 
     },
+
+    teste([metas, selecaoCTs, listaCTs]) {
+      listaCTs.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
+      listaCTs.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
+
+      this.metas = metas
+      this.selecaoCTs = selecaoCTs
+      //this.listaCTs = listaCTs
+
+      Promise.resolve(this.listaCTsGeral = listaCTs.reduce((acc, el) => {
+
+
+        selecaoCTs.includes(el.idresource) ? acc["selecionados"][el.idresource] = el : null;
+        acc["completa"][el.idresource] = el;
+
+        return acc
+
+      }, { selecionados: {}, completa: {} }))
+        .then(
+          console.log("LISTA GERAL: ", this.listaCTsGeral),
+          this.listaRecReceb = true,
+        )
+    },
+
+
 
 
     connect() {
