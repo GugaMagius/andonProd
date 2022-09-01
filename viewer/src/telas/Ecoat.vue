@@ -1,5 +1,6 @@
+
 <template>
-  <div>
+  <div v-if="dadosRecebidosLE">
     <TelaAndon
     :dadosServer="dadosServerLE"
     :ecoat="true"
@@ -7,6 +8,10 @@
     :unidQtd="'(bast)'"
     :sufixoMeta="' %'"
     :setor="'LE'"
+    :metaP="metaP"
+    :condP="'>='"
+    :metaS=0
+    :condS="'<='"
     />
   </div>
 </template>
@@ -18,26 +23,27 @@ export default {
   components: {
     TelaAndon
   },
-  
   props: {
     dadosServer: Object, // Dados completos recebidos do servidor
+    metas: Object, // Arquivo de metas
   },
-
-  data() {
-    return {
-      performance_LE: {},
-      dadosServerLE: {}
-    }
-  },
-
   watch: {
+    metas() {
+
+      try {
+        if (this.metas['metaCC']['5001']['metaP'] !== undefined) {
+          this.metaP = this.metas['metaCC']['5001']['metaP']
+        }
+      } catch (err) {
+        console.log("Não foi possível ler a meta do setor do Ecoat")
+      }
+      this.dadosRecebidosLE = true;
+    },
     dadosServer() {
-      
       try {
         if (this.dadosServer.produzidos_LE != undefined) {
           this.dadosServerLE = this.dadosServer
           this.dadosServerLE["performance_LE"] = {Hoje: {}, Ontem: {}}
-          this.dadosServerLE["performance_LE"]["metaP"] = this.dadosServer.produzidos_LE.metaP
 
           this.dadosServerLE.performance_LE["Hoje"]["Turno1"] =
             (this.dadosServerLE.produzidos_LE["Hoje"]["Turno1"]["soma"] * 100) /
@@ -88,7 +94,7 @@ export default {
 
           if (
             eval(
-              `${this.dadosServerLE.performance_LE["Hoje"]["total"]} ${this.dadosServerLE.performance_LE.metaP}`
+              `${this.dadosServerLE.performance_LE["Hoje"]["total"]} >= ${this.metas['metaCC']['5001']['metaP']}`
             )
           ) {
             this.metaPerfHoje = this.corOK;
@@ -98,7 +104,7 @@ export default {
 
           if (
             eval(
-              `${this.dadosServerLE.performance_LE["Ontem"]["total"]} ${this.dadosServerLE.performance_LE.metaP}`
+              `${this.dadosServerLE.performance_LE["Ontem"]["total"]} >= ${this.metas['metaCC']['5001']['metaP']}`
             )
           ) {
             this.metaPerfOntem = this.corOK;
@@ -112,12 +118,23 @@ export default {
         console.log("FALHA AO ATUALIZAR DADOS: ", err);
       }
     }
+
+  },
+  data() {
+    return {
+      metaP: 0,
+      dadosRecebidosLE: false,
+      performance_LE: {},
+      dadosServerLE: {}
+    }
   }
+
 
 
 };
 
 </script>
+
 
 <style scoped>
 

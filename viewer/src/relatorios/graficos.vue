@@ -693,12 +693,12 @@ export default {
 
       // Verifica e calcula metas
       if (this.selecCC.length === 1) {
-        this.metaGraf = this.metas["metaCC"][this.selecCC[0]][`meta${this.unidade}`]
+        this.metaGraf = this.metas["metaCC"][this.selecCC[0]][`meta${this.unidade === 'kg' ? 'P' : 'S'}`]
         this.metasSelec = {}
       } else if (this.selecCC.length > 1) {
         this.metasSelec = this.selecCC.reduce((acc, elemento, index) => {
           acc = acc || { soma: 0, media: 0 }
-          acc["soma"] = acc["soma"] + this.metas["metaCC"][elemento][`meta${this.unidade}`]
+          acc["soma"] = acc["soma"] + this.metas["metaCC"][elemento][`meta${this.unidade === 'kg' ? 'P' : 'S'}`]
           acc["media"] = acc["media"] = acc["soma"] / (index + 1)
           return acc
         }, 0)
