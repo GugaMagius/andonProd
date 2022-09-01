@@ -64,14 +64,20 @@
           <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
           <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
           <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metakg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+          <Column field="metaP" header="Meta (kg ou %)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
-              <InputNumber v-model="data[field]" autofocus />
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus /><div>{{ data.idresource==="ecoat" ? '%' : 'kg' }}</div>
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaP}}
+            {{slotProps.data.idresource==="ecoat" ? '% (perf.)' : 'kg' }}
             </template>
           </Column>
-          <Column field="metam2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+          <Column field="metaS" header="Meta (m2 ou bast/h)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
-              <InputNumber v-model="data[field]" autofocus />
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus /><div>{{ data.idresource==="ecoat" ? 'perda' : 'm2' }}</div>
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaS}}
+            {{slotProps.data.idresource==="ecoat" ? 'bast/h' : 'm2' }}
             </template>
           </Column>
           <!--
@@ -87,14 +93,20 @@
           scrollHeight="flex" @cell-edit-complete="onCellEditComplete" class="editable-cells-table"
           responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
           <Column field="cc" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="metakg" header="Meta (kg)" style="min-width:15%" :sortable="true">
+          <Column field="metaP" header="Meta (kg ou %)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
-              <InputNumber v-model="data[field]" autofocus />
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus />  
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaP}}
+            {{slotProps.data.idresource==="ecoat" ? '% (perf.)' : 'kg' }}
             </template>
           </Column>
-          <Column field="metam2" header="Meta (m2)" style="min-width:15%" :sortable="true">
+          <Column field="metaS" header="Meta (m2 ou bast/h)" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
-              <InputNumber v-model="data[field]" autofocus />
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus />  
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaS}}
+            {{slotProps.data.idresource==="ecoat" ? 'bast/h' : 'm2' }}
             </template>
           </Column>
 

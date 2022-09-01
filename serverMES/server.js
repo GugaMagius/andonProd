@@ -52,7 +52,7 @@ function fEnviaEmailSemCad(lista) {
         )
         emailSemCadEnviado = true;
         semCadastro = []
-*/
+        */
 
     }
 }
@@ -94,15 +94,6 @@ function itemsListUpdate(dados) {
 
 }
 module.exports.itemsListUpdate = itemsListUpdate
-
-
-
-function atualizaEcoat(dados, destino) {
-
-    dadosCompl[destino] = dados
-}
-
-module.exports.atualizaEcoat = atualizaEcoat
 
 
 
@@ -343,7 +334,7 @@ function respostaBD(string, destino, BD) {
         )
 }
 
-const prodLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then DAY(data-1) ELSE DAY(data) END dtmov from cicloEcoat ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
+const prodLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END dtmov from cicloEcoat ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 
 const perdLE = "select ce.id, ce.data, convert(time, data) hora, CASE WHEN DATEPART(hh,ce.data)<6 then DAY(data-1) ELSE DAY(data) END dtmov from bastPerdido ce where CASE WHEN DATEPART(hh,ce.data)<6 then data-1 ELSE data END >= convert(datetime2, DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE()-3)))"
 

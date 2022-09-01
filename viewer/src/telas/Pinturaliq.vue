@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="dadosRecebidosPL" class="semScrool">
     <TelaAndon
     :dadosServer="dadosServer"
     :ecoat="false"
@@ -7,6 +7,8 @@
     :unidQtd="'(m2)'"
     :sufixoMeta="' m2/h'"
     :setor="'PL'"
+    :metaP="metas['metaCC']['93']['metaS']"
+    :condP="'>='"
     />
   </div>
 </template>
@@ -20,12 +22,33 @@ export default {
   },
   props: {
     dadosServer: Object, // Dados completos recebidos do servidor
+    metas: Object, // Arquivo de metas
   },
+  watch: {
+    metas() {
 
+      try {
+        if (this.metas['metaCC']['93']['metaS'] !== undefined) {
+          this.metaP = this.metas['metaCC']['93']['metaS']
+        }
+      } catch (err) {
+        console.log("Não foi possível ler a meta do setor de PINTURA LÍQUIDA")
+      }
+      this.dadosRecebidosPL = true;
+    }
+
+  },
+  data() {
+    return {
+      metaP: 0,
+      dadosRecebidosPL: false
+    }
+  }
 
 };
 
 </script>
+
 
 <style scoped>
 
