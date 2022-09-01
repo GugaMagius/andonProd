@@ -18,14 +18,14 @@ async function dadosComp(respBD, ht, list) {
     return respBD[0].reduce(function (acc, index) {
         
         let dataElement = moment.utc(index["dtmov"], "DD/MM/YYYY HH:mm:ss")
-        let horaElement = moment.utc(index["hora"], "DD/MM/YYYY HH:mm:ss")
+        let horaElement = moment.utc(index["hora"], "DD/MM/YYYY HH:mm:ss").format("HH:mm:ss")
 
         // Formata dataIndex de acordo com as datas recebidas
         var dataIndex = ''
         let ano = moment.utc(dataElement).format("YYYY")
         let mes = moment.utc(dataElement).format("MM")
         let dia = moment.utc(dataElement).format("DD")
-        let hora = moment.utc(horaElement).format("HH")
+        let hora = moment.utc(horaElement, "HH:mm:ss").format("HH")
 
         if (respBD[1].periodo === "hora") {
             dataIndex = `${ano}${mes}${dia}${hora}`
@@ -34,7 +34,6 @@ async function dadosComp(respBD, ht, list) {
         } else {
             dataIndex = `${ano}${mes}`
         }
-
 
         
         if ( // Verifica se o turno foi selecionado para o horário do index atual

@@ -1,6 +1,6 @@
 {
   "name": "servermes",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "Painel andon da linha do E-coat - mostra produtividade por hora",
   "pkg": {
     "assets": [
