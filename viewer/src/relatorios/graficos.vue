@@ -305,6 +305,30 @@ export default {
             data: [0],
             order: 4
           },
+          {
+            type: "line",
+            label: "Carga Total",
+            borderColor: "rgb(255, 103, 47)",
+            borderWidth: 3,
+            radius: 0,
+            data: [65000, 63000, 55000, 53000, 52000],
+            datalabels: {
+              display: false,
+            },
+            order: 2
+          },
+          {
+            type: "line",
+            label: "Meta período",
+            borderColor: "rgb(47, 103, 255)",
+            borderWidth: 3,
+            radius: 0,
+            data: [62000, 60000, 58000, 47000, 48000],
+            datalabels: {
+              display: false,
+            },
+            order: 3
+          },
         ],
       },
 
@@ -367,7 +391,7 @@ export default {
             display: false,
           },
           legend: {
-            display: false,
+            display: true,
           },
         },
       },
