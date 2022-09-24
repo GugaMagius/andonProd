@@ -142,7 +142,8 @@
             <div class="inline col-3">
               <Button label="Atualizar" @click="consultaDados" />
             </div>
-            <div v-if="periodo === 'media' && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{ metaGraf }} {{ sufixo }}</div>
+            <div v-if="periodo === 'media' && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{ metaGraf
+            }} {{ sufixo }}</div>
 
 
 
@@ -159,6 +160,7 @@
         <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
           :data="basicData" :options="options" @select="excluiBarra($event)" />
       </div>
+      {{listaDatasets}}
 
       <!-- Aguardando... -->
       <div v-if="!dadosRecebidos">
@@ -182,7 +184,7 @@ import moment from 'moment'
 
 export default {
 
-  mounted: function () {
+  mounted() {
     this.dataInicio = new Date();
     this.dataFim = new Date();
     this.selecTurno = ["t1", "t2", "t3"];
@@ -191,6 +193,10 @@ export default {
 
 
     setTimeout(this.inicializaMenu, 800);
+
+    this.listaDatasets = this.basicData.datasets.map((el) => el.label);
+
+
 
   },
   watch: {
@@ -205,16 +211,16 @@ export default {
 
       if (this.media >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
         this.statusMedia = this.corOK
-        this.basicData.datasets[0].borderWidth = 3;
+        this.basicData.datasets[1].borderWidth = 3;
       } else if (this.media < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
         this.statusMedia = this.corNOK
-        this.basicData.datasets[0].borderWidth = 3;
-      } else {
+        this.basicData.datasets[1].borderWidth = 3;
+      } /*else {
         this.statusMedia = ''
-        this.basicData.datasets[0].borderWidth = 0;
-        this.basicData.datasets[0].data = []
+        this.basicData.datasets[1].borderWidth = 0;
+        this.basicData.datasets[1].data = []
 
-      }
+      } */
     }
 
   },
@@ -235,6 +241,7 @@ export default {
 
   data() {
     return {
+      listaDatasets: [],
       testeData: '',
       listaFCTs: [],
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
@@ -285,6 +292,15 @@ export default {
         labels: ["1"],
         datasets: [
           {
+            type: "bar",
+            label: "Produção",
+            backgroundColor: [],
+            borderColor: [],
+            borderWidth: [],
+            data: [0],
+            order: 4
+          },
+          {
             type: "line",
             label: "Meta",
             borderColor: "rgb(47, 103, 255)",
@@ -297,21 +313,12 @@ export default {
             order: 1
           },
           {
-            type: "bar",
-            label: "Produção",
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: [],
-            data: [0],
-            order: 4
-          },
-          {
             type: "line",
             label: "Carga Total",
             borderColor: "rgb(255, 103, 47)",
             borderWidth: 3,
-            radius: 0,
-            data: [65000, 63000, 55000, 53000, 52000],
+            radius: 2,
+            data: [0],
             datalabels: {
               display: false,
             },
@@ -319,15 +326,15 @@ export default {
           },
           {
             type: "line",
-            label: "Meta período",
+            label: "Meta Período",
             borderColor: "rgb(47, 103, 255)",
             borderWidth: 3,
-            radius: 0,
-            data: [62000, 60000, 58000, 47000, 48000],
+            radius: 2,
+            data: [0],
             datalabels: {
               display: false,
             },
-            order: 3
+            order: 3,
           },
         ],
       },
@@ -410,6 +417,7 @@ export default {
 
         this.dadosRecebidos = true;
 
+
         let unidGrafico;
 
         if (this.periodo === "media") {
@@ -418,9 +426,11 @@ export default {
         } else {
           this.mostraTotal = true;
           unidGrafico = "dadosQtd";
+          this.basicData.datasets[1].data = Object.values(data["cargaTotal"]);
+          this.basicData.datasets[2].data = Object.values(data["meta"]);
         }
         this.basicData.labels = Object.keys(data[unidGrafico]);
-        this.basicData.datasets[1].data = Object.values(data[unidGrafico]);
+        this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
 
         this.verificaMeta();
 
@@ -434,7 +444,7 @@ export default {
         }, 250)
         //})
 
-        this.calculaTotal(this.basicData.datasets[1].data, this.basicData.labels);
+        this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
       }
 
     },
@@ -447,18 +457,18 @@ export default {
       return Promise.resolve(
 
         //Object.values(data["media"]).forEach((element, index) => {
-          this.basicData.datasets[1].data.forEach((element, index) => {
+        this.basicData.datasets[0].data.forEach((element, index) => {
           if (this.periodo !== "media" || !this.metaGraf > 0) {
-            this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-            this.basicData.datasets[1].borderColor[index] = "#42A5F5";
+            this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+            this.basicData.datasets[0].borderColor[index] = "#42A5F5";
           } else {
-            this.basicData.datasets[0].data[index] = this.metaGraf
+            this.basicData.datasets[1].data[index] = this.metaGraf
             if (element >= this.metaGraf) {
-              this.basicData.datasets[1].backgroundColor[index] = this.corOK;
-              this.basicData.datasets[1].borderColor[index] = this.corOK;
+              this.basicData.datasets[0].backgroundColor[index] = this.corOK;
+              this.basicData.datasets[0].borderColor[index] = this.corOK;
             } else {
-              this.basicData.datasets[1].backgroundColor[index] = this.corNOK;
-              this.basicData.datasets[1].borderColor[index] = this.corNOK;
+              this.basicData.datasets[0].backgroundColor[index] = this.corNOK;
+              this.basicData.datasets[0].borderColor[index] = this.corNOK;
             }
 
           }
@@ -529,7 +539,7 @@ export default {
     },
     atualizaMenu(seletor) {
 
-      
+
       this.metaGraf = 0 // Zera a meta atual
 
       if (seletor === "Depto") {
@@ -593,45 +603,46 @@ export default {
 
           this.atualizaFCTs();
 
-        } 
+        }
 
       }
 
-                // Remove o E-coat caso tenha selecionado o E-coat e mais algum outro setor
-          if (this.selecCT.indexOf("ecoat") != -1 && this.selecCT.length > 1) {
+      // Remove o E-coat caso tenha selecionado o E-coat e mais algum outro setor
+      if (this.selecCT.indexOf("ecoat") != -1 && this.selecCT.length > 1) {
 
-            this.selecCT.splice(this.selecCT.indexOf("ecoat"), 1);
-            delete this.listaFCTs.ecoat;
+        this.selecCT.splice(this.selecCT.indexOf("ecoat"), 1);
+        delete this.listaFCTs.ecoat;
 
-          }
-          // Remove o Enganchamento caso tenha selecionado o Enganchamento e mais algum outro setor
-          if (this.selecCT.indexOf("EE") != -1 && this.selecCT.length > 1) {
+      }
+      // Remove o Enganchamento caso tenha selecionado o Enganchamento e mais algum outro setor
+      if (this.selecCT.indexOf("EE") != -1 && this.selecCT.length > 1) {
 
-            this.selecCT.splice(this.selecCT.indexOf("EE"), 1);
-            delete this.listaFCTs.EE;
+        this.selecCT.splice(this.selecCT.indexOf("EE"), 1);
+        delete this.listaFCTs.EE;
 
-          }
+      }
 
     },
 
     calculaTotal(dados, labels) {
+
       //for (const [index, label] of labels.entries()) {
 
       labels.forEach((label, index) => {
-                if (this.diaSemana(label) === 6) {
-          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[1].backgroundColor[index] = "yellow"
-          this.basicData.datasets[1].borderWidth[index] = 5
+        if (this.diaSemana(label) === 6) {
+          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[0].backgroundColor[index] = "yellow"
+          this.basicData.datasets[0].borderWidth[index] = 5
         } else if (this.diaSemana(label) === 0) {
-          //this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[1].backgroundColor[index] = "coral"
-          this.basicData.datasets[1].borderWidth[index] = 5
+          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
+          this.basicData.datasets[0].backgroundColor[index] = "coral"
+          this.basicData.datasets[0].borderWidth[index] = 5
         } else {
-          this.basicData.datasets[1].borderWidth[index] = 0
+          this.basicData.datasets[0].borderWidth[index] = 0
 
         }
 
-        this.total = this.basicData.datasets[1].data.reduce(
+        this.total = this.basicData.datasets[0].data.reduce(
           (acc, index) => {
             acc = acc || 0.0
             if (index > 0) {
@@ -642,7 +653,7 @@ export default {
           0.0
         )
         this.media = parseFloat((
-          this.total / parseInt(this.basicData.datasets[1].data.length)
+          this.total / parseInt(this.basicData.datasets[0].data.length)
         ).toFixed(1));
 
 
@@ -654,7 +665,7 @@ export default {
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
 
-      var dados = this.basicData.datasets[1].data.reduce(function (
+      var dados = this.basicData.datasets[0].data.reduce(function (
         acc,
         element,
         index
@@ -674,10 +685,10 @@ export default {
         return acc;
       }, []);
 
-      this.basicData.datasets[1].data = dados;
+      this.basicData.datasets[0].data = dados;
       this.basicData.labels = labels;
-      
-        this.verificaMeta();
+
+      this.verificaMeta();
 
       this.calculaTotal(dados, labels);
 
@@ -689,51 +700,75 @@ export default {
 
       this.metaGraf = 0 // Zera a meta atual
 
+      //this.dadosRecebidos = false
+
       if (this.selecPeriodo.code === undefined) {
         alert("Selecionar o Período do Gráfico");
       } else if (this.selecCT === undefined || this.selecCT === null || this.selecCT === [] || this.selecCT.length <= 0) {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
       } else {
 
-        this.dadosRecebidos = false;
-        this.aguarde = true;
+        coletaMeta(this.selecCC, this.unidade, this.metas).then((res) => {
 
-        this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
-        this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+          this.metaGraf = res
 
-        this.options.scales.y.title.text = this.sufixo;
+          this.dadosRecebidos = false;
+          this.aguarde = true;
 
-        this.basicData.labels = []; // Apaga labels atuais
-        this.basicData.datasets[1].data = []; // Apaga datasets atuais
-        this.msg =
-          "Solicitando atualização dos dados para os CTs selecionados... "
-        this.$socket.emit("solicitaDados", {
-          // Solicita dados para o gráfico
-          CT: this.selecCT, // Configuração de qual CT está solicitando
-          periodo: this.selecPeriodo.code, // Configuração de qual periodo está sendo solicitado (Dia / Hora / Mês)
-          unidade: this.unidade, // Unidade selecionada (m2 / kg)
-          dtInicio: moment.utc(this.dataInicio).format("YYYY-MM-DD"), // Data inicial para os dados solicitados
-          dtFim: moment.utc(this.dataFim).format("YYYY-MM-DD"), // Data final para os dados solicitados
-          turnos: this.selecTurno, // Turnos selecionados
-          ht: this.periodo,
-          id: this.id // ID do cliente que está solicitando os dados
-        });
+          this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+          this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+          this.options.scales.y.title.text = this.sufixo;
+
+          this.basicData.labels = []; // Apaga labels atuais
+          this.basicData.datasets[0].data = []; // Apaga datasets atuais
+          this.msg =
+            "Solicitando atualização dos dados para os CTs selecionados... "
+          this.$socket.emit("solicitaDados", {
+            // Solicita dados para o gráfico
+            CT: this.selecCT, // Configuração de qual CT está solicitando
+            periodo: this.selecPeriodo.code, // Configuração de qual periodo está sendo solicitado (Dia / Hora / Mês)
+            unidade: this.unidade, // Unidade selecionada (m2 / kg)
+            dtInicio: moment.utc(this.dataInicio).format("YYYY-MM-DD"), // Data inicial para os dados solicitados
+            dtFim: moment.utc(this.dataFim).format("YYYY-MM-DD"), // Data final para os dados solicitados
+            turnos: this.selecTurno, // Turnos selecionados
+            ht: this.periodo,
+            id: this.id, // ID do cliente que está solicitando os dados
+            meta: res // Meta para os dados selecionados
+          });
+
+        })
+
+
       }
 
 
-      // Verifica e calcula metas
-      if (this.selecCC.length === 1) {
-        this.metaGraf = this.metas["metaCC"][this.selecCC[0]][`meta${this.unidade === 'kg' ? 'P' : 'S'}`]
-        this.metasSelec = {}
-      } else if (this.selecCC.length > 1) {
-        this.metasSelec = this.selecCC.reduce((acc, elemento, index) => {
-          acc = acc || { soma: 0, media: 0 }
-          acc["soma"] = acc["soma"] + this.metas["metaCC"][elemento][`meta${this.unidade === 'kg' ? 'P' : 'S'}`]
-          acc["media"] = acc["media"] = acc["soma"] / (index + 1)
-          return acc
-        }, 0)
-        this.metaGraf = this.metasSelec.media
+
+      function coletaMeta(selecao, unidade, metas) {
+        return new Promise(
+          function (resolve) {
+            //let metasSelec = {}
+            //let metaGraf = 0;
+
+            // Verifica e calcula metas
+            if (selecao.length === 1) {
+              resolve(metas["metaCC"][selecao[0]][`meta${unidade === 'kg' ? 'P' : 'S'}`])
+              //metasSelec = {}
+            } else if (selecao.length > 1) {
+              resolve(selecao.reduce((acc, elemento, index) => {
+                acc = acc || { soma: 0, media: 0 }
+                acc["soma"] = acc["soma"] + metas["metaCC"][elemento][`meta${unidade === 'kg' ? 'P' : 'S'}`]
+                acc["media"] = acc["media"] = acc["soma"] / (index + 1)
+                return acc
+              }, 0).media)
+              //resolve(this.metaGraf = this.metasSelec.media)
+
+            }
+
+          }
+        )
       }
+
     },
 
     AdicionaVar(label, borderColor, data) {
