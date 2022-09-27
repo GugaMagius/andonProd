@@ -1,156 +1,253 @@
 <template>
   <div class="painel">
-    <div class="p-grid menu">
-      <div class="col-12 inline">
-        <div class="p-fluid seletores grid">
+    <div class="grid">
+      <div class="col-10">
 
-          <!-- Data inicial -->
-          <div class="field col-1 md:col-1  ">
-            <span class="p-float-label">
-              <Calendar id="dataInicial" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
-                v-model="dataInicio" :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy" :monthNavigator="true"
-                :yearNavigator="true" :showButtonBar="true" autocomplete="off" />
-              <label for="dataInicial"> Data Inicial: </label>
-            </span>
+
+        <div class="p-grid menu">
+          <div class="col-12 inline">
+            <div class="p-fluid seletores grid">
+              <!-- Data inicial -->
+              <div class="field col-1 md:col-1  ">
+                <span class="p-float-label">
+                  <Calendar id="dataInicial" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    v-model="dataInicio" :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy"
+                    :monthNavigator="true" :yearNavigator="true" :showButtonBar="true" autocomplete="off" />
+                  <label for="dataInicial"> Data Inicial: </label>
+                </span>
+              </div>
+
+              <!-- Data final -->
+              <div class="field col-1 md:col-1">
+                <span class="p-float-label">
+                  <Calendar id="dataFinal" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    v-model="dataFim" :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy" :monthNavigator="true"
+                    :yearNavigator="true" :showButtonBar="true" autocomplete="off" />
+                  <label for="dataFinal"> Data Final: </label>
+                </span>
+              </div>
+
+              <!-- Seleção do Departamento -->
+              <div class="selectDepto col-2 field col-3 md:col-2">
+                <span class="p-float-label">
+                  <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
+                    optionValue="idarea" optionLabel="depto" :filter="true" />
+                  <label for="selDepto"> Departamento: </label>
+                </span>
+              </div>
+
+
+              <!-- Seleção do MGrp (Setor - Centro de Custo) -->
+              <div class="selectMGrp col-2 field col-3 md:col-2">
+                <span class="p-float-label">
+                  <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    v-model="selecCC" @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)"
+                    optionValue="idsector" optionLabel="cc" :filter="true" />
+                  <label for="selCC"> Centro de Custo: </label>
+                </span>
+              </div>
+
+              <!-- Seleção do CT -->
+              <div class="selectCT field col-2 md:col-2">
+                <span class="p-float-label">
+                  <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTs)"
+                    optionValue="idresource" optionLabel="ct" :filter="true" />
+                  <label for="selCT"> Centro de Trabalho: </label>
+                </span>
+              </div>
+
+              <!-- Seleção do período -->
+              <div class="field col-1 md:col-1">
+                <span class="p-float-label">
+                  <Dropdown v-model="selecPeriodo" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
+                    :options="opcoesPeriodo" optionLabel="periodo" display="chip" />
+                  <label for="dataFinal"> Período: </label>
+                </span>
+              </div>
+
+              <!-- Valor Médio dos dados selecionados
+              <div class="field col-1 md:col-2">
+                <span v-if="dadosRecebidos" class="p-float-label">
+                  <InputNumber id="media"
+                    :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="media"
+                    readonly="true" :suffix="sufixo" />
+                  <label for="media"> Média: </label>
+                </span>
+              </div> -->
+
+
+
+
+            </div>
           </div>
 
-          <!-- Data final -->
-          <div class="field col-1 md:col-1">
-            <span class="p-float-label">
-              <Calendar id="dataFinal" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }" v-model="dataFim"
-                :showTime="false" :showSeconds="true" dateFormat="dd/mm/yy" :monthNavigator="true" :yearNavigator="true"
-                :showButtonBar="true" autocomplete="off" />
-              <label for="dataFinal"> Data Final: </label>
-            </span>
-          </div>
 
-          <!-- Seleção do Departamento -->
-          <div class="selectDepto col-2 field col-3 md:col-2">
-            <span class="p-float-label">
-              <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
-                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaFDeptos)"
-                optionValue="idarea" optionLabel="depto" :filter="true" />
-              <label for="selDepto"> Departamento: </label>
-            </span>
-          </div>
+          <!-- ************************************ linha de opções ****************************************************-->
 
+          <div class="grid">
+            <div class="col-12 inline">
+              <div class="p-fluid opcoes grid">
+                <div class="selectTurno col-3">
+                  <!-- ******* Seleção de turnos *********** -->
+                  <div class="checkbox inline">
+                    Turnos:
+                    <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
+                    <label for="turno1">Turno1</label>
+                  </div>
+                  <div class="checkbox inline">
+                    <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
+                    <label for="turno2">Turno2</label>
+                  </div>
+                  <div class="checkbox inline">
+                    <Checkbox id="turno3" name="turno" value="t3" v-model="selecTurno" />
+                    <label for="turno3">Turno3</label>
+                  </div>
+                </div>
 
-          <!-- Seleção do MGrp (Setor - Centro de Custo) -->
-          <div class="selectMGrp col-2 field col-3 md:col-2">
-            <span class="p-float-label">
-              <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }" v-model="selecCC"
-                @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
-                :filter="true" />
-              <label for="selCC"> Centro de Custo: </label>
-            </span>
-          </div>
+                <!-- ******* Seletores Unidade/período *********  -->
+                <div class="selectTurno col-3">
+                  <!-- Seleção de Unidade  -->
+                  <div v-if="!selectEcoat">
+                    <div class="checkbox inline">
+                      Unidade:
+                      <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
+                      <label for="m2">m2</label>
+                    </div>
+                    <div class="checkbox inline">
+                      <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
+                      <label for="kg">kg</label>
+                    </div>
+                  </div>
 
-          <!-- Seleção do CT -->
-          <div class="selectCT field col-2 md:col-2">
-            <span class="p-float-label">
-              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
-                v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTs)"
-                optionValue="idresource" optionLabel="ct" :filter="true" />
-              <label for="selCT"> Centro de Trabalho: </label>
-            </span>
-          </div>
+                  <br>
+                  <!-- Seleção do período  -->
+                  Totalizador:
+                  <div class="checkbox inline">
+                    <RadioButton id="total" name="unid" value="total" v-model="periodo" />
+                    <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
+                  </div>
+                  <div class="checkbox inline">
+                    <RadioButton id="media" name="unid" value="media" v-model="periodo" />
+                    <label for="media">Hora-máquina</label>
+                  </div>
 
-          <!-- Seleção do período -->
-          <div class="field col-1 md:col-1">
-            <span class="p-float-label">
-              <Dropdown v-model="selecPeriodo" :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ' }"
-                :options="opcoesPeriodo" optionLabel="periodo" display="chip" />
-              <label for="dataFinal"> Período: </label>
-            </span>
-          </div>
+                </div>
 
-          <!-- Valor Total -->
-          <div class="field col-1 md:col-1">
-            <span v-if="dadosRecebidos && mostraTotal" class="p-float-label">
-              <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="total"
-                readonly="true" :suffix="sufixoTot" />
-              <label for="total"> Total: </label>
-            </span>
-          </div>
+                <!-- ********** Botão de validação ************ -->
+                <div class="inline col-2">
+                  <Button label="Atualizar" @click="consultaDados" />
+                </div>
+                <!-- <div v-if="metaGraf !== 0 && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{
+                metaGraf
+                }} {{ sufixo }}</div> -->
 
-          <!-- Valor Médio dos dados selecionados -->
-          <div class="field col-1 md:col-2">
-            <span v-if="dadosRecebidos" class="p-float-label">
-              <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="media"
-                readonly="true" :suffix="sufixo" />
-              <label for="media"> Média: </label>
-            </span>
+              </div>
+            </div>
           </div>
 
         </div>
       </div>
 
-      <!-- ************************************ linha de opções ****************************************************-->
 
-      <div class="grid">
-        <div class="col-12 inline">
-          <div class="p-fluid opcoes grid">
-            <div class="selectTurno col-3">
-              <!-- ******* Seleção de turnos *********** -->
-              <div class="checkbox inline">
-                Turnos:
-                <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
-                <label for="turno1">Turno1</label>
-              </div>
-              <div class="checkbox inline">
-                <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
-                <label for="turno2">Turno2</label>
-              </div>
-              <div class="checkbox inline">
-                <Checkbox id="turno3" name="turno" value="t3" v-model="selecTurno" />
-                <label for="turno3">Turno3</label>
-              </div>
-            </div>
-
-            <!-- ******* Seletores Unidade/período *********  -->
-            <div class="selectTurno col-3">
-              <!-- Seleção de Unidade  -->
-              <div v-if="!selectEcoat">
-                <div class="checkbox inline">
-                  Unidade:
-                  <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
-                  <label for="m2">m2</label>
-                </div>
-                <div class="checkbox inline">
-                  <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
-                  <label for="kg">kg</label>
-                </div>
-              </div>
-
-              <br>
-              <!-- Seleção do período  -->
-              Totalizador:
-              <div class="checkbox inline">
-                <RadioButton id="total" name="unid" value="total" v-model="periodo" />
-                <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
-              </div>
-              <div class="checkbox inline">
-                <RadioButton id="media" name="unid" value="media" v-model="periodo" />
-                <label for="media">Hora-máquina</label>
-              </div>
-
-            </div>
-
-            <!-- ********** Botão de validação ************ -->
-            <div class="inline col-3">
-              <Button label="Atualizar" @click="consultaDados" />
-            </div>
-            <div v-if="periodo === 'media' && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{ metaGraf
-            }} {{ sufixo }}</div>
+      <div class="col-2 totalizador">
 
 
-
-          </div>
-        </div>
+        <table v-if="dadosRecebidos && mostraTotal">
+          <tr>
+            <th colspan="4"> Totalizador </th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>
+              <label class="label" for="metaPeriodo"> Média </label>
+            </th>
+            <th>
+              <label class="label" for="metaPeriodo"> Total Grafico: </label>
+            </th>
+            <th>
+              <label class="label" for="metaPeriodo"> Último período: </label>
+            </th>
+          </tr>
+          <tr>
+            <td> Capacidade Máxima </td>
+            <td>
+              <InputNumber id="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="medCapMaxima" readonly="true" :suffix="sufixo" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="totCapMaxima" readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="ultCapMaxima" readonly="true" :suffix="sufixoTot" />
+            </td>
+          </tr>
+          <tr>
+            <td> Meta R.O. (69%) </td>
+            <td>
+              <InputNumber id="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medMeta"
+                readonly="true" :suffix="sufixo" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="totMeta"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="ultMeta"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+          </tr>
+          <tr>
+            <td> Produção Efetiva </td>
+            <td>
+              <InputNumber id="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="medProdEfet" readonly="true" :suffix="sufixo" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
+            </td>
+          </tr>
+          <tr>
+            <td> Diferença p/ máxima </td>
+            <td>
+              <InputNumber id="media"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medDifProd"
+                readonly="true" :suffix="sufixo" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="totDifProd"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="ultDifProd"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
+
+
+
 
 
     <!-- ************************************ área do gráfico ****************************************************-->
@@ -160,7 +257,6 @@
         <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
           :data="basicData" :options="options" @select="excluiBarra($event)" />
       </div>
-      {{listaDatasets}}
 
       <!-- Aguardando... -->
       <div v-if="!dadosRecebidos">
@@ -260,8 +356,23 @@ export default {
       corOK: "#42A500",
       corNOK: "#ff0000",
 
-
       mostraTotal: false, // Indica quando é para mostrar o totalizador de produção 
+      cargaTotal: 0.0,
+
+      metaPeriodo: 0.0,
+      medCapMaxima: 0.0,
+      medMeta: 0.0,
+      medProdEfet: 0.0,
+      medDifProd: 0.0,
+      totCapMaxima: 0.0,
+      totMeta: 0.0,
+      totProdEfet: 0.0,
+      totDifProd: 0.0,
+      ultCapMaxima: 0.0,
+      ultMeta: 0.0,
+      ultProdEfet: 0.0,
+      ultDifProd: 0.0,
+
       periodo: 'total',
       unidade: "m2",
       sufixo: "m2",
@@ -318,6 +429,7 @@ export default {
             borderColor: "rgb(255, 103, 47)",
             borderWidth: 3,
             radius: 2,
+            pointStyle: 'line',
             data: [0],
             datalabels: {
               display: false,
@@ -330,6 +442,7 @@ export default {
             borderColor: "rgb(47, 103, 255)",
             borderWidth: 3,
             radius: 2,
+            pointStyle: 'line',
             data: [0],
             datalabels: {
               display: false,
@@ -398,7 +511,7 @@ export default {
             display: false,
           },
           legend: {
-            display: true,
+            display: false,
           },
         },
       },
@@ -426,11 +539,14 @@ export default {
         } else {
           this.mostraTotal = true;
           unidGrafico = "dadosQtd";
-          this.basicData.datasets[1].data = Object.values(data["cargaTotal"]);
-          this.basicData.datasets[2].data = Object.values(data["meta"]);
+          this.basicData.datasets[2].data = Object.values(data["cargaTotal"]);
+          this.basicData.datasets[3].data = Object.values(data["meta"]);
         }
+
         this.basicData.labels = Object.keys(data[unidGrafico]);
         this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
+
+        setTimeout(this.infoGraf, 3000);
 
         this.verificaMeta();
 
@@ -453,17 +569,44 @@ export default {
 
 
   methods: {
+    infoGraf() {
+      this.teste = this.$refs.graficoProd
+    },
+
+
     verificaMeta() {
+      let indexMeta = 0
+
+      if (this.periodo !== "media" || !this.metaGraf > 0) {
+        this.basicData.datasets[1].data = []
+        indexMeta = 3
+
+      } else {
+        this.basicData.datasets[2].data = []
+        this.basicData.datasets[3].data = []
+        indexMeta = 1
+      }
+
+
       return Promise.resolve(
 
         //Object.values(data["media"]).forEach((element, index) => {
+
         this.basicData.datasets[0].data.forEach((element, index) => {
-          if (this.periodo !== "media" || !this.metaGraf > 0) {
+
+
+          this.periodo === "media" ? this.basicData.datasets[1].data[index] = this.metaGraf : this.basicData.datasets[1].data[index] = []
+
+          console.log("Elemento: ", parseFloat(element), "Meta: ", parseFloat(this.basicData.datasets[indexMeta].data[index]))
+
+          if (!parseFloat(this.basicData.datasets[indexMeta].data[index]) > 0) {
             this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
             this.basicData.datasets[0].borderColor[index] = "#42A5F5";
+            //this.basicData.datasets[1].data = []
           } else {
-            this.basicData.datasets[1].data[index] = this.metaGraf
-            if (element >= this.metaGraf) {
+            //this.basicData.datasets[2].data = []
+            //this.basicData.datasets[3].data = []
+            if (parseFloat(element) >= parseFloat(this.basicData.datasets[indexMeta].data[index])) {
               this.basicData.datasets[0].backgroundColor[index] = this.corOK;
               this.basicData.datasets[0].borderColor[index] = this.corOK;
             } else {
@@ -625,6 +768,7 @@ export default {
     },
 
     calculaTotal(dados, labels) {
+      let tamanhoDados = this.basicData.datasets[0].data.length
 
       //for (const [index, label] of labels.entries()) {
 
@@ -642,7 +786,9 @@ export default {
 
         }
 
-        this.total = this.basicData.datasets[0].data.reduce(
+        // VALORES TOTAIS
+
+        this.totProdEfet = this.basicData.datasets[0].data.reduce(
           (acc, index) => {
             acc = acc || 0.0
             if (index > 0) {
@@ -652,9 +798,37 @@ export default {
           },
           0.0
         )
-        this.media = parseFloat((
-          this.total / parseInt(this.basicData.datasets[0].data.length)
+
+        this.totCapMaxima = this.basicData.datasets[2].data.reduce(
+          (acc, index) => acc = acc + index,
+          0.0
+        )
+
+        this.totMeta = this.basicData.datasets[3].data.reduce(
+          (acc, index) => acc = acc + index,
+          0.0
+        )
+
+        this.totDifProd = this.totCapMaxima - this.totProdEfet
+
+
+        // VALORES MÉDIOS
+
+        this.medProdEfet = parseFloat((
+          this.totProdEfet / parseInt(tamanhoDados)
         ).toFixed(1));
+
+
+        // VALORES ULTIMA BARRA
+
+        this.ultCapMaxima = this.basicData.datasets[2].data[tamanhoDados - 1]
+
+        this.ultProdEfet = this.basicData.datasets[0].data[tamanhoDados - 1]
+
+        this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
+
+        this.ultDifProd = this.ultCapMaxima - this.ultProdEfet
+
 
 
       }
@@ -739,10 +913,7 @@ export default {
 
         })
 
-
       }
-
-
 
       function coletaMeta(selecao, unidade, metas) {
         return new Promise(
@@ -770,6 +941,7 @@ export default {
       }
 
     },
+
 
     AdicionaVar(label, borderColor, data) {
       return {
@@ -849,7 +1021,25 @@ export default {
   margin: 1%;
 }
 
+.totalizador {
+  margin-left: -20vw;
+}
+
 .vertical {
   padding-top: 2vh
+}
+
+.p-float-label {
+  margin-top: 0px;
+  padding-bottom: 2vh;
+}
+
+.label {
+  font-size: small;
+}
+
+.streched {
+  height: 100%;
+
 }
 </style>
