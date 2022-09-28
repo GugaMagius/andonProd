@@ -154,7 +154,8 @@
       <div class="col-2 totalizador">
 
 
-        <table v-if="dadosRecebidos && mostraTotal">
+        <!-- <table v-if="dadosRecebidos && mostraTotal"></table> -->
+        <table v-if="dadosRecebidos">
           <tr>
             <th colspan="4"> Totalizador </th>
           </tr>
@@ -171,82 +172,107 @@
             </th>
           </tr>
           <tr>
-            <td> Capacidade Máxima </td>
+            <td class="labelLinha"> Capacidade Máxima </td>
             <td>
               <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(fontTable)"
                 v-model="medCapMaxima" readonly="true" :suffix="sufixo" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(fontTable)"
                 v-model="totCapMaxima" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(fontTable)"
                 v-model="ultCapMaxima" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
           <tr>
-            <td> Meta R.O. (69%) </td>
+            <td class="labelLinha"> Meta R.O. (69%) </td>
             <td>
               <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medMeta"
+                :inputStyle="confTable(fontTable)"
+                v-model="medMeta" 
                 readonly="true" :suffix="sufixo" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="totMeta"
+                :inputStyle="confTable(fontTable)"
+                v-model="totMeta" 
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="ultMeta"
+                :inputStyle="confTable(fontTable)"
+                v-model="ultMeta" 
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
           <tr>
-            <td> Produção Efetiva </td>
+            <td class="labelLinha"> Produção Efetiva </td>
             <td>
               <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(medProdEfet>=medMeta? 'black' : 'red')"
                 v-model="medProdEfet" readonly="true" :suffix="sufixo" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
                 v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
                 v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
           <tr>
-            <td> Diferença p/ máxima </td>
+            <td class="labelLinha"> Dif. p/ Meta R.O. </td>
             <td>
               <InputNumber id="media"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medDifProd"
+                :inputStyle="confTable(medDifProd >= 0 ? 'blue' : 'red')"
+                v-model="medDifProd" 
                 readonly="true" :suffix="sufixo" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="totDifProd"
+                :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')"
+                v-model="totDifProd" 
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
               <InputNumber id="total"
-                :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="ultDifProd"
+                :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')"
+                v-model="ultDifProd" 
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+          </tr>
+          <tr>
+            <td class="labelLinha"> Dif. p/ Cap. máxima </td>
+            <td>
+              <InputNumber id="media"
+                :inputStyle="confTable(fontTable)"
+                v-model="medDifProdMax" 
+                readonly="true" :suffix="sufixo" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="confTable(fontTable)"
+                v-model="totDifProdMax" 
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber id="total"
+                :inputStyle="confTable(fontTable)"
+                v-model="ultDifProdMax" 
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
         </table>
       </div>
     </div>
-
-
 
 
 
@@ -332,11 +358,14 @@ export default {
     selectEcoat() {
       return this.selecCT.includes('ecoat') ? true : false
     },
+    
   },
 
 
   data() {
     return {
+      teste: "blue",
+      fontTable: "black",
       listaDatasets: [],
       testeData: '',
       listaFCTs: [],
@@ -364,14 +393,17 @@ export default {
       medMeta: 0.0,
       medProdEfet: 0.0,
       medDifProd: 0.0,
+      medDifProdMax: 0.0,
       totCapMaxima: 0.0,
       totMeta: 0.0,
       totProdEfet: 0.0,
       totDifProd: 0.0,
+      totDifProdMax: 0.0,
       ultCapMaxima: 0.0,
       ultMeta: 0.0,
       ultProdEfet: 0.0,
       ultDifProd: 0.0,
+      ultDifProdMax: 0.0,
 
       periodo: 'total',
       unidade: "m2",
@@ -569,6 +601,11 @@ export default {
 
 
   methods: {
+    
+    confTable(variavel) {
+      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh' }
+    },
+
     infoGraf() {
       this.teste = this.$refs.graficoProd
     },
@@ -757,6 +794,7 @@ export default {
         delete this.listaFCTs.ecoat;
 
       }
+
       // Remove o Enganchamento caso tenha selecionado o Enganchamento e mais algum outro setor
       if (this.selecCT.indexOf("EE") != -1 && this.selecCT.length > 1) {
 
@@ -766,6 +804,7 @@ export default {
       }
 
     },
+
 
     calculaTotal(dados, labels) {
       let tamanhoDados = this.basicData.datasets[0].data.length
@@ -783,8 +822,8 @@ export default {
           this.basicData.datasets[0].borderWidth[index] = 5
         } else {
           this.basicData.datasets[0].borderWidth[index] = 0
-
         }
+
 
         // VALORES TOTAIS
 
@@ -809,7 +848,9 @@ export default {
           0.0
         )
 
-        this.totDifProd = this.totCapMaxima - this.totProdEfet
+        this.totDifProd =  this.totProdEfet - this.totMeta
+
+        this.totDifProdMax = this.totProdEfet - this.totCapMaxima 
 
 
         // VALORES MÉDIOS
@@ -827,11 +868,12 @@ export default {
 
         this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
 
-        this.ultDifProd = this.ultCapMaxima - this.ultProdEfet
+        this.ultDifProdMax = this.ultCapMaxima - this.ultProdEfet
 
-
+        this.ultDifProd = this.ultProdEfet - this.ultMeta
 
       }
+
       )
 
     },
@@ -983,6 +1025,11 @@ export default {
   overflow-y: hidden;
 }
 
+.linha {
+  height: 0.3vh;
+}
+
+
 .selectCT {
   max-width: 20%;
 }
@@ -1036,6 +1083,9 @@ export default {
 
 .label {
   font-size: small;
+}
+.labelLinha {
+  font-size: x-small;
 }
 
 .streched {

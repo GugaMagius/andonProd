@@ -34,6 +34,8 @@ const io = require("socket.io")(http, {
     }
 });
 
+
+
 http.listen(3006, function () {
     console.log("listening on port 3006")
 })
@@ -52,6 +54,9 @@ var listaCT = [] // Centro de trabalho
 
 const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
 const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code, st.Name as CC, st.IDSector, ar.Name as Depto, ar.IDArea from TBLResource ct inner join TBLManagerGrp mg on (ct.IDManagerGrp = mg.IDManagerGrp) inner join TBLSector st on (mg.IDSector = st.IDSector) inner join TBLArea ar on (st.IDArea = ar.IDArea) WHERE ar.Code LIKE '11%' OR ct.Code LIKE '1014001'`
+//const queryCTs = `select * from TBLResource`
+
+
 
 apiZeno.getDataSQL(queryCTs, connMES).then(
     res => {
