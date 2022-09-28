@@ -67,17 +67,15 @@
                 </span>
               </div>
 
-              <!-- Valor Médio dos dados selecionados
-              <div class="field col-1 md:col-2">
-                <span v-if="dadosRecebidos" class="p-float-label">
+              <!-- Valor Médio dos dados selecionados -->
+              <div v-if="dadosRecebidos" class="field col-2 md:col-2">
+                <span class="p-float-label">
                   <InputNumber id="media"
-                    :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="media"
+                    :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medProdEfet"
                     readonly="true" :suffix="sufixo" />
                   <label for="media"> Média: </label>
                 </span>
-              </div> -->
-
-
+              </div>
 
 
             </div>
@@ -151,19 +149,15 @@
       </div>
 
 
-      <div class="col-2 totalizador">
+      <!-- Tabela com valores e metas -->
+      <div class="col-1 totalizador">
 
-
-        <!-- <table v-if="dadosRecebidos && mostraTotal"></table> -->
-        <table v-if="dadosRecebidos">
+        <table v-if="dadosRecebidos && mostraTotal">
           <tr>
             <th colspan="4"> Totalizador </th>
           </tr>
           <tr>
             <th></th>
-            <th>
-              <label class="label" for="metaPeriodo"> Média </label>
-            </th>
             <th>
               <label class="label" for="metaPeriodo"> Total Grafico: </label>
             </th>
@@ -173,11 +167,6 @@
           </tr>
           <tr>
             <td class="labelLinha"> Capacidade Máxima </td>
-            <td>
-              <InputNumber id="media"
-                :inputStyle="confTable(fontTable)"
-                v-model="medCapMaxima" readonly="true" :suffix="sufixo" />
-            </td>
             <td>
               <InputNumber id="total"
                 :inputStyle="confTable(fontTable)"
@@ -191,12 +180,6 @@
           </tr>
           <tr>
             <td class="labelLinha"> Meta R.O. (69%) </td>
-            <td>
-              <InputNumber id="media"
-                :inputStyle="confTable(fontTable)"
-                v-model="medMeta" 
-                readonly="true" :suffix="sufixo" />
-            </td>
             <td>
               <InputNumber id="total"
                 :inputStyle="confTable(fontTable)"
@@ -213,11 +196,6 @@
           <tr>
             <td class="labelLinha"> Produção Efetiva </td>
             <td>
-              <InputNumber id="media"
-                :inputStyle="confTable(medProdEfet>=medMeta? 'black' : 'red')"
-                v-model="medProdEfet" readonly="true" :suffix="sufixo" />
-            </td>
-            <td>
               <InputNumber id="total"
                 :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
                 v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
@@ -230,12 +208,6 @@
           </tr>
           <tr>
             <td class="labelLinha"> Dif. p/ Meta R.O. </td>
-            <td>
-              <InputNumber id="media"
-                :inputStyle="confTable(medDifProd >= 0 ? 'blue' : 'red')"
-                v-model="medDifProd" 
-                readonly="true" :suffix="sufixo" />
-            </td>
             <td>
               <InputNumber id="total"
                 :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')"
@@ -251,12 +223,6 @@
           </tr>
           <tr>
             <td class="labelLinha"> Dif. p/ Cap. máxima </td>
-            <td>
-              <InputNumber id="media"
-                :inputStyle="confTable(fontTable)"
-                v-model="medDifProdMax" 
-                readonly="true" :suffix="sufixo" />
-            </td>
             <td>
               <InputNumber id="total"
                 :inputStyle="confTable(fontTable)"
@@ -329,12 +295,12 @@ export default {
 
     },
 
-    media() {
+    medProdEfet() {
 
-      if (this.media >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+      if (this.medProdEfet >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
         this.statusMedia = this.corOK
         this.basicData.datasets[1].borderWidth = 3;
-      } else if (this.media < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+      } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
         this.statusMedia = this.corNOK
         this.basicData.datasets[1].borderWidth = 3;
       } /*else {
@@ -603,7 +569,7 @@ export default {
   methods: {
     
     confTable(variavel) {
-      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh' }
+      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
     },
 
     infoGraf() {
@@ -868,7 +834,7 @@ export default {
 
         this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
 
-        this.ultDifProdMax = this.ultCapMaxima - this.ultProdEfet
+        this.ultDifProdMax = this.ultProdEfet - this.ultCapMaxima 
 
         this.ultDifProd = this.ultProdEfet - this.ultMeta
 
@@ -1069,7 +1035,7 @@ export default {
 }
 
 .totalizador {
-  margin-left: -20vw;
+  margin-left: -4vw;
 }
 
 .vertical {

@@ -43,7 +43,6 @@ function fEnviaEmailSemCad(lista) {
 
     if (emailSemCadEnviado === false && turnoAtual === 1 && listaSemCadCompl != undefined) {
 
-        /*
 
          //#Teste desativar quando estiver em teste 
         enviaEmail("Itens não cadastrados",
@@ -54,7 +53,7 @@ function fEnviaEmailSemCad(lista) {
         emailSemCadEnviado = true;
         semCadastro = []
         
-        */
+
 
     }
 }
