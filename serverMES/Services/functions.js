@@ -109,20 +109,24 @@ async function calculaMedia(Qtd, tempo, cargaTotalRec, parametros) {
     let media = {}
     let cargaTotal = {}
     let meta = {}
+    let RO = {}
 
     for (const [index, data] of Object.keys(Qtd).entries()) {
         //console.log("valor: ", Qtd[data], " - tempo: ", tempo[data])
         media[data] = media[data] || 0
         cargaTotal[data] = cargaTotal[data] || 0
         meta[data] = meta[data] || 0
+        RO[data] = RO[data] || 0
+
 
         media[data] = parseFloat((Qtd[data] / tempo[data]).toFixed(1))
         cargaTotal[data] = parseFloat((cargaTotalRec[data] * parametros.meta).toFixed(1))
         meta[data] = parseFloat((tempo[data] * parametros.meta).toFixed(1))
+        RO[data] = parseFloat((tempo[data] / cargaTotalRec[data] * 100)).toFixed(1)
         //cargaTotal = 
 
         if (index >= Object.keys(Qtd).length - 1) {
-            ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'cargaTotal': cargaTotal, 'meta': meta,  'parametros': parametros })
+            ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'cargaTotal': cargaTotal, 'tempoCarga': cargaTotalRec, 'RO': RO, 'horaMaquina': tempo, 'meta': meta,  'parametros': parametros })
         }
 
     }

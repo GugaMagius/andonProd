@@ -25,6 +25,7 @@ try {
             subject: assunto,
             text: responsavel + ',\n\n' + mensagem
         };
+        
 
         try {
             transporter.sendMail(mailOptions, function (error, info) {
