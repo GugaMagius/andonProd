@@ -3,7 +3,6 @@
     <div class="grid">
       <div class="col-10">
 
-
         <div class="p-grid menu">
           <div class="col-12 inline">
             <div class="p-fluid seletores grid">
@@ -71,8 +70,8 @@
               <div v-if="dadosRecebidos" class="field col-2 md:col-2">
                 <span class="p-float-label">
                   <InputNumber id="media"
-                    :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }" v-model="medProdEfet"
-                    readonly="true" :suffix="sufixo" />
+                    :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
+                    v-model="medProdEfet" readonly="true" :suffix="sufixo" />
                   <label for="media"> Média: </label>
                 </span>
               </div>
@@ -117,6 +116,10 @@
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
                     </div>
+                    <div class="checkbox inline">
+                      <RadioButton id="ro" name="unid" value="RO" v-model="unidade" />
+                      <label for="ro">R.O.</label>
+                    </div>
                   </div>
 
                   <br>
@@ -140,6 +143,8 @@
                 <!-- <div v-if="metaGraf !== 0 && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{
                 metaGraf
                 }} {{ sufixo }}</div> -->
+                Tempo Disp: {{tempoCarga}}
+                Tempo Trab: {{tempoTrabalhado}}
 
               </div>
             </div>
@@ -166,80 +171,72 @@
             </th>
           </tr>
           <tr>
-            <td class="labelLinha"> Capacidade Máxima </td>
+            <td class="labelLinha"> Capacidade Disponível </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="totCapMaxima" readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
+                :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="ultCapMaxima" readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
+                :suffix="sufixoTot" />
             </td>
           </tr>
+
           <tr>
-            <td class="labelLinha"> Meta R.O. (69%) </td>
+            <td class="labelLinha"> Meta R.O. </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="totMeta" 
-                readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
+                :suffix="sufixoTot" />
             </td>
+
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="ultMeta" 
-                readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true"
+                :suffix="sufixoTot" />
             </td>
           </tr>
+
           <tr>
             <td class="labelLinha"> Produção Efetiva </td>
+
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
+              <InputNumber id="total" :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
                 v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
+
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
+              <InputNumber id="total" :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
                 v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
+
           </tr>
+
           <tr>
             <td class="labelLinha"> Dif. p/ Meta R.O. </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')"
-                v-model="totDifProd" 
+              <InputNumber id="total" :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')"
-                v-model="ultDifProd" 
+              <InputNumber id="total" :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
+
           <tr>
-            <td class="labelLinha"> Dif. p/ Cap. máxima </td>
+            <td class="labelLinha"> Dif. p/ Cap. disponível </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="totDifProdMax" 
-                readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(totDifProdDisp >= 0 ? 'blue' : 'red')"
+                v-model="totDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total"
-                :inputStyle="confTable(fontTable)"
-                v-model="ultDifProdMax" 
-                readonly="true" :suffix="sufixoTot" />
+              <InputNumber id="total" :inputStyle="confTable(ultDifProdDisp >= 0 ? 'blue' : 'red')"
+                v-model="ultDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
+
         </table>
       </div>
     </div>
-
 
 
     <!-- ************************************ área do gráfico ****************************************************-->
@@ -264,6 +261,7 @@
         </span>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -292,6 +290,16 @@ export default {
     listaCTsReceb() {
 
       this.inicializaMenu();
+
+    },
+
+    unidade() {
+
+      if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null ) {
+
+       // this.compilaDadosGraf(this.respostaBD)
+
+      }
 
     },
 
@@ -324,16 +332,20 @@ export default {
     selectEcoat() {
       return this.selecCT.includes('ecoat') ? true : false
     },
-    
+
   },
 
 
   data() {
     return {
-      teste: "blue",
+      tempoCarga: 0.0,
+      tempoTrabalhado: 0.0,
+
+      respostaBD: {}, // Resposta do Banco de dados para consulta
+
+
       fontTable: "black",
       listaDatasets: [],
-      testeData: '',
       listaFCTs: [],
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [],
@@ -355,21 +367,21 @@ export default {
       cargaTotal: 0.0,
 
       metaPeriodo: 0.0,
-      medCapMaxima: 0.0,
+      medCapDisponivel: 0.0,
       medMeta: 0.0,
       medProdEfet: 0.0,
       medDifProd: 0.0,
-      medDifProdMax: 0.0,
-      totCapMaxima: 0.0,
+      medDifProdDisp: 0.0,
+      totCapDisponivel: 0.0,
       totMeta: 0.0,
       totProdEfet: 0.0,
       totDifProd: 0.0,
-      totDifProdMax: 0.0,
-      ultCapMaxima: 0.0,
+      totDifProdDisp: 0.0,
+      ultCapDisponivel: 0.0,
       ultMeta: 0.0,
       ultProdEfet: 0.0,
       ultDifProd: 0.0,
-      ultDifProdMax: 0.0,
+      ultDifProdDisp: 0.0,
 
       periodo: 'total',
       unidade: "m2",
@@ -397,6 +409,83 @@ export default {
       ],
       media: 0,
       total: 0,
+
+
+//       const chart = new Chart(ctx, {
+//   type: 'line',
+//   data: {
+//     labels: ['Friday', 'Saturday', 'Sunday', 'Monday'],
+//     datasets: [
+//       {
+//         yAxisID: 'A', // <-- the Y axis to use for this data set
+//         label: 'Page Views',
+//         data: [13500, 5700, 6300, 8200],
+//         borderWidth: 1,
+//         backgroundColor: 'blue',
+//         borderColor: 'blue'
+//       },
+//       {
+//         yAxisID: 'B', // <-- the Y axis to use for this data set
+//         label: 'Revenue',
+//         data: [11, 3.6, 7.3, 8.1],
+//         backgroundColor: 'green',
+//         borderColor: 'green'
+//       }
+//     ]
+//   },
+//   options: {
+//     responsive: true,
+//     scales: {
+//       A: {
+//         type: 'linear',
+//         position: 'left',
+//         ticks: { beginAtZero: true, color: 'blue' },
+//         // Hide grid lines, otherwise you have separate grid lines for the 2 y axes
+//         grid: { display: false }
+//       },
+//       B: {
+//         type: 'linear',
+//         position: 'right',
+//         ticks: { beginAtZero: true, color: 'green' },
+//         grid: { display: false }
+//       },
+//       x: { ticks: { beginAtZero: true } }
+//     }
+//   }
+// });
+
+// stackedOptions: {
+//                 plugins: {
+//                     tooltip: {
+//                         mode: 'index',
+//                         intersect: false
+//                     },
+//                     legend: {
+//                         labels: {
+//                             color: '#495057'
+//                         }
+//                     }
+//                 },
+//                 scales: {
+//                     x: {
+//                         stacked: true,
+//                         ticks: {
+//                             color: '#495057'
+//                         },
+//                         grid: {
+//                             color: '#ebedef'
+//                         }
+//                     },
+//                     y: {
+//                         stacked: true,
+//                         ticks: {
+//                             color: '#495057'
+//                         },
+//                         grid: {
+//                             color: '#ebedef'
+//                         }
+//                     }
+
       basicData: {
         labels: ["1"],
         datasets: [
@@ -518,6 +607,32 @@ export default {
 
   sockets: {
     resConsDB(data) {
+
+      this.respostaBD = data
+
+      this.compilaDadosGraf(this.respostaBD)
+
+    },
+
+  },
+
+
+  methods: {
+
+    compilaDadosGraf(data) {
+
+      this.tempoTrabalhado = Object.values(data.horaMaquina).reduce(
+        (acc, el) => {
+          acc = acc + parseFloat(el);
+          return acc
+        }, 0.0)
+
+      this.tempoCarga = Object.values(data.tempoCarga).reduce(
+        (acc, el) => {
+          acc = acc + parseFloat(el);
+          return acc
+        }, 0.0)
+
       if (data.dadosQtd === []) {
 
         this.aguarde = false;
@@ -541,8 +656,24 @@ export default {
           this.basicData.datasets[3].data = Object.values(data["meta"]);
         }
 
+
         this.basicData.labels = Object.keys(data[unidGrafico]);
-        this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
+
+        if (this.unidade === 'RO') {
+
+          this.basicData.datasets[0].data = Object.values(data['RO']);
+
+          this.basicData.datasets[1].data = []
+          this.basicData.datasets[2].data = []
+          this.basicData.datasets[3].data = []
+
+
+        } else {
+
+          this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
+
+        }
+
 
         setTimeout(this.infoGraf, 3000);
 
@@ -563,18 +694,10 @@ export default {
 
     },
 
-  },
-
-
-  methods: {
-    
     confTable(variavel) {
       return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
     },
 
-    infoGraf() {
-      this.teste = this.$refs.graficoProd
-    },
 
 
     verificaMeta() {
@@ -599,8 +722,6 @@ export default {
 
 
           this.periodo === "media" ? this.basicData.datasets[1].data[index] = this.metaGraf : this.basicData.datasets[1].data[index] = []
-
-          console.log("Elemento: ", parseFloat(element), "Meta: ", parseFloat(this.basicData.datasets[indexMeta].data[index]))
 
           if (!parseFloat(this.basicData.datasets[indexMeta].data[index]) > 0) {
             this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
@@ -804,7 +925,7 @@ export default {
           0.0
         )
 
-        this.totCapMaxima = this.basicData.datasets[2].data.reduce(
+        this.totCapDisponivel = this.basicData.datasets[2].data.reduce(
           (acc, index) => acc = acc + index,
           0.0
         )
@@ -814,9 +935,9 @@ export default {
           0.0
         )
 
-        this.totDifProd =  this.totProdEfet - this.totMeta
+        this.totDifProd = this.totProdEfet - this.totMeta
 
-        this.totDifProdMax = this.totProdEfet - this.totCapMaxima 
+        this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
 
         // VALORES MÉDIOS
@@ -828,13 +949,13 @@ export default {
 
         // VALORES ULTIMA BARRA
 
-        this.ultCapMaxima = this.basicData.datasets[2].data[tamanhoDados - 1]
+        this.ultCapDisponivel = this.basicData.datasets[2].data[tamanhoDados - 1]
 
         this.ultProdEfet = this.basicData.datasets[0].data[tamanhoDados - 1]
 
         this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
 
-        this.ultDifProdMax = this.ultProdEfet - this.ultCapMaxima 
+        this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
 
         this.ultDifProd = this.ultProdEfet - this.ultMeta
 
@@ -1050,6 +1171,7 @@ export default {
 .label {
   font-size: small;
 }
+
 .labelLinha {
   font-size: x-small;
 }
