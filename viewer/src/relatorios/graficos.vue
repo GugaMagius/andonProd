@@ -295,9 +295,9 @@ export default {
 
     unidade() {
 
-      if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null ) {
+      if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null) {
 
-       // this.compilaDadosGraf(this.respostaBD)
+        // this.compilaDadosGraf(this.respostaBD)
 
       }
 
@@ -411,80 +411,80 @@ export default {
       total: 0,
 
 
-//       const chart = new Chart(ctx, {
-//   type: 'line',
-//   data: {
-//     labels: ['Friday', 'Saturday', 'Sunday', 'Monday'],
-//     datasets: [
-//       {
-//         yAxisID: 'A', // <-- the Y axis to use for this data set
-//         label: 'Page Views',
-//         data: [13500, 5700, 6300, 8200],
-//         borderWidth: 1,
-//         backgroundColor: 'blue',
-//         borderColor: 'blue'
-//       },
-//       {
-//         yAxisID: 'B', // <-- the Y axis to use for this data set
-//         label: 'Revenue',
-//         data: [11, 3.6, 7.3, 8.1],
-//         backgroundColor: 'green',
-//         borderColor: 'green'
-//       }
-//     ]
-//   },
-//   options: {
-//     responsive: true,
-//     scales: {
-//       A: {
-//         type: 'linear',
-//         position: 'left',
-//         ticks: { beginAtZero: true, color: 'blue' },
-//         // Hide grid lines, otherwise you have separate grid lines for the 2 y axes
-//         grid: { display: false }
-//       },
-//       B: {
-//         type: 'linear',
-//         position: 'right',
-//         ticks: { beginAtZero: true, color: 'green' },
-//         grid: { display: false }
-//       },
-//       x: { ticks: { beginAtZero: true } }
-//     }
-//   }
-// });
+      //       const chart = new Chart(ctx, {
+      //   type: 'line',
+      //   data: {
+      //     labels: ['Friday', 'Saturday', 'Sunday', 'Monday'],
+      //     datasets: [
+      //       {
+      //         yAxisID: 'A', // <-- the Y axis to use for this data set
+      //         label: 'Page Views',
+      //         data: [13500, 5700, 6300, 8200],
+      //         borderWidth: 1,
+      //         backgroundColor: 'blue',
+      //         borderColor: 'blue'
+      //       },
+      //       {
+      //         yAxisID: 'B', // <-- the Y axis to use for this data set
+      //         label: 'Revenue',
+      //         data: [11, 3.6, 7.3, 8.1],
+      //         backgroundColor: 'green',
+      //         borderColor: 'green'
+      //       }
+      //     ]
+      //   },
+      //   options: {
+      //     responsive: true,
+      //     scales: {
+      //       A: {
+      //         type: 'linear',
+      //         position: 'left',
+      //         ticks: { beginAtZero: true, color: 'blue' },
+      //         // Hide grid lines, otherwise you have separate grid lines for the 2 y axes
+      //         grid: { display: false }
+      //       },
+      //       B: {
+      //         type: 'linear',
+      //         position: 'right',
+      //         ticks: { beginAtZero: true, color: 'green' },
+      //         grid: { display: false }
+      //       },
+      //       x: { ticks: { beginAtZero: true } }
+      //     }
+      //   }
+      // });
 
-// stackedOptions: {
-//                 plugins: {
-//                     tooltip: {
-//                         mode: 'index',
-//                         intersect: false
-//                     },
-//                     legend: {
-//                         labels: {
-//                             color: '#495057'
-//                         }
-//                     }
-//                 },
-//                 scales: {
-//                     x: {
-//                         stacked: true,
-//                         ticks: {
-//                             color: '#495057'
-//                         },
-//                         grid: {
-//                             color: '#ebedef'
-//                         }
-//                     },
-//                     y: {
-//                         stacked: true,
-//                         ticks: {
-//                             color: '#495057'
-//                         },
-//                         grid: {
-//                             color: '#ebedef'
-//                         }
-//                     }
+      // stackedOptions: {
+      //                 plugins: {
+      //                     tooltip: {
+      //                         mode: 'index',
+      //                         intersect: false
+      //                     },
+      //                     legend: {
+      //                         labels: {
+      //                             color: '#495057'
+      //                         }
+      //                     }
+      //                 },
+      //                 scales: {
+      //                     x: {
+      //                         stacked: true,
+      //                         ticks: {
+      //                             color: '#495057'
+      //                         },
+      //                         grid: {
+      //                             color: '#ebedef'
+      //                         }
+      //                     },
+      //                     y: {
+      //                         stacked: true,
+      //                         ticks: {
+      //                             color: '#495057'
+      //                         },
+      //                         grid: {
+      //                             color: '#ebedef'
+      //                         }
+      //                     }
 
       basicData: {
         labels: ["1"],
@@ -499,7 +499,7 @@ export default {
             order: 4
           },
           {
-            type: "line",
+            type: "bar",
             label: "Meta",
             borderColor: "rgb(47, 103, 255)",
             borderWidth: 2,
@@ -546,6 +546,7 @@ export default {
 
         scales: {
           x: {
+            stacked: true,
             ticks: {
               // Include a dollar sign in the ticks
               callback: function (value) {
@@ -568,6 +569,7 @@ export default {
             },
           },
           y: {
+            stacked: true,
             title: {
               display: true,
               text: "produção",
@@ -594,6 +596,19 @@ export default {
             formatter: Math.round(),
             padding: 1,
           },
+
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: 15000,
+                yMax: 15000,
+                borderColor: 'rgb(23, 50, 217)',
+                borderWidth: 3,
+              }
+            }
+          },
+
           title: {
             display: false,
           },

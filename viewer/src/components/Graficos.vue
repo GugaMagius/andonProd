@@ -20,8 +20,9 @@
 <script>
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartAnnotations from "chartjs-plugin-annotation";
 
-Chart.register(ChartDataLabels);
+Chart.register(ChartDataLabels, ChartAnnotations);
 
 export default {
   props: {
