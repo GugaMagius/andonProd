@@ -490,16 +490,19 @@ export default {
         labels: ["1"],
         datasets: [
           {
+            yAxisID: 'Prod',
             type: "bar",
             label: "Produção",
             backgroundColor: [],
             borderColor: [],
             borderWidth: [],
             data: [0],
-            order: 4
+            order: 4,
+            stack: 'Stack 0',
           },
           {
-            type: "bar",
+            yAxisID: 'Meta',
+            type: "line",
             label: "Meta",
             borderColor: "rgb(47, 103, 255)",
             borderWidth: 2,
@@ -511,6 +514,7 @@ export default {
             order: 1
           },
           {
+            yAxisID: 'CT',
             type: "line",
             label: "Carga Total",
             borderColor: "rgb(255, 103, 47)",
@@ -521,9 +525,11 @@ export default {
             datalabels: {
               display: false,
             },
-            order: 2
+            order: 2,
+            stack: 'Stack 1',
           },
           {
+            yAxisID: 'MP',
             type: "line",
             label: "Meta Período",
             borderColor: "rgb(47, 103, 255)",
@@ -535,6 +541,35 @@ export default {
               display: false,
             },
             order: 3,
+            stack: 'Stack 2',
+          },
+          {
+            yAxisID: 'tmpTrab',
+            type: "bar",
+            label: "Tempo Trabalhado",
+            backgroundColor: "rgb(255, 103, 47)",
+            borderWidth: 0,
+            data: [0],
+            datalabels: {
+              display: true,
+            },
+            order: 4,
+            stack: 'Stack 0',
+          },
+          {
+            yAxisID: 'RO',
+            type: "line",
+            label: "Rendimento Operacional",
+            borderColor: "rgb(240, 103, 67)",
+            borderWidth: 3,
+            radius: 2,
+            pointStyle: 'line',
+            data: [0],
+            datalabels: {
+              display: false,
+            },
+            order: 5,
+            stack: 'Stack 4',
           },
         ],
       },
@@ -568,8 +603,9 @@ export default {
               },
             },
           },
-          y: {
+          Prod: {
             stacked: true,
+            position: 'left',
             title: {
               display: true,
               text: "produção",
@@ -578,6 +614,66 @@ export default {
                 size: 14,
               },
             },
+          Meta: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
+              },
+            },
+          },
+          CT: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
+              },
+            },
+          },
+          MP: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
+              },
+            },
+          },
+          tmpTrab: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
+              },
+            },
+          },
+          RO: {
+            stacked: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
+              },
+            },
+          },
           },
         },
 
@@ -597,17 +693,17 @@ export default {
             padding: 1,
           },
 
-          annotation: {
-            annotations: {
-              line1: {
-                type: 'line',
-                yMin: 15000,
-                yMax: 15000,
-                borderColor: 'rgb(23, 50, 217)',
-                borderWidth: 3,
-              }
-            }
-          },
+          // annotation: {
+          //   annotations: {
+          //     line1: {
+          //       type: 'line',
+          //       yMin: 15000,
+          //       yMax: 15000,
+          //       borderColor: 'rgb(23, 50, 217)',
+          //       borderWidth: 3,
+          //     }
+          //   }
+          // },
 
           title: {
             display: false,
@@ -676,16 +772,29 @@ export default {
 
         if (this.unidade === 'RO') {
 
-          this.basicData.datasets[0].data = Object.values(data['RO']);
+          this.basicData.datasets[0].data = Object.values(data['horaMaquina']);
+
+
+          
+          //this.basicData.datasets[1].hidden = true
+          //this.basicData.datasets[2].hidden = true
+          //this.basicData.datasets[3].hidden = true
+
+          //this.$refs.graficoProd.refresh();
 
           this.basicData.datasets[1].data = []
           this.basicData.datasets[2].data = []
           this.basicData.datasets[3].data = []
 
+          this.basicData.datasets[4].data = Object.values(data['tempoCarga']);
 
         } else {
 
           this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
+          //this.basicData.datasets[4].hidden = true
+          //this.basicData.datasets[5].hidden = true
+
+          //this.$refs.graficoProd.refresh();
 
         }
 
@@ -1036,7 +1145,7 @@ export default {
           this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
           this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
-          this.options.scales.y.title.text = this.sufixo;
+          this.options.scales.Prod.title.text = this.sufixo;
 
           this.basicData.labels = []; // Apaga labels atuais
           this.basicData.datasets[0].data = []; // Apaga datasets atuais
