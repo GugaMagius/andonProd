@@ -3,6 +3,7 @@
 
     <!-- ************************************ área do gráfico ****************************************************-->
     <div id="graficoRel" class="grafico">
+      Grafico Produção
       <div v-if="dadosRecebidos">
         <!-- GRÁFICO -->
         <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
@@ -38,11 +39,16 @@ export default {
   },
 
   watch: {
-    dadosGraf() {
+    dadosGraf(data) {
+
+      console.log("dados recebidos:", data)
+
+      this.dadosRecebidos = true
       
       this.compilaDadosGraf(this.dadosGraf)
 
     }
+
   },
 
   props: {
@@ -355,7 +361,6 @@ export default {
 
 
     calculaTotal(dados, labels) {
-      let tamanhoDados = this.basicData.datasets[0].data.length
 
       //for (const [index, label] of labels.entries()) {
 

@@ -1,8 +1,9 @@
 <template>
   <div>
-<TabMenu :model="itemsMenu" />
+    <TabMenu :model="itemsMenu" />
 
-<router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTs="listaCTsC" :metasRec="metas" :ctsSelecRec="selecaoCTs"></router-view>
+    <router-view name="panel" :listaCTsRecebC="listaCTsReceb" :listaCTs="listaCTsC" :metasRec="metas"
+      :ctsSelecRec="selecaoCTs"></router-view>
 
   </div>
 

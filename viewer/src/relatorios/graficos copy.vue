@@ -93,7 +93,7 @@
                     <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
                     <label for="turno1">Turno1</label>
                   </div>
-                  <div class="checkbox inline">RO
+                  <div class="checkbox inline">
                     <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
                     <label for="turno2">Turno2</label>
                   </div>
@@ -116,9 +116,9 @@
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
                     </div>
-                    <div class="checkbox inline" v-if="periodo === 'total'">
-                      <RadioButton id="disp" name="unid" value="Disp" v-model="unidade" />
-                      <label for="disp">Disp.</label>
+                    <div class="checkbox inline">
+                      <RadioButton id="ro" name="unid" value="RO" v-model="unidade" />
+                      <label for="ro">R.O.</label>
                     </div>
                   </div>
 
@@ -241,11 +241,10 @@
 
     <!-- ************************************ área do gráfico ****************************************************-->
     <div id="graficoRel" class="grafico">
-      <div>
+      <div v-if="dadosRecebidos">
         <!-- GRÁFICO -->
-
-        <router-view name="grafico" :id="id" :metaGraf="metaGraf" :dadosGraf="respostaBD"></router-view>
-
+        <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
+          :data="basicData" :options="options" @select="excluiBarra($event)" />
       </div>
 
       <!-- Aguardando... -->
@@ -294,23 +293,12 @@ export default {
 
     },
 
-    unidade(valor) {
-
-      valor === "Disp" ? this.$router.push("/graficos/disp") : this.periodo === "media" ? this.$router.push("/graficos/media") : this.$router.push("/graficos/periodo")
+    unidade() {
 
       if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null) {
 
         // this.compilaDadosGraf(this.respostaBD)
 
-      }
-
-    },
-    periodo(valor) {
-
-      valor === "media" ? this.$router.push("/graficos/media") : this.unidade === "Disp" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/periodo")
-
-      if (valor === "media" && this.unidade === "Disp") {
-        this.unidade = "m2"
       }
 
     },
@@ -421,7 +409,8 @@ export default {
       ],
       media: 0,
       total: 0,
- 
+
+
       //       const chart = new Chart(ctx, {
       //   type: 'line',
       //   data: {
@@ -497,7 +486,6 @@ export default {
       //                         }
       //                     }
 
-
       basicData: {
         labels: ["1"],
         datasets: [
@@ -569,7 +557,7 @@ export default {
             stack: 'Stack 0',
           },
           {
-            yAxisID: 'Disp',
+            yAxisID: 'RO',
             type: "line",
             label: "Rendimento Operacional",
             borderColor: "rgb(240, 103, 67)",
@@ -626,66 +614,66 @@ export default {
                 size: 14,
               },
             },
-            Meta: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
+          Meta: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
               },
             },
-            CT: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
+          },
+          CT: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
               },
             },
-            MP: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
+          },
+          MP: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
               },
             },
-            tmpTrab: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
+          },
+          tmpTrab: {
+            stacked: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
               },
             },
-            Disp: {
-              stacked: true,
-              position: 'right',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
+          },
+          RO: {
+            stacked: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: "produção",
+              font: {
+                weight: "bold",
+                size: 14,
               },
             },
+          },
           },
         },
 
@@ -782,12 +770,12 @@ export default {
 
         this.basicData.labels = Object.keys(data[unidGrafico]);
 
-        if (this.unidade === 'Disp') {
+        if (this.unidade === 'RO') {
 
           this.basicData.datasets[0].data = Object.values(data['horaMaquina']);
 
 
-
+          
           //this.basicData.datasets[1].hidden = true
           //this.basicData.datasets[2].hidden = true
           //this.basicData.datasets[3].hidden = true
