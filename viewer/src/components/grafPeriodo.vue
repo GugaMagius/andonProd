@@ -22,6 +22,14 @@ export default {
 
     setTimeout(this.ajustaAltura(), 250)
 
+    
+    if (this.dadosGraf.dadosQtd) {
+      console.log("Dados atuais: ", this.dadosGraf)
+
+      this.options.scales.y.title.text = this.sufixo;
+      this.compilaDadosGraf(this.dadosGraf)
+    }
+
   },
 
   watch: {
@@ -180,23 +188,9 @@ export default {
 
   methods: {
 
-    inicializaGraf() {
-
-
-      //this.basicData.labels = []; // Apaga labels atuais
-      //this.basicData.datasets[0].data = []; // Apaga datasets atuais
-
-    },
-
     compilaDadosGraf(data) {
 
-      if (data.dadosQtd === []) {
 
-        this.$emit('fAguarde', false)
-        this.$emit('fDadosRecebidos', true)
-        alert("Nenhum dado retornado!")
-
-      } else if (data.parametros.id === this.id) {
 
         this.$parent.dadosRecebidos = true;
 
@@ -225,9 +219,9 @@ export default {
 
         this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
 
-        
+
         this.$emit('calculaTotal', this.basicData)
-      }
+      
 
     },
 
@@ -334,7 +328,7 @@ export default {
       this.verificaMeta();
 
       this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
-      
+
       this.$emit('calculaTotal', this.basicData)
 
     },

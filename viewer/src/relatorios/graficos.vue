@@ -271,9 +271,12 @@ import moment from 'moment'
 export default {
 
   mounted() {
+    this.$router.push("/graficos/periodo");
+
     this.dataInicio = new Date();
     this.dataFim = new Date();
     this.selecTurno = ["t1", "t2", "t3"];
+
 
     setTimeout(this.inicializaMenu, 800);
 
@@ -291,11 +294,6 @@ export default {
 
       valor === "Disp" ? this.$router.push("/graficos/disp") : this.periodo === "media" ? this.$router.push("/graficos/media") : this.$router.push("/graficos/periodo")
 
-      if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null) {
-
-        // this.compilaDadosGraf(this.respostaBD)
-
-      }
 
     },
     periodo(valor) {
@@ -308,16 +306,7 @@ export default {
 
     },
 
-    medProdEfet() {
 
-      if (this.medProdEfet >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
-        this.statusMedia = this.corOK
-        this.basicData.datasets[1].borderWidth = 3;
-      } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
-        this.statusMedia = this.corNOK
-        this.basicData.datasets[1].borderWidth = 3;
-      }
-    }
 
   },
 
@@ -416,9 +405,20 @@ export default {
   sockets: {
     resConsDB(data) {
 
-      this.respostaBD = data
+      if (data.dadosQtd === []) {
 
-      this.mostraTotal = this.periodo != "media"
+        this.aguarde = false
+        this.dadosRecebidos = true
+        alert("Nenhum dado retornado!")
+
+      } else if (data.parametros.id === this.id) {
+
+        this.respostaBD = data
+
+        this.mostraTotal = this.periodo != "media"
+
+      }
+
 
       // this.compilaDadosGraf(this.respostaBD)
 
@@ -593,11 +593,17 @@ export default {
 
       this.totCapDisponivel = reduceArray(dadosGraf.datasets[1].data)
 
-      this.totMeta = reduceArray(dadosGraf.datasets[2].data);
+      if (this.periodo === "total") {
 
-      this.totDifProd = this.totProdEfet - this.totMeta
+        this.totMeta = reduceArray(dadosGraf.datasets[2].data);
 
-      this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
+        this.totDifProd = this.totProdEfet - this.totMeta
+
+        this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
+
+        this.ultMeta = dadosGraf.datasets[2].data[tamanhoDados - 1]
+      }
+
 
 
       // VALORES MÉDIOS
@@ -613,11 +619,18 @@ export default {
 
       this.ultProdEfet = dadosGraf.datasets[0].data[tamanhoDados - 1]
 
-      this.ultMeta = dadosGraf.datasets[2].data[tamanhoDados - 1]
 
       this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
 
       this.ultDifProd = this.ultProdEfet - this.ultMeta
+
+
+      if (this.medProdEfet >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+        this.statusMedia = this.corOK
+      } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+        this.statusMedia = this.corNOK
+      }
+
 
     },
 
@@ -767,9 +780,6 @@ export default {
   overflow-y: hidden;
 }
 
-.linha {
-  height: 0.3vh;
-}
 
 
 .selectCT {
@@ -814,9 +824,6 @@ export default {
   margin-left: -4vw;
 }
 
-.vertical {
-  padding-top: 2vh
-}
 
 .p-float-label {
   margin-top: 0px;
@@ -829,10 +836,5 @@ export default {
 
 .labelLinha {
   font-size: x-small;
-}
-
-.streched {
-  height: 100%;
-
 }
 </style>
