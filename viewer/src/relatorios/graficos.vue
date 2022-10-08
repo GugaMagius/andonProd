@@ -2,7 +2,6 @@
   <div class="painel">
     <div class="grid">
       <div class="col-10">
-
         <div class="p-grid menu">
           <div class="col-12 inline">
             <div class="p-fluid seletores grid">
@@ -140,12 +139,6 @@
                 <div class="inline col-2">
                   <Button label="Atualizar" @click="consultaDados" />
                 </div>
-                <!-- <div v-if="metaGraf !== 0 && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{
-                metaGraf
-                }} {{ sufixo }}</div> -->
-                Tempo Disp: {{tempoDisponivel}}
-                Tempo Trab: {{tempoTrabalhado}}
-
               </div>
             </div>
           </div>
@@ -183,7 +176,7 @@
           </tr>
 
           <tr>
-            <td class="labelLinha"> Meta R.O. </td>
+            <td class="labelLinha"> Meta Prod. </td>
             <td>
               <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
                 :suffix="sufixoTot" />
@@ -211,7 +204,7 @@
           </tr>
 
           <tr>
-            <td class="labelLinha"> Dif. p/ Meta R.O. </td>
+            <td class="labelLinha"> Dif. p/ Meta Prod. </td>
             <td>
               <InputNumber id="total" :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
                 readonly="true" :suffix="sufixoTot" />
@@ -241,12 +234,6 @@
 
     <!-- ************************************ área do gráfico ****************************************************-->
     <div id="graficoRel" class="grafico">
-      <div>
-        <!-- GRÁFICO -->
-
-        <router-view name="grafico" :id="id" :metaGraf="metaGraf" :dadosGraf="respostaBD"></router-view>
-
-      </div>
 
       <!-- Aguardando... -->
       <div v-if="!dadosRecebidos">
@@ -261,6 +248,18 @@
         " strokeWidth="6" animationDuration=".8s" />
         </span>
       </div>
+
+
+
+      <div>
+
+        <!-- GRÁFICO -->
+        <router-view name="grafico" :id="id" @calculaTotal="calculaTotal" @fDadosRecebidos="fDadosRecebidos"
+          @fAguarde="fAguarde" :metaGraf="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
+          :sufixo="sufixo"></router-view>
+
+      </div>
+
     </div>
 
   </div>
@@ -276,13 +275,7 @@ export default {
     this.dataFim = new Date();
     this.selecTurno = ["t1", "t2", "t3"];
 
-    setTimeout(this.ajustaAltura(), 250)
-
-
     setTimeout(this.inicializaMenu, 800);
-
-    this.listaDatasets = this.basicData.datasets.map((el) => el.label);
-
 
 
   },
@@ -323,12 +316,7 @@ export default {
       } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
         this.statusMedia = this.corNOK
         this.basicData.datasets[1].borderWidth = 3;
-      } /*else {
-        this.statusMedia = ''
-        this.basicData.datasets[1].borderWidth = 0;
-        this.basicData.datasets[1].data = []
-
-      } */
+      }
     }
 
   },
@@ -421,310 +409,7 @@ export default {
       ],
       media: 0,
       total: 0,
- 
-      //       const chart = new Chart(ctx, {
-      //   type: 'line',
-      //   data: {
-      //     labels: ['Friday', 'Saturday', 'Sunday', 'Monday'],
-      //     datasets: [
-      //       {
-      //         yAxisID: 'A', // <-- the Y axis to use for this data set
-      //         label: 'Page Views',
-      //         data: [13500, 5700, 6300, 8200],
-      //         borderWidth: 1,
-      //         backgroundColor: 'blue',
-      //         borderColor: 'blue'
-      //       },
-      //       {
-      //         yAxisID: 'B', // <-- the Y axis to use for this data set
-      //         label: 'Revenue',
-      //         data: [11, 3.6, 7.3, 8.1],
-      //         backgroundColor: 'green',
-      //         borderColor: 'green'
-      //       }
-      //     ]
-      //   },
-      //   options: {
-      //     responsive: true,
-      //     scales: {
-      //       A: {
-      //         type: 'linear',
-      //         position: 'left',
-      //         ticks: { beginAtZero: true, color: 'blue' },
-      //         // Hide grid lines, otherwise you have separate grid lines for the 2 y axes
-      //         grid: { display: false }
-      //       },
-      //       B: {
-      //         type: 'linear',
-      //         position: 'right',
-      //         ticks: { beginAtZero: true, color: 'green' },
-      //         grid: { display: false }
-      //       },
-      //       x: { ticks: { beginAtZero: true } }
-      //     }
-      //   }
-      // });
 
-      // stackedOptions: {
-      //                 plugins: {
-      //                     tooltip: {
-      //                         mode: 'index',
-      //                         intersect: false
-      //                     },
-      //                     legend: {
-      //                         labels: {
-      //                             color: '#495057'
-      //                         }
-      //                     }
-      //                 },
-      //                 scales: {
-      //                     x: {
-      //                         stacked: true,
-      //                         ticks: {
-      //                             color: '#495057'
-      //                         },
-      //                         grid: {
-      //                             color: '#ebedef'
-      //                         }
-      //                     },
-      //                     y: {
-      //                         stacked: true,
-      //                         ticks: {
-      //                             color: '#495057'
-      //                         },
-      //                         grid: {
-      //                             color: '#ebedef'
-      //                         }
-      //                     }
-
-
-      basicData: {
-        labels: ["1"],
-        datasets: [
-          {
-            yAxisID: 'Prod',
-            type: "bar",
-            label: "Produção",
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: [],
-            data: [0],
-            order: 4,
-            stack: 'Stack 0',
-          },
-          {
-            yAxisID: 'Meta',
-            type: "line",
-            label: "Meta",
-            borderColor: "rgb(47, 103, 255)",
-            borderWidth: 2,
-            radius: 0,
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 1
-          },
-          {
-            yAxisID: 'CT',
-            type: "line",
-            label: "Carga Total",
-            borderColor: "rgb(255, 103, 47)",
-            borderWidth: 3,
-            radius: 2,
-            pointStyle: 'line',
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 2,
-            stack: 'Stack 1',
-          },
-          {
-            yAxisID: 'MP',
-            type: "line",
-            label: "Meta Período",
-            borderColor: "rgb(47, 103, 255)",
-            borderWidth: 3,
-            radius: 2,
-            pointStyle: 'line',
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 3,
-            stack: 'Stack 2',
-          },
-          {
-            yAxisID: 'tmpTrab',
-            type: "bar",
-            label: "Tempo Trabalhado",
-            backgroundColor: "rgb(255, 103, 47)",
-            borderWidth: 0,
-            data: [0],
-            datalabels: {
-              display: true,
-            },
-            order: 4,
-            stack: 'Stack 0',
-          },
-          {
-            yAxisID: 'Disp',
-            type: "line",
-            label: "Rendimento Operacional",
-            borderColor: "rgb(240, 103, 67)",
-            borderWidth: 3,
-            radius: 2,
-            pointStyle: 'line',
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 5,
-            stack: 'Stack 4',
-          },
-        ],
-      },
-
-      options: {
-        responsive: false,
-        hoverMode: "index",
-        stacked: false,
-
-        scales: {
-          x: {
-            stacked: true,
-            ticks: {
-              // Include a dollar sign in the ticks
-              callback: function (value) {
-                let label = this.getLabelForValue(value);
-                let aa = label.substr(2, 2) + " ";
-                let mm = label.substr(4, 2) + "/";
-                let dd = label.substr(6, 2) > 0 ? label.substr(6, 2) + "/" : "";
-                let hh =
-                  label.substr(8, 2) !== "" ? label.substr(8, 2) + ":00" : "";
-                return `${dd}${mm}${aa}${hh}`;
-              },
-            },
-            title: {
-              display: true,
-              text: "data",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          },
-          Prod: {
-            stacked: true,
-            position: 'left',
-            title: {
-              display: true,
-              text: "produção",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-            Meta: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
-              },
-            },
-            CT: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
-              },
-            },
-            MP: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
-              },
-            },
-            tmpTrab: {
-              stacked: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
-              },
-            },
-            Disp: {
-              stacked: true,
-              position: 'right',
-              title: {
-                display: true,
-                text: "produção",
-                font: {
-                  weight: "bold",
-                  size: 14,
-                },
-              },
-            },
-          },
-        },
-
-        plugins: {
-          datalabels: {
-            anchor: "end",
-            clamp: true,
-            offset: -1,
-            align: "end",
-            display: "auto",
-            color: "#606075",
-            font: {
-              weight: "bold",
-              size: 16,
-            },
-            formatter: Math.round(),
-            padding: 1,
-          },
-
-          // annotation: {
-          //   annotations: {
-          //     line1: {
-          //       type: 'line',
-          //       yMin: 15000,
-          //       yMax: 15000,
-          //       borderColor: 'rgb(23, 50, 217)',
-          //       borderWidth: 3,
-          //     }
-          //   }
-          // },
-
-          title: {
-            display: false,
-          },
-          legend: {
-            display: false,
-          },
-        },
-      },
     };
   },
 
@@ -733,7 +418,9 @@ export default {
 
       this.respostaBD = data
 
-      this.compilaDadosGraf(this.respostaBD)
+      this.mostraTotal = this.periodo != "media"
+
+      // this.compilaDadosGraf(this.respostaBD)
 
     },
 
@@ -741,156 +428,18 @@ export default {
 
 
   methods: {
+    fDadosRecebidos(valor) {
+      this.dadosRecebidos = valor
+    },
 
-    compilaDadosGraf(data) {
-
-      this.tempoTrabalhado = Object.values(data.tempoTrab).reduce(
-        (acc, el) => {
-          acc = acc + parseFloat(el);
-          return acc
-        }, 0.0)
-
-      this.tempoDisponivel = Object.values(data.tempoDisp).reduce(
-        (acc, el) => {
-          acc = acc + parseFloat(el);
-          return acc
-        }, 0.0)
-
-      if (data.dadosQtd === []) {
-
-        this.aguarde = false;
-        this.dadosRecebidos = true;
-        alert("Nenhum dado retornado!")
-
-      } else if (data.parametros.id === this.id) {
-
-        this.dadosRecebidos = true;
-
-
-        let unidGrafico;
-
-        if (this.periodo === "media") {
-          unidGrafico = "media";
-          this.mostraTotal = false;
-        } else {
-          this.mostraTotal = true;
-          unidGrafico = "dadosQtd";
-          this.basicData.datasets[2].data = Object.values(data["prodDisp"]);
-          this.basicData.datasets[3].data = Object.values(data["prodMeta"]);
-        }
-
-
-        this.basicData.labels = Object.keys(data[unidGrafico]);
-
-        if (this.unidade === 'Disp') {
-
-          this.basicData.datasets[0].data = Object.values(data['Disp']);
-
-
-
-          //this.basicData.datasets[1].hidden = true
-          //this.basicData.datasets[2].hidden = true
-          //this.basicData.datasets[3].hidden = true
-
-          //this.$refs.graficoProd.refresh();
-
-          this.basicData.datasets[1].data = []
-          this.basicData.datasets[2].data = []
-          this.basicData.datasets[3].data = []
-
-          this.basicData.datasets[4].data = Object.values(data['tempoDisp']);
-
-        } else {
-
-          this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
-          //this.basicData.datasets[4].hidden = true
-          //this.basicData.datasets[5].hidden = true
-
-          //this.$refs.graficoProd.refresh();
-
-        }
-
-
-        setTimeout(this.infoGraf, 3000);
-
-        this.verificaMeta();
-
-        setTimeout(() => {
-
-          // Ajusta altura do gráfico
-          this.ajustaAltura();
-
-          this.aguarde = false;
-
-        }, 250)
-        //})
-
-        this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
-      }
-
+    fAguarde(valor) {
+      this.aguarde = valor
     },
 
     confTable(variavel) {
       return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
     },
 
-
-
-    verificaMeta() {
-      let indexMeta = 0
-
-      if (this.periodo !== "media" || !this.metaGraf > 0) {
-        this.basicData.datasets[1].data = []
-        indexMeta = 3
-
-      } else {
-        this.basicData.datasets[2].data = []
-        this.basicData.datasets[3].data = []
-        indexMeta = 1
-      }
-
-
-      return Promise.resolve(
-
-        //Object.values(data["media"]).forEach((element, index) => {
-
-        this.basicData.datasets[0].data.forEach((element, index) => {
-
-
-          this.periodo === "media" ? this.basicData.datasets[1].data[index] = this.metaGraf : this.basicData.datasets[1].data[index] = []
-
-          if (!parseFloat(this.basicData.datasets[indexMeta].data[index]) > 0) {
-            this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-            this.basicData.datasets[0].borderColor[index] = "#42A5F5";
-            //this.basicData.datasets[1].data = []
-          } else {
-            //this.basicData.datasets[2].data = []
-            //this.basicData.datasets[3].data = []
-            if (parseFloat(element) >= parseFloat(this.basicData.datasets[indexMeta].data[index])) {
-              this.basicData.datasets[0].backgroundColor[index] = this.corOK;
-              this.basicData.datasets[0].borderColor[index] = this.corOK;
-            } else {
-              this.basicData.datasets[0].backgroundColor[index] = this.corNOK;
-              this.basicData.datasets[0].borderColor[index] = this.corNOK;
-            }
-
-          }
-        })
-      )
-
-    },
-    diaSemana(data) {
-      if (data.substr(6, 2) > 0) {
-        let aa = data.substr(2, 2);
-        let mm = data.substr(4, 2);
-        let dd = data.substr(6, 2);
-        let hh = data.substr(8, 2) !== "" ? data.substr(8, 2) + ":00" : "00:00:00";
-        //console.log("valor: ", this.getLabelForValue(value), " - index: ", this.getLabelForValue(index), " - ticks: ", this.getLabelForValue(ticks))
-        return new Date(`${mm}-${dd}-${aa} ${hh}`).getDay();
-      } else {
-        return "";
-      }
-    },
 
     inicializaMenu() {
 
@@ -909,15 +458,6 @@ export default {
       this.listaFCCs = this.listaCCs
 
     },
-
-    ajustaAltura() {
-
-      // Ajusta altura do gráfico
-      this.larguraGraf = document.getElementById("graficoRel").clientWidth;
-      this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
-    },
-
-
     atualizaFCTs() {
 
       try {
@@ -1029,28 +569,14 @@ export default {
     },
 
 
-    calculaTotal(dados, labels) {
-      let tamanhoDados = this.basicData.datasets[0].data.length
+    calculaTotal(dadosGraf) {
+      console.log("DADOS RECEBIDOS DO GRAFICO: ", dadosGraf)
 
-      //for (const [index, label] of labels.entries()) {
+      let tamanhoDados = dadosGraf.labels.length
 
-      labels.forEach((label, index) => {
-        if (this.diaSemana(label) === 6) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].backgroundColor[index] = "yellow"
-          this.basicData.datasets[0].borderWidth[index] = 5
-        } else if (this.diaSemana(label) === 0) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].backgroundColor[index] = "coral"
-          this.basicData.datasets[0].borderWidth[index] = 5
-        } else {
-          this.basicData.datasets[0].borderWidth[index] = 0
-        }
-
-
-        // VALORES TOTAIS
-
-        this.totProdEfet = this.basicData.datasets[0].data.reduce(
+      // VALORES TOTAIS
+      function reduceArray(dados) {
+        return dados.reduce(
           (acc, index) => {
             acc = acc || 0.0
             if (index > 0) {
@@ -1060,46 +586,43 @@ export default {
           },
           0.0
         )
-
-        this.totCapDisponivel = this.basicData.datasets[2].data.reduce(
-          (acc, index) => acc = acc + index,
-          0.0
-        )
-
-        this.totMeta = this.basicData.datasets[3].data.reduce(
-          (acc, index) => acc = acc + index,
-          0.0
-        )
-
-        this.totDifProd = this.totProdEfet - this.totMeta
-
-        this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
-
-
-        // VALORES MÉDIOS
-
-        this.medProdEfet = parseFloat((
-          this.totProdEfet / parseInt(tamanhoDados)
-        ).toFixed(1));
-
-
-        // VALORES ULTIMA BARRA
-
-        this.ultCapDisponivel = this.basicData.datasets[2].data[tamanhoDados - 1]
-
-        this.ultProdEfet = this.basicData.datasets[0].data[tamanhoDados - 1]
-
-        this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
-
-        this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
-
-        this.ultDifProd = this.ultProdEfet - this.ultMeta
-
       }
 
-      )
+      this.totProdEfet = reduceArray(dadosGraf.datasets[0].data)
+
+
+      this.totCapDisponivel = reduceArray(dadosGraf.datasets[1].data)
+
+      this.totMeta = reduceArray(dadosGraf.datasets[2].data);
+
+      this.totDifProd = this.totProdEfet - this.totMeta
+
+      this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
+
+
+      // VALORES MÉDIOS
+
+      this.medProdEfet = parseFloat((
+        this.totProdEfet / parseInt(tamanhoDados)
+      ).toFixed(1));
+
+
+      // VALORES ULTIMA BARRA
+
+      this.ultCapDisponivel = dadosGraf.datasets[1].data[tamanhoDados - 1]
+
+      this.ultProdEfet = dadosGraf.datasets[0].data[tamanhoDados - 1]
+
+      this.ultMeta = dadosGraf.datasets[2].data[tamanhoDados - 1]
+
+      this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
+
+      this.ultDifProd = this.ultProdEfet - this.ultMeta
 
     },
+
+
+
 
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
@@ -1157,10 +680,6 @@ export default {
           this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
           this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
-          this.options.scales.Prod.title.text = this.sufixo;
-
-          this.basicData.labels = []; // Apaga labels atuais
-          this.basicData.datasets[0].data = []; // Apaga datasets atuais
           this.msg =
             "Solicitando atualização dos dados para os CTs selecionados... "
           this.$socket.emit("solicitaDados", {
@@ -1238,7 +757,7 @@ export default {
       return [" " + unidTotaliz, " " + unidTotaliz + "/" + perTotaliz]
     },
   },
-};
+}
 </script>
 
 <style scoped>

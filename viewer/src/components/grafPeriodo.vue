@@ -1,28 +1,14 @@
 <template>
   <div class="painel">
 
-    <!-- ************************************ área do gráfico ****************************************************-->
+    <!-- ************************************ área do gráfico **************************************************** -->
     <div id="graficoRel" class="grafico">
-      Grafico Produção
       <div v-if="dadosRecebidos">
         <!-- GRÁFICO -->
         <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
           :data="basicData" :options="options" @select="excluiBarra($event)" />
       </div>
 
-      <!-- Aguardando... -->
-      <div v-if="!dadosRecebidos">
-        <p>{{ msg }}</p>
-
-        <span>
-          <ProgressSpinner v-if="aguarde" style="
-          :width: larguraGraf;
-          :height: alturaGraf;
-          position: relative;
-          top: 15vh;
-        " strokeWidth="6" animationDuration=".8s" />
-        </span>
-      </div>
     </div>
 
   </div>
@@ -41,7 +27,8 @@ export default {
   watch: {
     dadosGraf(data) {
 
-      
+
+      this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(data)
 
     }
@@ -52,6 +39,9 @@ export default {
     id: String, // Número do id para constrole do receptor dos dados
     metaGraf: Number, // Valor da meta para status no gráfico
     dadosGraf: Object, // Dados para serem usados no gráfico
+    dadosRecebidos: Boolean, // Dados recebidos do servidor
+    aguarde: Boolean, // Sinalização para aguardar respota dos dados
+    sufixo: String, // Sufixo para a escala do gráfico
   },
 
   data() {
@@ -64,9 +54,7 @@ export default {
       corOK: "#42A500",
       corNOK: "#ff0000",
 
-      dadosRecebidos: false,
       msg: "",
-      aguarde: "",
 
       basicData: {
         labels: ["1"],
@@ -83,7 +71,7 @@ export default {
           {
             type: "line",
             label: "Prod Disp",
-            borderColor: "rgb(255, 103, 47)",
+            borderColor: "rgb(144, 238, 144)",
             borderWidth: 3,
             radius: 2,
             pointStyle: 'line',
@@ -192,23 +180,31 @@ export default {
 
   methods: {
 
+    inicializaGraf() {
+
+
+      //this.basicData.labels = []; // Apaga labels atuais
+      //this.basicData.datasets[0].data = []; // Apaga datasets atuais
+
+    },
+
     compilaDadosGraf(data) {
 
       if (data.dadosQtd === []) {
 
-        this.aguarde = false;
-        this.dadosRecebidos = true;
+        this.$emit('fAguarde', false)
+        this.$emit('fDadosRecebidos', true)
         alert("Nenhum dado retornado!")
 
       } else if (data.parametros.id === this.id) {
 
-        this.dadosRecebidos = true;
+        this.$parent.dadosRecebidos = true;
 
-          this.mostraTotal = true;
-          
-          this.basicData.datasets[0].data = Object.values(data["dadosQtd"]);
-          this.basicData.datasets[1].data = Object.values(data["prodDisp"]);
-          this.basicData.datasets[2].data = Object.values(data["prodMeta"]);
+        this.mostraTotal = true;
+
+        this.basicData.datasets[0].data = Object.values(data["dadosQtd"]);
+        this.basicData.datasets[1].data = Object.values(data["prodDisp"]);
+        this.basicData.datasets[2].data = Object.values(data["prodMeta"]);
 
 
         this.basicData.labels = Object.keys(data["dadosQtd"]);
@@ -221,12 +217,16 @@ export default {
           // Ajusta altura do gráfico
           this.ajustaAltura();
 
-          this.aguarde = false;
+          this.$emit('fAguarde', false)
+          this.$emit('fDadosRecebidos', true)
 
         }, 250)
         //})
 
-        this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
+        this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+
+        
+        this.$emit('calculaTotal', this.basicData)
       }
 
     },
@@ -284,7 +284,7 @@ export default {
 
 
 
-    calculaTotal(dados, labels) {
+    verifFDS(dados, labels) {
 
       //for (const [index, label] of labels.entries()) {
 
@@ -303,7 +303,7 @@ export default {
 
       }
       )
-      
+
 
     },
 
@@ -314,40 +314,17 @@ export default {
 
       function excluiItem(dados) {
         return dados.reduce(function (
-        acc,
-        element,
-        index
-      ) {
-        acc = acc || [];
-        if (index != e.element.index) {
-          acc.push(element);
-        }
-        return acc;
-      }, []);
+          acc,
+          element,
+          index
+        ) {
+          acc = acc || [];
+          if (index != e.element.index) {
+            acc.push(element);
+          }
+          return acc;
+        }, []);
       }
-
-      /*
-      var dados = this.basicData.datasets[0].data.reduce(function (
-        acc,
-        element,
-        index
-      ) {
-        acc = acc || [];
-        if (index != e.element.index) {
-          acc.push(element);
-        }
-        return acc;
-      }, []);
-
-
-      var labels = this.basicData.labels.reduce(function (acc, element, index) {
-        acc = acc || [];
-        if (index != e.element.index) {
-          acc.push(element);
-        }
-        return acc;
-      }, []);
-*/
 
       this.basicData.datasets[0].data = excluiItem(this.basicData.datasets[0].data);
       this.basicData.datasets[1].data = excluiItem(this.basicData.datasets[1].data);
@@ -356,7 +333,9 @@ export default {
 
       this.verificaMeta();
 
-      this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
+      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      
+      this.$emit('calculaTotal', this.basicData)
 
     },
 
@@ -379,6 +358,4 @@ export default {
   padding: 0%;
   margin-bottom: -5vh;
 }
-
-
 </style>
