@@ -41,11 +41,8 @@ export default {
   watch: {
     dadosGraf(data) {
 
-      console.log("dados recebidos:", data)
-
-      this.dadosRecebidos = true
       
-      this.compilaDadosGraf(this.dadosGraf)
+      this.compilaDadosGraf(data)
 
     }
 
@@ -75,33 +72,17 @@ export default {
         labels: ["1"],
         datasets: [
           {
-            yAxisID: 'Prod',
             type: "bar",
             label: "Produção",
             backgroundColor: [],
             borderColor: [],
             borderWidth: [],
             data: [0],
-            order: 4,
-            stack: 'Stack 0',
+            order: 2,
           },
           {
-            yAxisID: 'Meta',
             type: "line",
-            label: "Meta",
-            borderColor: "rgb(47, 103, 255)",
-            borderWidth: 2,
-            radius: 0,
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 1
-          },
-          {
-            yAxisID: 'CT',
-            type: "line",
-            label: "Carga Total",
+            label: "Prod Disp",
             borderColor: "rgb(255, 103, 47)",
             borderWidth: 3,
             radius: 2,
@@ -110,11 +91,9 @@ export default {
             datalabels: {
               display: false,
             },
-            order: 2,
-            stack: 'Stack 1',
+            order: 0,
           },
           {
-            yAxisID: 'MP',
             type: "line",
             label: "Meta Período",
             borderColor: "rgb(47, 103, 255)",
@@ -125,8 +104,7 @@ export default {
             datalabels: {
               display: false,
             },
-            order: 3,
-            stack: 'Stack 2',
+            order: 1,
           },
         ],
       },
@@ -160,9 +138,7 @@ export default {
               },
             },
           },
-          Prod: {
-            stacked: true,
-            position: 'left',
+          y: {
             title: {
               display: true,
               text: "produção",
@@ -171,42 +147,6 @@ export default {
                 size: 14,
               },
             },
-          Meta: {
-            stacked: true,
-            position: 'left',
-            title: {
-              display: true,
-              text: "produção",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          },
-          CT: {
-            stacked: true,
-            position: 'left',
-            title: {
-              display: true,
-              text: "produção",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          },
-          MP: {
-            stacked: true,
-            position: 'left',
-            title: {
-              display: true,
-              text: "produção",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          }
           },
         },
 
@@ -242,23 +182,12 @@ export default {
             display: false,
           },
           legend: {
-            display: false,
+            display: true,
           },
         },
       },
     };
   },
-
-  // sockets: {
-  //   resConsDB(data) {
-
-  //     this.respostaBD = data
-
-  //     this.compilaDadosGraf(this.respostaBD)
-
-  //   },
-
-  // },
 
 
   methods: {
@@ -276,8 +205,10 @@ export default {
         this.dadosRecebidos = true;
 
           this.mostraTotal = true;
-          this.basicData.datasets[2].data = Object.values(data["cargaTotal"]);
-          this.basicData.datasets[3].data = Object.values(data["meta"]);
+          
+          this.basicData.datasets[0].data = Object.values(data["dadosQtd"]);
+          this.basicData.datasets[1].data = Object.values(data["prodDisp"]);
+          this.basicData.datasets[2].data = Object.values(data["prodMeta"]);
 
 
         this.basicData.labels = Object.keys(data["dadosQtd"]);
@@ -310,21 +241,14 @@ export default {
 
       return Promise.resolve(
 
-        //Object.values(data["media"]).forEach((element, index) => {
 
         this.basicData.datasets[0].data.forEach((element, index) => {
 
-
-          this.periodo === "media" ? this.basicData.datasets[1].data[index] = this.metaGraf : this.basicData.datasets[1].data[index] = []
-
-          if (!parseFloat(this.basicData.datasets[1].data[index]) > 0) {
+          if (!parseFloat(this.basicData.datasets[2].data[index]) > 0) {
             this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
             this.basicData.datasets[0].borderColor[index] = "#42A5F5";
-            //this.basicData.datasets[1].data = []
           } else {
-            //this.basicData.datasets[2].data = []
-            //this.basicData.datasets[3].data = []
-            if (parseFloat(element) >= parseFloat(this.basicData.datasets[1].data[index])) {
+            if (parseFloat(element) >= parseFloat(this.basicData.datasets[2].data[index])) {
               this.basicData.datasets[0].backgroundColor[index] = this.corOK;
               this.basicData.datasets[0].borderColor[index] = this.corOK;
             } else {
@@ -378,14 +302,31 @@ export default {
         }
 
       }
-
       )
+      
 
     },
 
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
 
+
+
+      function excluiItem(dados) {
+        return dados.reduce(function (
+        acc,
+        element,
+        index
+      ) {
+        acc = acc || [];
+        if (index != e.element.index) {
+          acc.push(element);
+        }
+        return acc;
+      }, []);
+      }
+
+      /*
       var dados = this.basicData.datasets[0].data.reduce(function (
         acc,
         element,
@@ -398,6 +339,7 @@ export default {
         return acc;
       }, []);
 
+
       var labels = this.basicData.labels.reduce(function (acc, element, index) {
         acc = acc || [];
         if (index != e.element.index) {
@@ -405,13 +347,16 @@ export default {
         }
         return acc;
       }, []);
+*/
 
-      this.basicData.datasets[0].data = dados;
-      this.basicData.labels = labels;
+      this.basicData.datasets[0].data = excluiItem(this.basicData.datasets[0].data);
+      this.basicData.datasets[1].data = excluiItem(this.basicData.datasets[1].data);
+      this.basicData.datasets[2].data = excluiItem(this.basicData.datasets[2].data);
+      this.basicData.labels = excluiItem(this.basicData.labels);
 
       this.verificaMeta();
 
-      this.calculaTotal(dados, labels);
+      this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
 
     },
 

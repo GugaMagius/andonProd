@@ -90,7 +90,7 @@ async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
         Promise.all([promiseQtd, promiseHt, promiseCt]).then((res) => {
             if (res[0]==={} || res[0] === undefined || res[0] === null){
                 console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
-                ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'cargaTotal': res[2],'parametros': parametros })
+                ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'tempoDisp': res[2],'parametros': parametros })
             } else {
                 calculaMedia(res[0], res[1], res[2], parametros)
             }
@@ -105,28 +105,28 @@ module.exports.solicitaBD = solicitaBD
 
 
 // Função para calcular a média
-async function calculaMedia(Qtd, tempo, cargaTotalRec, parametros) {
+async function calculaMedia(Qtd, tempoTrab, tempoDisp, parametros) {
     let media = {}
-    let cargaTotal = {}
-    let meta = {}
-    let RO = {}
+    let prodDisp = {}
+    let prodMeta = {}
+    let Disp = {}
 
     for (const [index, data] of Object.keys(Qtd).entries()) {
-        //console.log("valor: ", Qtd[data], " - tempo: ", tempo[data])
+        //console.log("valor: ", Qtd[data], " - tempoTrab: ", tempoTrab[data])
         media[data] = media[data] || 0
-        cargaTotal[data] = cargaTotal[data] || 0
-        meta[data] = meta[data] || 0
-        RO[data] = RO[data] || 0
+        prodDisp[data] = prodDisp[data] || 0
+        prodMeta[data] = prodMeta[data] || 0
+        Disp[data] = Disp[data] || 0
 
 
-        media[data] = parseFloat((Qtd[data] / tempo[data]).toFixed(1))
-        cargaTotal[data] = parseFloat((cargaTotalRec[data] * parametros.meta).toFixed(1))
-        meta[data] = parseFloat((tempo[data] * parametros.meta).toFixed(1))
-        RO[data] = parseFloat((tempo[data] / cargaTotalRec[data] * 100)).toFixed(1)
-        //cargaTotal = 
+        media[data] = parseFloat((Qtd[data] / tempoTrab[data]).toFixed(1))
+        prodDisp[data] = parseFloat((tempoDisp[data] * parametros.meta).toFixed(1))
+        prodMeta[data] = parseFloat((tempoTrab[data] * parametros.meta).toFixed(1))
+        Disp[data] = parseFloat((tempoTrab[data] / tempoDisp[data] * 100)).toFixed(1)
+        //tempoDisp = 
 
         if (index >= Object.keys(Qtd).length - 1) {
-            ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'cargaTotal': cargaTotal, 'tempoCarga': cargaTotalRec, 'RO': RO, 'horaMaquina': tempo, 'meta': meta,  'parametros': parametros })
+            ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'prodDisp': prodDisp, 'tempoDisp': tempoDisp, 'Disp': Disp, 'tempoTrab': tempoTrab, 'prodMeta': prodMeta,  'parametros': parametros })
         }
 
     }

@@ -143,7 +143,7 @@
                 <!-- <div v-if="metaGraf !== 0 && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{
                 metaGraf
                 }} {{ sufixo }}</div> -->
-                Tempo Disp: {{tempoCarga}}
+                Tempo Disp: {{tempoDisponivel}}
                 Tempo Trab: {{tempoTrabalhado}}
 
               </div>
@@ -350,7 +350,7 @@ export default {
 
   data() {
     return {
-      tempoCarga: 0.0,
+      tempoDisponivel: 0.0,
       tempoTrabalhado: 0.0,
 
       respostaBD: {}, // Resposta do Banco de dados para consulta
@@ -744,13 +744,13 @@ export default {
 
     compilaDadosGraf(data) {
 
-      this.tempoTrabalhado = Object.values(data.horaMaquina).reduce(
+      this.tempoTrabalhado = Object.values(data.tempoTrab).reduce(
         (acc, el) => {
           acc = acc + parseFloat(el);
           return acc
         }, 0.0)
 
-      this.tempoCarga = Object.values(data.tempoCarga).reduce(
+      this.tempoDisponivel = Object.values(data.tempoDisp).reduce(
         (acc, el) => {
           acc = acc + parseFloat(el);
           return acc
@@ -775,8 +775,8 @@ export default {
         } else {
           this.mostraTotal = true;
           unidGrafico = "dadosQtd";
-          this.basicData.datasets[2].data = Object.values(data["cargaTotal"]);
-          this.basicData.datasets[3].data = Object.values(data["meta"]);
+          this.basicData.datasets[2].data = Object.values(data["prodDisp"]);
+          this.basicData.datasets[3].data = Object.values(data["prodMeta"]);
         }
 
 
@@ -784,7 +784,7 @@ export default {
 
         if (this.unidade === 'Disp') {
 
-          this.basicData.datasets[0].data = Object.values(data['horaMaquina']);
+          this.basicData.datasets[0].data = Object.values(data['Disp']);
 
 
 
@@ -798,7 +798,7 @@ export default {
           this.basicData.datasets[2].data = []
           this.basicData.datasets[3].data = []
 
-          this.basicData.datasets[4].data = Object.values(data['tempoCarga']);
+          this.basicData.datasets[4].data = Object.values(data['tempoDisp']);
 
         } else {
 

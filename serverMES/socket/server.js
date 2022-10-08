@@ -202,7 +202,7 @@ try {
 
             let queryQtd = ''; // Query para solicitar quantidade produzida
             let queryHt = ''; // Query para solicitar horas trabalhadas
-            let queryCt= ''; // Query para solicitar Carga Total de horas da máquina
+            let queryHd= ''; // Query para solicitar horas Disponíveis
 
             async function sectorSelect(parametros) {
 
@@ -221,8 +221,8 @@ try {
                 } else {
                     queryQtd = "set dateformat ymd select me.DtMov, me.DtTimeStamp as hora, me.Shift, me.MovQty, me.UndoIDMovEv, me.RelatedIDMovEv, p.Code from TBLMovEv me inner join TBLProduct p on (p.IDProduct = me.IDProduct) where me.IDResource IN(" + parametros.CT + ") and DtMov >= '" + parametros.dtInicio + "' and DtMov <= '" + parametros.dtFim + "'"
                     queryHt = "set dateformat ymd select pev.DtProd as DtMov, rsev.ShiftDtStart as hora, rsev.ShiftDtStart, pev.IDResource,TBLResource.Code,TBLResource.Nickname, rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
-                    queryCt = "set dateformat ymd select pev.DtProd as DtMov, rsev.ShiftDtStart as hora, rsev.ShiftDtStart, pev.IDResource,TBLResource.Code,TBLResource.Nickname, rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification!=1 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
-                    await Functions.solicitaBD(queryQtd, queryHt, queryCt, parametros)
+                    queryHd = "set dateformat ymd select pev.DtProd as DtMov, rsev.ShiftDtStart as hora, rsev.ShiftDtStart, pev.IDResource,TBLResource.Code,TBLResource.Nickname, rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification!=1 and rsev.RSClassification!=2 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
+                    await Functions.solicitaBD(queryQtd, queryHt, queryHd, parametros)
                 }
 
             }
