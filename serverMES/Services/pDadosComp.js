@@ -69,7 +69,7 @@ async function dadosComp(respBD, ht, list) {
 
                             //Enquanto hora temporária for menor do que a hora fim
                             while (moment(horaTmp).isSameOrBefore(horaHtFim)) {
-                                let difHora = 0
+                                let difHora = 0.0
                                 
                                 //console.log(horaFimArred)
 
@@ -90,15 +90,18 @@ async function dadosComp(respBD, ht, list) {
 
                             }
 
-     
                         } else {
                             let difHora = parseFloat(moment(horaHtFim, formatoCompleto).diff(moment(horaHtInicio, formatoCompleto), "seconds")) / 60 / 60
 
                             acc[dataIndex] += difHora;
 
-
-
                         }
+
+
+                        
+                        let accTemp = acc[dataIndex].toFixed(1)
+
+                        acc[dataIndex] = parseFloat(accTemp)
 
 
                     }

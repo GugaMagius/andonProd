@@ -1,6 +1,5 @@
 <template>
   <div class="painel">
-{{metaGraf}}
     <!-- ************************************ área do gráfico **************************************************** -->
     <div id="graficoRel" class="grafico">
       <div v-if="dadosRecebidos">
@@ -24,7 +23,6 @@ export default {
 
 
     if (this.dadosGraf.dadosQtd) {
-      console.log("Dados atuais: ", this.dadosGraf)
 
       this.compilaDadosGraf(this.dadosGraf)
     }
@@ -32,6 +30,7 @@ export default {
   },
 
   watch: {
+    
     dadosGraf(data) {
 
       this.compilaDadosGraf(data)
@@ -72,6 +71,9 @@ export default {
             borderColor: [],
             borderWidth: [],
             data: [0],
+            datalabels: {
+              display: false,
+            },
             order: 2,
             stack: 'Stack 0',
           },
@@ -79,10 +81,13 @@ export default {
             yAxisID: 'horas',
             type: "bar",
             label: "Tempo Disp.",
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: [],
+            borderColor: '#42A5F5', //'rgb(124, 255, 0)',
+            borderWidth: 3,
+            fill: false,
             data: [0],
+            datalabels: {
+              display: false,
+            },
             order: 3,
             stack: 'Stack 0',
           },
@@ -90,7 +95,7 @@ export default {
             yAxisID: 'perc',
             type: "line",
             label: "Meta",
-            borderColor: "rgb(144, 238, 144)",
+            borderColor: "rgb(47, 103, 255)",
             borderWidth: 3,
             radius: 2,
             pointStyle: 'line',
@@ -105,13 +110,13 @@ export default {
             yAxisID: 'perc',
             type: "line",
             label: "Disponibilidade",
-            borderColor: "rgb(47, 103, 255)",
+            borderColor: "rgb(124, 255, 0)",
             borderWidth: 3,
             radius: 2,
             pointStyle: 'line',
             data: [0],
             datalabels: {
-              display: false,
+              display: true,
             },
             order: 1,
             stack: 'Stack 2',
@@ -301,7 +306,7 @@ export default {
     ajustaAltura() {
 
       // Ajusta altura do gráfico
-      this.larguraGraf = document.getElementById("graficoRel").clientWidth;
+      this.larguraGraf = document.getElementById("graficoRel").clientWidth * 0.97;
       this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
     },
 

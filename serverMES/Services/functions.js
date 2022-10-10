@@ -92,6 +92,8 @@ async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
                 console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
                 ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'tempoDisp': res[2],'parametros': parametros })
             } else {
+
+                console.log("Enviando valores para cacular Média: ", res[0])
                 calculaMedia(res[0], res[1], res[2], parametros)
             }
 

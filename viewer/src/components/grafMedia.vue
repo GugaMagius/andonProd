@@ -22,7 +22,7 @@ export default {
 
     setTimeout(this.ajustaAltura(), 250)
 
-    if (this.dadosGraf !== {} && this.dadosGraf !== undefined && this.dadosGraf !== null) {
+    if (this.dadosGraf.media !== undefined) {
 
       this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(this.dadosGraf)
@@ -247,8 +247,8 @@ export default {
     ajustaAltura() {
 
       // Ajusta altura do gráfico
-      this.larguraGraf = document.getElementById("graficoRel").clientWidth;
-      this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
+      this.larguraGraf = document.getElementById("graficoRel").clientWidth * 0.97;
+      this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 60) * 1;
     },
 
 

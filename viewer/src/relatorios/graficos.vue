@@ -115,10 +115,6 @@
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
                     </div>
-                    <div class="checkbox inline" v-if="periodo === 'total'">
-                      <RadioButton id="disp" name="unid" value="Disp" v-model="unidade" />
-                      <label for="disp">Disp.</label>
-                    </div>
                   </div>
 
                   <br>
@@ -130,8 +126,12 @@
                   </div>
                   <div class="checkbox inline">
                     <RadioButton id="media" name="unid" value="media" v-model="periodo" />
-                    <label for="media">Hora-máquina</label>
+                    <label for="media">hora-maq.</label>
                   </div>
+                    <div class="checkbox inline">
+                      <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
+                      <label for="disp">Disp.</label>
+                    </div>
 
                 </div>
 
@@ -290,15 +290,9 @@ export default {
 
     },
 
-    unidade(valor) {
-
-      valor === "Disp" ? this.$router.push("/graficos/disp") : this.periodo === "media" ? this.$router.push("/graficos/media") : this.$router.push("/graficos/periodo")
-
-
-    },
     periodo(valor) {
 
-      valor === "media" ? this.$router.push("/graficos/media") : this.unidade === "Disp" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/periodo")
+      valor === "media" ? this.$router.push("/graficos/media") : valor === "Disp" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/periodo")
 
       if (valor === "media" && this.unidade === "Disp") {
         this.unidade = "m2"

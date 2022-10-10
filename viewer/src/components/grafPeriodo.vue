@@ -272,7 +272,7 @@ export default {
     ajustaAltura() {
 
       // Ajusta altura do gráfico
-      this.larguraGraf = document.getElementById("graficoRel").clientWidth;
+      this.larguraGraf = document.getElementById("graficoRel").clientWidth * 0.97;
       this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
     },
 
