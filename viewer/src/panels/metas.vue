@@ -80,6 +80,14 @@
             {{slotProps.data.idresource==="ecoat" ? 'bast/h' : 'm2' }}
             </template>
           </Column>
+          <Column field="metaD" header="Disponibilidade (%)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus /><div>{{ data.idresource==="ecoat" ? '' : '%' }}</div>
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaD}}
+            {{slotProps.data.idresource==="ecoat" ? '' : '%' }}
+            </template>
+          </Column>
           <!--
           <Column field="altName" header="Nome Alternativo" style="min-width:15%" :sortable="true">
             <template #editor="{ data, field }">
@@ -107,6 +115,14 @@
             </template>
             <template #body="slotProps" > {{slotProps.data.metaS}}
             {{slotProps.data.idresource==="ecoat" ? 'bast/h' : 'm2' }}
+            </template>
+          </Column>
+          <Column field="metaD" header="Disponibilidade (%)" style="min-width:15%" :sortable="true">
+            <template #editor="{ data, field }">
+              <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="0" :maxFractionDigits="1" locale="en-IN" autofocus /><div>{{ data.idresource==="ecoat" ? '' : '%' }}</div>
+            </template>
+            <template #body="slotProps" > {{slotProps.data.metaD}}
+            {{slotProps.data.idresource==="ecoat" ? '' : '%' }}
             </template>
           </Column>
 

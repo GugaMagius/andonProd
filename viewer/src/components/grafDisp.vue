@@ -41,7 +41,7 @@ export default {
 
   props: {
     id: String, // Número do id para constrole do receptor dos dados
-    metaGraf: Number, // Valor da meta para status no gráfico
+    metas: Number, // Valor da meta para status no gráfico
     dadosGraf: Object, // Dados para serem usados no gráfico
     dadosRecebidos: Boolean, // Dados recebidos do servidor
     aguarde: Boolean, // Sinalização para aguardar respota dos dados
@@ -270,7 +270,7 @@ export default {
         this.basicData.datasets[0].data.forEach((element, index) => {
 
 
-          this.basicData.datasets[2].data[index] = this.metaGraf
+          this.basicData.datasets[2].data[index] = this.metas.metaD
 
           if (!parseFloat(this.basicData.datasets[2].data[index]) > 0) {
             this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";

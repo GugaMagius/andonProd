@@ -145,7 +145,7 @@ try {
             storage.setLS(arquivo, dados)
         })
 
-
+        
         // Leitura das configurações de meta
         function leituraConfig() {
             let respConfig = {}

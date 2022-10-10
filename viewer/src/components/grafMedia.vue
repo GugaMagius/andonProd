@@ -1,6 +1,5 @@
 <template>
   <div class="painel">
-
     <!-- ************************************ área do gráfico **************************************************** -->
     <div id="graficoRel" class="grafico">
       <div v-if="dadosRecebidos">
@@ -36,17 +35,24 @@ export default {
       this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(data)
 
+    },
+
+    sufixo(valor) {
+      this.options.scales.y.title.text = valor;
+      this.compilaDadosGraf(this.dadosGraf)
+      this.$refs.graficoProd.refresh();
     }
 
   },
 
   props: {
     id: String, // Número do id para constrole do receptor dos dados
-    metaGraf: Number, // Valor da meta para status no gráfico
+    metas: Number, // Valor da meta para status no gráfico
     dadosGraf: Object, // Dados para serem usados no gráfico
     dadosRecebidos: Boolean, // Dados recebidos do servidor
     aguarde: Boolean, // Sinalização para aguardar respota dos dados
     sufixo: String, // Sufixo para a escala do gráfico
+    unidade: String, // Unidade selecionada para o gráfico
   },
 
   data() {
@@ -167,10 +173,10 @@ export default {
 
       this.mostraTotal = true;
 
-      this.basicData.datasets[0].data = Object.values(data["media"]);
+      this.basicData.datasets[0].data = Object.values(data[`media${this.unidade}`]);
 
 
-      this.basicData.labels = Object.keys(data["dadosQtd"]);
+      this.basicData.labels = Object.keys(data[`dadosQtd${this.unidade}`]);
 
 
       this.verificaMeta();
@@ -210,7 +216,7 @@ export default {
 
         this.basicData.datasets[0].data.forEach((element, index) => {
 
-          this.basicData.datasets[1].data[index] = this.metaGraf
+          this.basicData.datasets[1].data[index] = this.metas[this.unidade === 'kg' ? 'metaP' : 'metaS']
 
           if (!parseFloat(this.basicData.datasets[1].data[index]) > 0) {
             this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";

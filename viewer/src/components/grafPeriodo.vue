@@ -21,7 +21,6 @@ export default {
   mounted() {
 
     setTimeout(this.ajustaAltura(), 250)
-
     
     if (this.dadosGraf.dadosQtd) {
       console.log("Dados atuais: ", this.dadosGraf)
@@ -45,7 +44,7 @@ export default {
 
   props: {
     id: String, // Número do id para constrole do receptor dos dados
-    metaGraf: Number, // Valor da meta para status no gráfico
+    metas: Number, // Valor da meta para status no gráfico
     dadosGraf: Object, // Dados para serem usados no gráfico
     dadosRecebidos: Boolean, // Dados recebidos do servidor
     aguarde: Boolean, // Sinalização para aguardar respota dos dados
@@ -54,7 +53,6 @@ export default {
 
   data() {
     return {
-      metaGrafico: 0,
 
       larguraGraf: '',
       alturaGraf: '',

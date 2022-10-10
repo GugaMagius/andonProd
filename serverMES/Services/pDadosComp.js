@@ -6,7 +6,7 @@ const moment = require('moment')
 
 const calcHorarios = require('../Services/calcHorarios')
 
-async function dadosComp(respBD, ht, list) {
+async function dadosComp(respBD, ht, list, unid) {
 
     console.log("Iniciando Compilação dos dados recebidos! Horas trabalhadas? ", ht, "Data-hora: ", new Date())
 
@@ -124,13 +124,13 @@ async function dadosComp(respBD, ht, list) {
                 }
 
                 try {
-                    if (list[index.code][respBD[1].unidade] > 0) {
+                    if (list[index.code][unid] > 0) {
 
-                        acc[dataIndex] = (parseFloat(acc[dataIndex]) + parseFloat(quantidade * parseFloat(list[index.code][respBD[1].unidade]))).toFixed(1)
+                        acc[dataIndex] = (parseFloat(acc[dataIndex]) + parseFloat(quantidade * parseFloat(list[index.code][unid]))).toFixed(1)
 
 
                     } else {
-                        console.log(" ITEM NÃO CADASTRADO: ", index.code, " - Valor: ", list[index.code][respBD[1].unidade], " - Unidade: ", respBD[1].unidade)
+                        console.log(" ITEM NÃO CADASTRADO: ", index.code, " - Valor: ", list[index.code][unid], " - Unidade: ", unid)
                     }
 
                 } catch (err) {

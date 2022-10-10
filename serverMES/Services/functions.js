@@ -32,74 +32,96 @@ module.exports.reduceDatasul = reduceDatasul
 // Função para solicitar dados do banco de dados
 async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
 
-        let promiseQtd = new Promise(
-            async function (resolve, reject) {
+    let promiseQtdM2 = new Promise(
+        async function (resolve, reject) {
 
-                await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), parametros).then(res => {
-                    if (res[0]==={} || res[0] === undefined || res[0] === null){
-                        console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryQtd)
-                        resolve("vazia")}
-                    pool.exec('dadosComp', [res, false, main.eItemsList(), config]).then(
-                        resPool => {
-                            resolve(resPool)
-                        }
-                    )
-                    .catch(err=>{reject(err)})
-                })
-
-            }
-        )
-
-        let promiseHt = new Promise(
-            function (resolve, reject) {
-
-                apiZeno.getDataSQL(queryHt, main.seletorConexaoBD(), parametros).then(res => {
-                    if (res[0]==={} || res[0] === undefined || res[0] === null){
-                        console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHt)
-                        resolve("vazia")}
-                    pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
-                        resPool => {
-                            resolve(resPool)
-                        }
-                    )
-                    .catch(err=>{reject(err)})
-                })
-
-            }
-        )
-
-        let promiseCt = new Promise(
-            function (resolve, reject) {
-
-                apiZeno.getDataSQL(queryCt, main.seletorConexaoBD(), parametros).then(res => {
-                    if (res[0]==={} || res[0] === undefined || res[0] === null){
-                        console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryCt)
-                        resolve("vazia")}
-                    pool.exec('dadosComp', [res, true, main.eItemsList(), config]).then(
-                        resPool => {
-                            resolve(resPool)
-                        }
-                    )
-                    .catch(err=>{reject(err)})
-                })
-
-            }
-        )
-
-
-        Promise.all([promiseQtd, promiseHt, promiseCt]).then((res) => {
-            if (res[0]==={} || res[0] === undefined || res[0] === null){
-                console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
-                ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'tempoDisp': res[2],'parametros': parametros })
-            } else {
-
-                console.log("Enviando valores para cacular Média: ", res[0])
-                calculaMedia(res[0], res[1], res[2], parametros)
-            }
+            await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryQtd)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, false, main.eItemsList(), 'm2']).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
 
         }
+    )
 
-        )
+    let promiseQtdKg = new Promise(
+        async function (resolve, reject) {
+
+            await apiZeno.getDataSQL(queryQtd, main.seletorConexaoBD(setor), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryQtd)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, false, main.eItemsList(), 'kg']).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
+
+        }
+    )
+
+    let promiseHt = new Promise(
+        function (resolve, reject) {
+
+            apiZeno.getDataSQL(queryHt, main.seletorConexaoBD(), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHt)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, true, main.eItemsList()]).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
+
+        }
+    )
+
+    let promiseCt = new Promise(
+        function (resolve, reject) {
+
+            apiZeno.getDataSQL(queryCt, main.seletorConexaoBD(), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryCt)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, true, main.eItemsList()]).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
+
+        }
+    )
+
+
+    Promise.all([promiseQtdM2, promiseQtdKg, promiseHt, promiseCt]).then((res) => {
+        if (res[0] === {} || res[0] === undefined || res[0] === null) {
+            console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
+            ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'tempoDisp': res[2], 'parametros': parametros })
+        } else {
+
+            console.log("Enviando valores para cacular Média: ", res[0])
+            calculaMedia(res[0], res[1], res[2], res[3], parametros)
+        }
+
+    }
+
+    )
 
 
 }
@@ -107,28 +129,50 @@ module.exports.solicitaBD = solicitaBD
 
 
 // Função para calcular a média
-async function calculaMedia(Qtd, tempoTrab, tempoDisp, parametros) {
-    let media = {}
-    let prodDisp = {}
-    let prodMeta = {}
+async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, parametros) {
+    let mediaM2 = {}
+    let mediaKg = {}
+    let prodDispM2 = {}
+    let prodDispKg = {}
+    let prodMetaM2 = {}
+    let prodMetaKg = {}
     let Disp = {}
 
-    for (const [index, data] of Object.keys(Qtd).entries()) {
+    for (const [index, data] of Object.keys(QtdM2).entries()) {
         //console.log("valor: ", Qtd[data], " - tempoTrab: ", tempoTrab[data])
-        media[data] = media[data] || 0
-        prodDisp[data] = prodDisp[data] || 0
-        prodMeta[data] = prodMeta[data] || 0
+        mediaM2[data] = mediaM2[data] || 0
+        mediaKg[data] = mediaKg[data] || 0
+        prodDispM2[data] = prodDispM2[data] || 0
+        prodDispKg[data] = prodDispKg[data] || 0
+        prodMetaM2[data] = prodMetaM2[data] || 0
+        prodMetaKg[data] = prodMetaKg[data] || 0
         Disp[data] = Disp[data] || 0
 
 
-        media[data] = parseFloat((Qtd[data] / tempoTrab[data]).toFixed(1))
-        prodDisp[data] = parseFloat((tempoDisp[data] * parametros.meta).toFixed(1))
-        prodMeta[data] = parseFloat((tempoTrab[data] * parametros.meta).toFixed(1))
+        mediaM2[data] = parseFloat((QtdM2[data] / tempoTrab[data]).toFixed(1))
+        mediaKg[data] = parseFloat((QtdKg[data] / tempoTrab[data]).toFixed(1))
+        prodDispM2[data] = parseFloat((tempoDisp[data] * parametros.meta.metaS).toFixed(1))
+        prodDispKg[data] = parseFloat((tempoDisp[data] * parametros.meta.metaP).toFixed(1))
+        prodMetaM2[data] = parseFloat((tempoTrab[data] * parametros.meta.metaS).toFixed(1))
+        prodMetaKg[data] = parseFloat((tempoTrab[data] * parametros.meta.metaP).toFixed(1))
         Disp[data] = parseFloat((tempoTrab[data] / tempoDisp[data] * 100)).toFixed(1)
         //tempoDisp = 
 
-        if (index >= Object.keys(Qtd).length - 1) {
-            ioSocket.enviarResposta({ 'dadosQtd': Qtd, 'media': media, 'prodDisp': prodDisp, 'tempoDisp': tempoDisp, 'Disp': Disp, 'tempoTrab': tempoTrab, 'prodMeta': prodMeta,  'parametros': parametros })
+        if (index >= Object.keys(QtdM2).length - 1) {
+            ioSocket.enviarResposta({
+                'dadosQtdm2': QtdM2,
+                'dadosQtdkg': QtdKg,
+                'mediam2': mediaM2, 
+                'mediakg': mediaKg, 
+                'prodDispm2': prodDispM2, 
+                'prodDispkg': prodDispKg, 
+                'prodMetam2': prodMetaM2, 
+                'prodMetakg': prodMetaKg, 
+                'tempoTrab': tempoTrab,
+                'tempoDisp': tempoDisp, 
+                'Disp': Disp,  
+                'parametros': parametros
+            })
         }
 
     }

@@ -128,10 +128,10 @@
                     <RadioButton id="media" name="unid" value="media" v-model="periodo" />
                     <label for="media">hora-maq.</label>
                   </div>
-                    <div class="checkbox inline">
-                      <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
-                      <label for="disp">Disp.</label>
-                    </div>
+                  <div class="checkbox inline">
+                    <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
+                    <label for="disp">Disp.</label>
+                  </div>
 
                 </div>
 
@@ -255,8 +255,8 @@
 
         <!-- GRÁFICO -->
         <router-view name="grafico" :id="id" @calculaTotal="calculaTotal" @fDadosRecebidos="fDadosRecebidos"
-          @fAguarde="fAguarde" :metaGraf="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
-          :sufixo="sufixo"></router-view>
+          @fAguarde="fAguarde" :metas="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
+          :sufixo="sufixo" :unidade="unidade"></router-view>
 
       </div>
 
@@ -297,8 +297,18 @@ export default {
       if (valor === "media" && this.unidade === "Disp") {
         this.unidade = "m2"
       }
+      
+      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
     },
+
+    unidade () {
+      
+      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+    }
 
 
 
@@ -321,6 +331,7 @@ export default {
 
   data() {
     return {
+      metaGraf: {},
       tempoDisponivel: 0.0,
       tempoTrabalhado: 0.0,
 
@@ -477,7 +488,7 @@ export default {
     atualizaMenu(seletor) {
 
 
-      this.metaGraf = 0 // Zera a meta atual
+      this.metaGraf = {} // Zera a meta atual
 
       if (seletor === "Depto") {
 
@@ -619,9 +630,9 @@ export default {
       this.ultDifProd = this.ultProdEfet - this.ultMeta
 
 
-      if (this.medProdEfet >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+      if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
         this.statusMedia = this.corOK
-      } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
+      } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
         this.statusMedia = this.corNOK
       }
 
@@ -667,7 +678,7 @@ export default {
     consultaDados() {
       // Prepara configuração pra enviar para o servidor consultar o BD
 
-      this.metaGraf = 0 // Zera a meta atual
+      this.metaGraf = {} // Zera a meta atual
 
       //this.dadosRecebidos = false
 
@@ -677,15 +688,12 @@ export default {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
       } else {
 
-        coletaMeta(this.selecCC, this.unidade, this.metas).then((res) => {
+        coletaMeta(this.selecCC, this.metas).then((res) => {
 
           this.metaGraf = res
 
           this.dadosRecebidos = false;
           this.aguarde = true;
-
-          this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
-          this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
           this.msg =
             "Solicitando atualização dos dados para os CTs selecionados... "
@@ -706,23 +714,33 @@ export default {
 
       }
 
-      function coletaMeta(selecao, unidade, metas) {
+      function coletaMeta(selecao, metas) {
         return new Promise(
           function (resolve) {
-            //let metasSelec = {}
-            //let metaGraf = 0;
-
             // Verifica e calcula metas
             if (selecao.length === 1) {
-              resolve(metas["metaCC"][selecao[0]][`meta${unidade === 'kg' ? 'P' : 'S'}`])
-              //metasSelec = {}
-            } else if (selecao.length > 1) {
+
+              resolve(metas["metaCC"][selecao[0]])
+
+            } else {
               resolve(selecao.reduce((acc, elemento, index) => {
-                acc = acc || { soma: 0, media: 0 }
-                acc["soma"] = acc["soma"] + metas["metaCC"][elemento][`meta${unidade === 'kg' ? 'P' : 'S'}`]
-                acc["media"] = acc["media"] = acc["soma"] / (index + 1)
+                //let campos = { soma: 0, media: 0 }
+                //acc["mediaP"] = acc["mediaP"] || campos
+                //acc["mediaS"] = acc["mediaS"] || campos
+                //acc["mediaD"] = acc["mediaD"] || campos
+
+                acc["somaP"] = acc["somaP"] + metas["metaCC"][elemento][`metaP`]
+                acc["metaP"] = acc["somaP"] / (index + 1)
+
+                acc["somaS"] = acc["somaS"] + metas["metaCC"][elemento][`metaS`]
+                acc["metaS"] = acc["somaS"] / (index + 1)
+
+                acc["somaD"] = acc["somaD"] + metas["metaCC"][elemento][`metaD`]
+                acc["metaD"] = acc["somaD"] / (index + 1)
+
                 return acc
-              }, 0).media)
+
+              }, { "metaP": 0, "metaS": 0, "metaD": 0, "somaP": 0, "somaS": 0, "somaD": 0 }))
               //resolve(this.metaGraf = this.metasSelec.media)
 
             }
