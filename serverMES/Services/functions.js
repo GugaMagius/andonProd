@@ -30,7 +30,7 @@ module.exports.reduceDatasul = reduceDatasul
 
 
 // Função para solicitar dados do banco de dados
-async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
+async function solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros, setor) {
 
     let promiseQtdM2 = new Promise(
         async function (resolve, reject) {
@@ -89,12 +89,50 @@ async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
         }
     )
 
-    let promiseCt = new Promise(
+    let promiseHd = new Promise(
         function (resolve, reject) {
 
-            apiZeno.getDataSQL(queryCt, main.seletorConexaoBD(), parametros).then(res => {
+            apiZeno.getDataSQL(queryHd, main.seletorConexaoBD(), parametros).then(res => {
                 if (res[0] === {} || res[0] === undefined || res[0] === null) {
-                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryCt)
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHd)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, true, main.eItemsList()]).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
+
+        }
+    )
+
+    let promiseHc = new Promise(
+        function (resolve, reject) {
+
+            apiZeno.getDataSQL(queryHc, main.seletorConexaoBD(), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHc)
+                    resolve("vazia")
+                }
+                pool.exec('dadosComp', [res, true, main.eItemsList()]).then(
+                    resPool => {
+                        resolve(resPool)
+                    }
+                )
+                    .catch(err => { reject(err) })
+            })
+
+        }
+    )
+
+    let promiseHtt = new Promise(
+        function (resolve, reject) {
+
+            apiZeno.getDataSQL(queryHtt, main.seletorConexaoBD(), parametros).then(res => {
+                if (res[0] === {} || res[0] === undefined || res[0] === null) {
+                    console.log("RESPOSTA VAZIA DO BD PARA A CONSULTA: ", queryHtt)
                     resolve("vazia")
                 }
                 pool.exec('dadosComp', [res, true, main.eItemsList()]).then(
@@ -109,14 +147,15 @@ async function solicitaBD(queryQtd, queryHt, queryCt, parametros, setor) {
     )
 
 
-    Promise.all([promiseQtdM2, promiseQtdKg, promiseHt, promiseCt]).then((res) => {
+    Promise.all([promiseQtdM2, promiseQtdKg, promiseHt, promiseHd, promiseHc, promiseHtt]).then((res) => {
         if (res[0] === {} || res[0] === undefined || res[0] === null) {
-            console.log("RESPOSTA da promise VAZIA PARA AS CONSULTAS ")
+
             ioSocket.enviarResposta({ 'dadosQtd': res[0], 'media': res[1], 'tempoDisp': res[2], 'parametros': parametros })
+
         } else {
 
-            console.log("Enviando valores para cacular Média: ", res[0])
-            calculaMedia(res[0], res[1], res[2], res[3], parametros)
+            calculaMedia(res[0], res[1], res[2], res[3], res[4], res[5], parametros)
+
         }
 
     }
@@ -129,7 +168,7 @@ module.exports.solicitaBD = solicitaBD
 
 
 // Função para calcular a média
-async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, parametros) {
+async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, tempoCarga, tempoTotal, parametros) {
     let mediaM2 = {}
     let mediaKg = {}
     let prodDispM2 = {}
@@ -170,6 +209,8 @@ async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, parametros) {
                 'prodMetakg': prodMetaKg, 
                 'tempoTrab': tempoTrab,
                 'tempoDisp': tempoDisp, 
+                'tempoCarga': tempoCarga, 
+                'tempoTotal': tempoTotal, 
                 'Disp': Disp,  
                 'parametros': parametros
             })

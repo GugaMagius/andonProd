@@ -24,12 +24,14 @@ export default {
     if (this.dadosGraf.dadosQtdkg) {
 
       this.compilaDadosGraf(this.dadosGraf)
+
     }
 
   },
 
+
   watch: {
-    
+
     dadosGraf(data) {
 
       this.compilaDadosGraf(data)
@@ -39,12 +41,14 @@ export default {
   },
 
   props: {
+
     id: String, // Número do id para constrole do receptor dos dados
     metas: Number, // Valor da meta para status no gráfico
     dadosGraf: Object, // Dados para serem usados no gráfico
     dadosRecebidos: Boolean, // Dados recebidos do servidor
     aguarde: Boolean, // Sinalização para aguardar respota dos dados
     sufixo: String, // Sufixo para a escala do gráfico
+
   },
 
   data() {
@@ -74,20 +78,56 @@ export default {
               display: false,
             },
             order: 0,
+            stack: "Stack 1",
           },
           {
-            label: "Disponibilidade",
+            label: "Tempo Trab.",
             type: "bar",
             backgroundColor: [],
             borderColor: [],
             borderWidth: [],
-            radius: 2,
-            fill: true,
             data: [0],
             datalabels: {
               display: true,
             },
+            order: 1,
+            stack: "Stack 0",
+          },
+          {
+            label: "Tempo Disp.",
+            type: "bar",
+            borderColor: 'rgb(144, 238, 144)',
+            borderWidth: 4,
+            data: [0],
+            datalabels: {
+              display: false,
+            },
+            order: 2,
+            stack: "Stack 0",
+          },
+          {
+            label: "Tempo Carga",
+            type: "bar",
+            borderColor: 'rgb(255, 69, 10)',
+            borderWidth: 4,
+            data: [0],
+            datalabels: {
+              display: false,
+            },
             order: 3,
+            stack: "Stack 0",
+          },
+          {
+            label: "Tempo Total",
+            type: "bar",
+            borderColor: 'rgb(128, 128, 128)',
+            borderWidth: 4,
+            data: [0],
+            datalabels: {
+              display: false,
+            },
+            order: 4,
+            stack: "Stack 0",
           },
         ],
       },
@@ -122,14 +162,19 @@ export default {
             },
           },
           y: {
+              stacked: false,
             title: {
               display: true,
-              text: "%",
+              text: "horas",
               font: {
                 weight: "bold",
                 size: 14,
               },
             },
+            ticks: {
+
+              beginAtZero: true,
+            }
           },
         },
 
@@ -183,7 +228,11 @@ export default {
 
       this.mostraTotal = true;
 
-      this.basicData.datasets[1].data = Object.values(data["Disp"]);
+      this.basicData.datasets[1].data = Object.values(data["tempoTrab"]);
+      this.basicData.datasets[2].data = Object.values(data["tempoDisp"]);
+      this.basicData.datasets[3].data = Object.values(data["tempoCarga"]);
+      this.basicData.datasets[4].data = Object.values(data["tempoTotal"]);
+
 
       this.basicData.labels = Object.keys(data["dadosQtdkg"]);
 
@@ -223,7 +272,7 @@ export default {
         this.basicData.datasets[1].data.forEach((element, index) => {
 
 
-          this.basicData.datasets[0].data[index] = this.metas.metaD
+          this.basicData.datasets[0].data[index] = this.metas.metaD * parseFloat(this.basicData.datasets[2].data[index]) * 0.01
 
           if (!parseFloat(this.basicData.datasets[0].data[index]) > 0) {
             this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
@@ -309,6 +358,7 @@ export default {
 
       this.basicData.datasets[0].data = excluiItem(this.basicData.datasets[0].data);
       this.basicData.datasets[1].data = excluiItem(this.basicData.datasets[1].data);
+      this.basicData.datasets[2].data = excluiItem(this.basicData.datasets[2].data);
       this.basicData.labels = excluiItem(this.basicData.labels);
 
       this.verificaMeta();

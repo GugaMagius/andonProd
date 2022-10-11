@@ -14,6 +14,7 @@ import Testes from "@/panels/testes.vue";
 import grafPeriodo from "@/components/grafPeriodo.vue"
 import grafMedia from "@/components/grafMedia.vue"
 import grafDisp from "@/components/grafDisp.vue"
+import grafDispHrs from "@/components/grafDispHrs.vue"
 //import Andon from "@/components/telaAndon";
 
 
@@ -76,6 +77,12 @@ const routes = [
               path: 'disp',
               components: {
                 grafico: grafDisp,
+              },
+            },
+            {
+              path: 'disphrs',
+              components: {
+                grafico: grafDispHrs,
               },
             }
           ],

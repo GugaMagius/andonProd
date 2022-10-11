@@ -106,14 +106,22 @@
                 <div class="selectTurno col-3">
                   <!-- Seleção de Unidade  -->
                   <div v-if="!selectEcoat">
-                    <div class="checkbox inline">
-                      Unidade:
+                    Unidade:
+                    <div v-if="periodo!=='Disp'" class="checkbox inline">
                       <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
                       <label for="m2">m2</label>
                     </div>
-                    <div class="checkbox inline">
+                    <div v-if="periodo!=='Disp'" class="checkbox inline">
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
+                    </div>
+                    <div v-if="periodo==='Disp'" class="checkbox inline">
+                      <RadioButton id="perc" name="perc" value="perc" v-model="unidadeDisp" />
+                      <label for="perc">%</label>
+                    </div>
+                    <div v-if="periodo==='Disp'" class="checkbox inline">
+                      <RadioButton id="horas" name="horas" value="horas" v-model="unidadeDisp" />
+                      <label for="horas">horas</label>
                     </div>
                   </div>
 
@@ -292,21 +300,27 @@ export default {
 
     periodo(valor) {
 
-      valor === "media" ? this.$router.push("/graficos/media") : valor === "Disp" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/periodo")
+      valor === "media" ? this.$router.push("/graficos/media") : valor === "total" ? this.$router.push("/graficos/periodo") : this.unidadeDisp === 'perc' ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
 
       if (valor === "media" && this.unidade === "Disp") {
         this.unidade = "m2"
       }
-      
+
       this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
       this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
     },
 
-    unidade () {
-      
+    unidade() {
+
       this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
       this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+    },
+
+    unidadeDisp(valor) {
+
+      valor === "perc" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
 
     }
 
@@ -378,7 +392,8 @@ export default {
       ultDifProdDisp: 0.0,
 
       periodo: 'total',
-      unidade: "m2",
+      unidade: "m2", // Unidade para os gráficos de m2 ou kg
+      unidadeDisp: "perc", // Unidade para o gráfico de Disponibilidade
       sufixo: "m2",
       sufixoTot: "m2",
       dadosRecebidos: false,
