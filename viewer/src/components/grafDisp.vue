@@ -22,7 +22,7 @@ export default {
     setTimeout(this.ajustaAltura(), 250)
 
 
-    if (this.dadosGraf.dadosQtd) {
+    if (this.dadosGraf.dadosQtdkg) {
 
       this.compilaDadosGraf(this.dadosGraf)
     }
@@ -64,9 +64,9 @@ export default {
         labels: ["1"],
         datasets: [
           {
+            label: "Tempo Trab.",
             yAxisID: 'horas',
             type: "bar",
-            label: "Tempo Trab.",
             backgroundColor: [],
             borderColor: [],
             borderWidth: [],
@@ -78,9 +78,9 @@ export default {
             stack: 'Stack 0',
           },
           {
+            label: "Tempo Disp.",
             yAxisID: 'horas',
             type: "bar",
-            label: "Tempo Disp.",
             borderColor: '#42A5F5', //'rgb(124, 255, 0)',
             borderWidth: 3,
             fill: false,
@@ -92,9 +92,9 @@ export default {
             stack: 'Stack 0',
           },
           {
+            label: "Meta",
             yAxisID: 'perc',
             type: "line",
-            label: "Meta",
             borderColor: "rgb(47, 103, 255)",
             borderWidth: 3,
             radius: 2,
@@ -107,9 +107,9 @@ export default {
             stack: 'Stack 1',
           },
           {
+            label: "Disponibilidade",
             yAxisID: 'perc',
             type: "line",
-            label: "Disponibilidade",
             borderColor: "rgb(124, 255, 0)",
             borderWidth: 3,
             radius: 2,
@@ -232,7 +232,7 @@ export default {
       this.basicData.datasets[3].data = Object.values(data["Disp"]);
 
 
-      this.basicData.labels = Object.keys(data["dadosQtd"]);
+      this.basicData.labels = Object.keys(data["dadosQtdkg"]);
 
 
       this.verificaMeta();
@@ -267,7 +267,7 @@ export default {
       return Promise.resolve(
 
 
-        this.basicData.datasets[0].data.forEach((element, index) => {
+        this.basicData.datasets[3].data.forEach((element, index) => {
 
 
           this.basicData.datasets[2].data[index] = this.metas.metaD

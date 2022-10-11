@@ -574,67 +574,67 @@ export default {
     },
 
 
-    calculaTotal(dadosGraf) {
-      console.log("DADOS RECEBIDOS DO GRAFICO: ", dadosGraf)
+    calculaTotal() { //dadosGraf
+      // console.log("DADOS RECEBIDOS DO GRAFICO: ", dadosGraf)
 
-      let tamanhoDados = dadosGraf.labels.length
+      // let tamanhoDados = dadosGraf.labels.length
 
-      // VALORES TOTAIS
-      function reduceArray(dados) {
-        return dados.reduce(
-          (acc, index) => {
-            acc = acc || 0.0
-            if (index > 0) {
-              acc = parseFloat(acc) + parseFloat(index)
-            }
-            return acc
-          },
-          0.0
-        )
-      }
+      // // VALORES TOTAIS
+      // function reduceArray(dados) {
+      //   return dados.reduce(
+      //     (acc, index) => {
+      //       acc = acc || 0.0
+      //       if (index > 0) {
+      //         acc = parseFloat(acc) + parseFloat(index)
+      //       }
+      //       return acc
+      //     },
+      //     0.0
+      //   )
+      // }
 
-      this.totProdEfet = reduceArray(dadosGraf.datasets[0].data)
+      // this.totProdEfet = reduceArray(dadosGraf.datasets[0].data)
 
 
-      this.totCapDisponivel = reduceArray(dadosGraf.datasets[1].data)
+      // this.totCapDisponivel = reduceArray(dadosGraf.datasets[1].data)
 
-      if (this.periodo === "total") {
+      // if (this.periodo === "total") {
 
-        this.totMeta = reduceArray(dadosGraf.datasets[2].data);
+      //   this.totMeta = reduceArray(dadosGraf.datasets[2].data);
 
-        this.totDifProd = this.totProdEfet - this.totMeta
+      //   this.totDifProd = this.totProdEfet - this.totMeta
 
-        this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
+      //   this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
-        this.ultMeta = dadosGraf.datasets[2].data[tamanhoDados - 1]
-      }
+      //   this.ultMeta = dadosGraf.datasets[2].data[tamanhoDados - 1]
+      // }
 
 
 
       // VALORES MÉDIOS
 
-      this.medProdEfet = parseFloat((
-        this.totProdEfet / parseInt(tamanhoDados)
-      ).toFixed(1));
+      // this.medProdEfet = parseFloat((
+      //   this.totProdEfet / parseInt(tamanhoDados)
+      // ).toFixed(1));
 
 
-      // VALORES ULTIMA BARRA
+      // // VALORES ULTIMA BARRA
 
-      this.ultCapDisponivel = dadosGraf.datasets[1].data[tamanhoDados - 1]
+      // this.ultCapDisponivel = dadosGraf.datasets[1].data[tamanhoDados - 1]
 
-      this.ultProdEfet = dadosGraf.datasets[0].data[tamanhoDados - 1]
-
-
-      this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
-
-      this.ultDifProd = this.ultProdEfet - this.ultMeta
+      // this.ultProdEfet = dadosGraf.datasets[0].data[tamanhoDados - 1]
 
 
-      if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-        this.statusMedia = this.corOK
-      } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-        this.statusMedia = this.corNOK
-      }
+      // this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
+
+      // this.ultDifProd = this.ultProdEfet - this.ultMeta
+
+
+      // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+      //   this.statusMedia = this.corOK
+      // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+      //   this.statusMedia = this.corNOK
+      // }
 
 
     },

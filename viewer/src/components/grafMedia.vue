@@ -21,7 +21,7 @@ export default {
 
     setTimeout(this.ajustaAltura(), 250)
 
-    if (this.dadosGraf.media !== undefined) {
+    if (this.dadosGraf.mediam2) {
 
       this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(this.dadosGraf)
@@ -174,7 +174,6 @@ export default {
       this.mostraTotal = true;
 
       this.basicData.datasets[0].data = Object.values(data[`media${this.unidade}`]);
-
 
       this.basicData.labels = Object.keys(data[`dadosQtd${this.unidade}`]);
 

@@ -21,8 +21,8 @@ export default {
   mounted() {
 
     setTimeout(this.ajustaAltura(), 250)
-    
-    if (this.dadosGraf.dadosQtd) {
+
+    if (this.dadosGraf.dadosQtdkg) {
       console.log("Dados atuais: ", this.dadosGraf)
 
       this.options.scales.y.title.text = this.sufixo;
@@ -38,7 +38,18 @@ export default {
       this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(data)
 
+    },
+
+
+    sufixo(valor) {
+
+      if (this.dadosGraf.dadosQtdkg) {
+        this.options.scales.y.title.text = valor;
+        this.compilaDadosGraf(this.dadosGraf)
+        this.$refs.graficoProd.refresh();
+      }
     }
+
 
   },
 
@@ -49,6 +60,7 @@ export default {
     dadosRecebidos: Boolean, // Dados recebidos do servidor
     aguarde: Boolean, // Sinalização para aguardar respota dos dados
     sufixo: String, // Sufixo para a escala do gráfico
+    unidade: String, // Unidade selecionada para o gráfico
   },
 
   data() {
@@ -190,36 +202,35 @@ export default {
 
 
 
-        this.$parent.dadosRecebidos = true;
+      this.$parent.dadosRecebidos = true;
 
-        this.mostraTotal = true;
+      this.mostraTotal = true;
 
-        this.basicData.datasets[0].data = Object.values(data["dadosQtd"]);
-        this.basicData.datasets[1].data = Object.values(data["prodDisp"]);
-        this.basicData.datasets[2].data = Object.values(data["prodMeta"]);
+      this.basicData.datasets[0].data = Object.values(data[`dadosQtd${this.unidade}`]);
+      this.basicData.datasets[1].data = Object.values(data[`prodDisp${this.unidade}`]);
+      this.basicData.datasets[2].data = Object.values(data[`prodMeta${this.unidade}`]);
 
-
-        this.basicData.labels = Object.keys(data["dadosQtd"]);
-
-
-        this.verificaMeta();
-
-        setTimeout(() => {
-
-          // Ajusta altura do gráfico
-          this.ajustaAltura();
-
-          this.$emit('fAguarde', false)
-          this.$emit('fDadosRecebidos', true)
-
-        }, 250)
-        //})
-
-        this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      this.basicData.labels = Object.keys(data[`dadosQtd${this.unidade}`]);
 
 
-        this.$emit('calculaTotal', this.basicData)
-      
+      this.verificaMeta();
+
+      setTimeout(() => {
+
+        // Ajusta altura do gráfico
+        this.ajustaAltura();
+
+        this.$emit('fAguarde', false)
+        this.$emit('fDadosRecebidos', true)
+
+      }, 250)
+      //})
+
+      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+
+
+      this.$emit('calculaTotal', this.basicData)
+
 
     },
 
