@@ -248,7 +248,6 @@ export default {
 
     },
     diaSemana(data) {
-      console.log("Iniciando substract: ", data)
       if (data.substr(6, 2) > 0) {
         let aa = data.substr(2, 2);
         let mm = data.substr(4, 2);

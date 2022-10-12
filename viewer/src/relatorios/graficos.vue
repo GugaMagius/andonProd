@@ -66,7 +66,7 @@
               </div>
 
               <!-- Valor Médio dos dados selecionados -->
-              <div v-if="dadosRecebidos" class="field col-2 md:col-2">
+              <div v-if="desativado" class="field col-2 md:col-2">
                 <span class="p-float-label">
                   <InputNumber id="media"
                     :inputStyle="{ 'text-align': 'center', 'font-size': '0.8vw ', color: statusMedia }"
@@ -85,17 +85,18 @@
           <div class="grid">
             <div class="col-12 inline">
               <div class="p-fluid opcoes grid">
-                <div class="selectTurno col-3">
+                <div class="selectTurno col-1">
                   <!-- ******* Seleção de turnos *********** -->
                   <div class="checkbox inline">
-                    Turnos:
                     <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
                     <label for="turno1">Turno1</label>
                   </div>
-                  <div class="checkbox inline">RO
+                  <br>
+                  <div class="checkbox inline">
                     <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
                     <label for="turno2">Turno2</label>
                   </div>
+                  <br>
                   <div class="checkbox inline">
                     <Checkbox id="turno3" name="turno" value="t3" v-model="selecTurno" />
                     <label for="turno3">Turno3</label>
@@ -103,15 +104,15 @@
                 </div>
 
                 <!-- ******* Seletores Unidade/período *********  -->
-                <div class="selectTurno col-3">
+                <div class="selectTurno col-5">
                   <!-- Seleção de Unidade  -->
-                  <div v-if="!selectEcoat">
+                  <div>
                     Unidade:
-                    <div v-if="periodo!=='Disp'" class="checkbox inline">
+                    <div v-if="periodo!=='Disp' && !selectEcoat" class="checkbox inline">
                       <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
                       <label for="m2">m2</label>
                     </div>
-                    <div v-if="periodo!=='Disp'" class="checkbox inline">
+                    <div v-if="periodo!=='Disp' && !selectEcoat" class="checkbox inline">
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
                     </div>
@@ -144,9 +145,10 @@
                 </div>
 
                 <!-- ********** Botão de validação ************ -->
-                <div class="inline col-2">
+                <div class="inline col-1">
                   <Button label="Atualizar" @click="consultaDados" />
                 </div>
+
               </div>
             </div>
           </div>
@@ -160,12 +162,17 @@
 
         <table v-if="dadosRecebidos && mostraTotal">
           <tr>
-            <th colspan="4"> Totalizador </th>
+            <th colspan="5"> Totalizador </th>
           </tr>
+
           <tr>
             <th></th>
             <th>
-              <label class="label" for="metaPeriodo"> Média (período): </label>
+              <label class="label" for="metaPeriodo" v-if="periodo!=='Disp'"> Média (hora): </label>
+              <label class="label" for="metaPeriodo" v-if="periodo==='Disp'"> Média (%): </label>
+            </th>
+            <th>
+              <label class="label" for="metaPeriodo"> Média ({{selecPeriodo.code}}): </label>
             </th>
             <th>
               <label class="label" for="metaPeriodo"> Total Grafico: </label>
@@ -174,11 +181,14 @@
               <label class="label" for="metaPeriodo"> Último período: </label>
             </th>
           </tr>
+
           <tr>
             <td class="labelLinha"> Capacidade Disponível </td>
             <td>
+            </td>
+            <td>
               <InputNumber :inputStyle="confTable(fontTable)" v-model="medCapDisponivel" readonly="true"
-                :suffix="sufixoTot" />
+                :suffix="sufixoTot+'/'+selecPeriodo.code" />
             </td>
             <td>
               <InputNumber :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
@@ -193,34 +203,43 @@
           <tr>
             <td class="labelLinha"> Meta Prod. </td>
             <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
-                :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medHmeta" readonly="true"
+                :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="metaGraf.metaD" readonly="true" :suffix="'%'"
+                v-if="periodo==='Disp'" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
-                :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
+                :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true" :suffix="sufixoTot" />
             </td>
 
             <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true"
-                :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
 
           <tr>
             <td class="labelLinha"> Produção Efetiva </td>
-
             <td>
-              <InputNumber :inputStyle="confTable(medProdEfet>=medMeta? 'black' : 'red')"
-                v-model="medProdEfet" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(medHprodEfet)>=parseFloat(medHmeta)? 'green' : 'red')" v-model="medHprodEfet"
+                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDisp)>=parseFloat(metaGraf.metaD)? 'green' : 'red')" v-model="medDisp"
+                readonly="true" :suffix="'%'" v-if="periodo==='Disp'" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
-                v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(medProdEfet)>=parseFloat(medMeta)? 'green' : 'red')" v-model="medProdEfet"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
-                v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(totProdEfet)>=parseFloat(totMeta)? 'green' : 'red')" v-model="totProdEfet"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(ultProdEfet)>=parseFloat(ultMeta)? 'green' : 'red')" v-model="ultProdEfet"
+                readonly="true" :suffix="sufixoTot" />
             </td>
 
           </tr>
@@ -228,15 +247,21 @@
           <tr>
             <td class="labelLinha"> Dif. p/ Meta Prod. </td>
             <td>
-              <InputNumber :inputStyle="confTable(medDifProd >= 0 ? 'blue' : 'red')" v-model="medDifProd"
+              <InputNumber :inputStyle="confTable(parseFloat(medHdifProd)/0 >= 0 ? 'blue' : 'red')" v-model="medHdifProd"
+                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDifDisp) >= 0 ? 'blue' : 'red')" v-model="medDifDisp"
+                readonly="true" :suffix="'% '" v-if="periodo==='Disp'" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(medDifProd) >= 0 ? 'blue' : 'red')" v-model="medDifProd"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(totDifProd) >= 0 ? 'blue' : 'red')" v-model="totDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
+              <InputNumber :inputStyle="confTable(parseFloat(ultDifProd) >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
@@ -244,16 +269,18 @@
           <tr>
             <td class="labelLinha"> Dif. p/ Cap. disponível </td>
             <td>
-              <InputNumber :inputStyle="confTable(medDifProdDisp >= 0 ? 'blue' : 'red')"
-                v-model="medDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(totDifProdDisp >= 0 ? 'blue' : 'red')"
-                v-model="totDifProdDisp" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="medDifProdDisp"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
             </td>
             <td>
-              <InputNumber :inputStyle="confTable(ultDifProdDisp >= 0 ? 'blue' : 'red')"
-                v-model="ultDifProdDisp" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(totDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="totDifProdDisp"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(ultDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="ultDifProdDisp"
+                readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
 
@@ -340,6 +367,8 @@ export default {
 
       this.inicializaArrays();
 
+      this.respostaBD.dadosQtdkg ? this.calculaTotal() : null;
+
     },
 
     unidadeDisp(valor) {
@@ -378,6 +407,7 @@ export default {
       dadosQtd: [], // Dados temporários para o totalizador
       prodDisp: [], // Dados temporários para o totalizador
       prodMeta: [], // Dados temporários para o totalizador
+      mediaGraf: [], // Dados temporários para o totalizador
       tempoTrab: [], // Dados temporários para o totalizador
       tempoDisp: [], // Dados temporários para o totalizador
 
@@ -407,11 +437,18 @@ export default {
       cargaTotal: 0.0,
 
       metaPeriodo: 0.0,
+      medHcapDisponivel: 0.0,
+      medHmeta: 0.0,
+      medHprodEfet: 0.0,
+      medHdifProd: 0.0,
+      medHdifProdDisp: 0.0,
       medCapDisponivel: 0.0,
       medMeta: 0.0,
       medProdEfet: 0.0,
       medDifProd: 0.0,
       medDifProdDisp: 0.0,
+      medDisp: 0.0,
+      medDifDisp: 0.0,
       totCapDisponivel: 0.0,
       totMeta: 0.0,
       totProdEfet: 0.0,
@@ -488,6 +525,7 @@ export default {
         this.dadosQtd = Object.values(this.respostaBD[`dadosQtd${this.unidade}`])
         this.prodDisp = Object.values(this.respostaBD[`prodDisp${this.unidade}`])
         this.prodMeta = Object.values(this.respostaBD[`prodMeta${this.unidade}`])
+        this.mediaGraf = Object.values(this.respostaBD[`media${this.unidade}`])
         this.tempoTrab = Object.values(this.respostaBD[`tempoTrab`])
         this.tempoDisp = Object.values(this.respostaBD[`tempoDisp`])
 
@@ -505,7 +543,7 @@ export default {
     },
 
     confTable(variavel) {
-      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '6vw' }
+      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
     },
 
 
@@ -636,99 +674,113 @@ export default {
 
     calculaTotal(indexExcluido) { //dadosGraf
 
-      
-      function excluiItem(dados, indexEx) {
-        return dados.reduce(function (
-          acc,
-          element,
-          index
-        ) {
-          acc = acc || [];
-          if (index != indexEx) {
-            acc.push(element);
-          }
-          return acc;
-        }, []);
-      }
 
-      if(indexExcluido) {
 
-        this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
-        this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
-        this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
-        this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
-        this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
-
-      }
-
-      let tamanhoDados = this.dadosQtd.length
-
-      // VALORES TOTAIS
-      function reduceArray(dados) {
-        return dados.reduce(
-          (acc, index) => {
-            acc = acc || 0.0
-            if (index > 0) {
-              acc = parseFloat(acc) + parseFloat(index)
+        function excluiItem(dados, indexEx) {
+          return dados.reduce(function (
+            acc,
+            element,
+            index
+          ) {
+            acc = acc || [];
+            if (index != indexEx) {
+              acc.push(element);
             }
-            return acc
-          },
-          0.0
-        )
-      }
+            return acc;
+          }, []);
+        }
+
+        if (indexExcluido >= 0) {
+
+          console.log("INDEX A SER EXCLUÍDO: ", indexExcluido)
+
+          this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
+          this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
+          this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
+          this.mediaGraf = excluiItem(this.mediaGraf, indexExcluido)
+          this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
+          this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
+
+        }
+
+        let tamanhoDados = this.dadosQtd.length
+
+        // VALORES TOTAIS
+        function reduceArray(dados) {
+          return dados.reduce(
+            (acc, index) => {
+              acc = acc || 0.0
+              if (index > 0) {
+                acc = parseFloat(acc) + parseFloat(index)
+              }
+              return acc
+            },
+            0.0
+          )
+        }
 
 
-      this.totProdEfet = reduceArray(this.dadosQtd)
+        this.totProdEfet = reduceArray(this.dadosQtd).toFixed(0)
 
-      this.totCapDisponivel = reduceArray(this.prodDisp)
+        this.totCapDisponivel = reduceArray(this.prodDisp).toFixed(0)
 
-      //if (this.periodo === "total") {
 
-        this.totMeta = reduceArray(this.prodMeta);
+        this.totMeta = reduceArray(this.prodMeta).toFixed(0);
 
         this.totDifProd = this.totProdEfet - this.totMeta
 
         this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
         this.ultMeta = this.prodMeta[tamanhoDados - 1]
-      //}
 
 
 
-      // VALORES MÉDIOS
+        // VALORES MÉDIOS HORA
 
-      this.medProdEfet = parseFloat((
-        this.totProdEfet / parseInt(tamanhoDados)
-      ).toFixed(1));
+        this.medHprodEfet = (reduceArray(this.mediaGraf) / tamanhoDados).toFixed(1)
 
-      this.medMeta = this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados
+        this.medHmeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS']).toFixed(1)
 
-      this.medCapDisponivel = this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados
-
-      this.medDifProd = this.medProdEfet - this.medMeta
-
-      this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
+        this.medHdifProd = this.medHprodEfet - this.medHmeta
 
 
-      // VALORES ULTIMA BARRA
+        // VALORES MÉDIOS PERÍODO
 
-      this.ultCapDisponivel = this.prodDisp[tamanhoDados - 1]
+        this.medProdEfet = parseFloat((
+          this.totProdEfet / parseInt(tamanhoDados)
+        ).toFixed(0));
 
-      this.ultProdEfet = this.dadosQtd[tamanhoDados - 1]
+        this.medMeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados).toFixed(0)
+
+        this.medCapDisponivel = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados).toFixed(0)
+
+        this.medDifProd = this.medProdEfet - this.medMeta
+
+        this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
+
+        this.medDisp = (reduceArray(this.tempoTrab) / reduceArray(this.tempoDisp) * 100).toFixed(1)
+
+        this.medDifDisp = this.medDisp - this.metaGraf.metaD
 
 
-      this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
+        // VALORES ULTIMA BARRA
 
-      this.ultDifProd = this.ultProdEfet - this.ultMeta
+        this.ultCapDisponivel = (this.prodDisp[tamanhoDados - 1]).toFixed(0)
 
-
-      // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-      //   this.statusMedia = this.corOK
-      // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-      //   this.statusMedia = this.corNOK
-      // }
+        this.ultProdEfet = parseFloat(this.dadosQtd[tamanhoDados - 1]).toFixed(0)
 
 
+        this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
+
+        this.ultDifProd = this.ultProdEfet - this.ultMeta
+
+
+        // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+        //   this.statusMedia = this.corOK
+        // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+        //   this.statusMedia = this.corNOK
+        // }
+      
     },
 
 
@@ -929,7 +981,7 @@ export default {
 }
 
 .totalizador {
-  margin-left: -7vw;
+  margin-left: -20vw;
 }
 
 
