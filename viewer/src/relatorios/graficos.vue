@@ -289,6 +289,7 @@ export default {
     setTimeout(this.inicializaMenu, 800);
 
 
+
   },
   watch: {
 
@@ -394,8 +395,8 @@ export default {
       periodo: 'total',
       unidade: "m2", // Unidade para os gráficos de m2 ou kg
       unidadeDisp: "perc", // Unidade para o gráfico de Disponibilidade
-      sufixo: "m2",
-      sufixoTot: "m2",
+      sufixo: "",
+      sufixoTot: "",
       dadosRecebidos: false,
       dataInicio: "",
       dataFim: "",
@@ -469,8 +470,6 @@ export default {
       // Filtra Centros de Custo (Setores) e elimina duplicados
       this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc }, {})
 
-
-
       this.listaFDeptos = this.listaDeptos
       this.listaFCCs = this.listaCCs
 
@@ -480,7 +479,6 @@ export default {
       try {
 
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
-
 
           if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
             (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
@@ -720,6 +718,10 @@ export default {
       } else if (this.selecCT === undefined || this.selecCT === null || this.selecCT === [] || this.selecCT.length <= 0) {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
       } else {
+
+        
+      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
         coletaMeta(this.selecCC, this.metas).then((res) => {
 
