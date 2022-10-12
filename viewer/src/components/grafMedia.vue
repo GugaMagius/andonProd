@@ -39,7 +39,7 @@ export default {
 
     sufixo(valor) {
       this.options.scales.y.title.text = valor;
-      this.compilaDadosGraf(this.dadosGraf)
+      //this.compilaDadosGraf(this.dadosGraf)
       this.$refs.graficoProd.refresh();
     }
 

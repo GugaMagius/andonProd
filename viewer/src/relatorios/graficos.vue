@@ -165,6 +165,9 @@
           <tr>
             <th></th>
             <th>
+              <label class="label" for="metaPeriodo"> Média (período): </label>
+            </th>
+            <th>
               <label class="label" for="metaPeriodo"> Total Grafico: </label>
             </th>
             <th>
@@ -174,11 +177,15 @@
           <tr>
             <td class="labelLinha"> Capacidade Disponível </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medCapDisponivel" readonly="true"
                 :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
+                :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
                 :suffix="sufixoTot" />
             </td>
           </tr>
@@ -186,12 +193,16 @@
           <tr>
             <td class="labelLinha"> Meta Prod. </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
+                :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
                 :suffix="sufixoTot" />
             </td>
 
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true"
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true"
                 :suffix="sufixoTot" />
             </td>
           </tr>
@@ -200,12 +211,15 @@
             <td class="labelLinha"> Produção Efetiva </td>
 
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
+              <InputNumber :inputStyle="confTable(medProdEfet>=medMeta? 'black' : 'red')"
+                v-model="medProdEfet" readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
                 v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
-
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
+              <InputNumber :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
                 v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
             </td>
 
@@ -214,11 +228,15 @@
           <tr>
             <td class="labelLinha"> Dif. p/ Meta Prod. </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
+              <InputNumber :inputStyle="confTable(medDifProd >= 0 ? 'blue' : 'red')" v-model="medDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
+              <InputNumber :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
@@ -226,11 +244,15 @@
           <tr>
             <td class="labelLinha"> Dif. p/ Cap. disponível </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totDifProdDisp >= 0 ? 'blue' : 'red')"
+              <InputNumber :inputStyle="confTable(medDifProdDisp >= 0 ? 'blue' : 'red')"
+                v-model="medDifProdDisp" readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(totDifProdDisp >= 0 ? 'blue' : 'red')"
                 v-model="totDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultDifProdDisp >= 0 ? 'blue' : 'red')"
+              <InputNumber :inputStyle="confTable(ultDifProdDisp >= 0 ? 'blue' : 'red')"
                 v-model="ultDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
@@ -283,7 +305,6 @@ export default {
     this.dataFim = new Date();
     this.selecTurno = ["t1", "t2", "t3"];
 
-
     setTimeout(this.inicializaMenu, 800);
 
 
@@ -326,7 +347,7 @@ export default {
       valor === "perc" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
 
       this.inicializaArrays();
-      
+
     }
 
 
@@ -357,6 +378,8 @@ export default {
       dadosQtd: [], // Dados temporários para o totalizador
       prodDisp: [], // Dados temporários para o totalizador
       prodMeta: [], // Dados temporários para o totalizador
+      tempoTrab: [], // Dados temporários para o totalizador
+      tempoDisp: [], // Dados temporários para o totalizador
 
       respostaBD: {}, // Resposta do Banco de dados para consulta
 
@@ -465,6 +488,8 @@ export default {
         this.dadosQtd = Object.values(this.respostaBD[`dadosQtd${this.unidade}`])
         this.prodDisp = Object.values(this.respostaBD[`prodDisp${this.unidade}`])
         this.prodMeta = Object.values(this.respostaBD[`prodMeta${this.unidade}`])
+        this.tempoTrab = Object.values(this.respostaBD[`tempoTrab`])
+        this.tempoDisp = Object.values(this.respostaBD[`tempoDisp`])
 
       }
 
@@ -480,7 +505,7 @@ export default {
     },
 
     confTable(variavel) {
-      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
+      return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '6vw' }
     },
 
 
@@ -627,9 +652,13 @@ export default {
       }
 
       if(indexExcluido) {
+
         this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
         this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
         this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
+        this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
+        this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
+
       }
 
       let tamanhoDados = this.dadosQtd.length
@@ -653,7 +682,7 @@ export default {
 
       this.totCapDisponivel = reduceArray(this.prodDisp)
 
-      if (this.periodo === "total") {
+      //if (this.periodo === "total") {
 
         this.totMeta = reduceArray(this.prodMeta);
 
@@ -662,7 +691,7 @@ export default {
         this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
         this.ultMeta = this.prodMeta[tamanhoDados - 1]
-      }
+      //}
 
 
 
@@ -671,6 +700,15 @@ export default {
       this.medProdEfet = parseFloat((
         this.totProdEfet / parseInt(tamanhoDados)
       ).toFixed(1));
+
+      this.medMeta = this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados
+
+      this.medCapDisponivel = this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados
+
+      this.medDifProd = this.medProdEfet - this.medMeta
+
+      this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
+
 
       // VALORES ULTIMA BARRA
 
@@ -891,7 +929,7 @@ export default {
 }
 
 .totalizador {
-  margin-left: -4vw;
+  margin-left: -7vw;
 }
 
 
