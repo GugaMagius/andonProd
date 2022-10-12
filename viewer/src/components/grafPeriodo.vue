@@ -23,7 +23,6 @@ export default {
     setTimeout(this.ajustaAltura(), 250)
 
     if (this.dadosGraf.dadosQtdkg) {
-      console.log("Dados atuais: ", this.dadosGraf)
 
       this.options.scales.y.title.text = this.sufixo;
       this.compilaDadosGraf(this.dadosGraf)
@@ -200,8 +199,6 @@ export default {
 
     compilaDadosGraf(data) {
 
-
-
       this.$parent.dadosRecebidos = true;
 
       this.mostraTotal = true;
@@ -226,7 +223,7 @@ export default {
       }, 250)
       //})
 
-      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      this.verifFDS(this.basicData.labels);
 
 
       this.$emit('calculaTotal')
@@ -287,7 +284,7 @@ export default {
 
 
 
-    verifFDS(dados, labels) {
+    verifFDS(labels) {
 
       //for (const [index, label] of labels.entries()) {
 

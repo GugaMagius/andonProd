@@ -257,8 +257,6 @@
         </span>
       </div>
 
-
-
       <div>
 
         <!-- GRÁFICO -->
@@ -310,6 +308,8 @@ export default {
       this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
       this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
+      this.inicializaArrays();
+
     },
 
     unidade() {
@@ -317,12 +317,16 @@ export default {
       this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
       this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
+      this.inicializaArrays();
+
     },
 
     unidadeDisp(valor) {
 
       valor === "perc" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
 
+      this.inicializaArrays();
+      
     }
 
 
@@ -349,6 +353,10 @@ export default {
       metaGraf: {},
       tempoDisponivel: 0.0,
       tempoTrabalhado: 0.0,
+
+      dadosQtd: [], // Dados temporários para o totalizador
+      prodDisp: [], // Dados temporários para o totalizador
+      prodMeta: [], // Dados temporários para o totalizador
 
       respostaBD: {}, // Resposta do Banco de dados para consulta
 
@@ -426,6 +434,7 @@ export default {
   sockets: {
     resConsDB(data) {
 
+
       if (!data.dadosQtdkg) {
 
         this.aguarde = false
@@ -440,12 +449,28 @@ export default {
 
       }
 
+      this.inicializaArrays();
+
     },
 
   },
 
 
   methods: {
+
+    inicializaArrays() {
+
+      if (this.respostaBD.dadosQtdkg) {
+
+        this.dadosQtd = Object.values(this.respostaBD[`dadosQtd${this.unidade}`])
+        this.prodDisp = Object.values(this.respostaBD[`prodDisp${this.unidade}`])
+        this.prodMeta = Object.values(this.respostaBD[`prodMeta${this.unidade}`])
+
+      }
+
+
+    },
+
     fDadosRecebidos(valor) {
       this.dadosRecebidos = valor
     },
@@ -586,37 +611,35 @@ export default {
 
     calculaTotal(indexExcluido) { //dadosGraf
 
-      console.log('RECALCULANDO TOTAL', indexExcluido)
+      
+      function excluiItem(dados, indexEx) {
+        return dados.reduce(function (
+          acc,
+          element,
+          index
+        ) {
+          acc = acc || [];
+          if (index != indexEx) {
+            acc.push(element);
+          }
+          return acc;
+        }, []);
+      }
 
-      let tamanhoDados = indexExcluido !== undefined ? Object.values(this.respostaBD[`dadosQtd${this.unidade}`]).length -1 : Object.values(this.respostaBD[`dadosQtd${this.unidade}`]).length
+      if(indexExcluido) {
+        this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
+        this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
+        this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
+      }
 
-      console.log("tamanho dos DADOS: ", tamanhoDados) // ??Teste
-
-      // function excluiItem(dados, indexEx) {
-      //   return new Promise(
-      //     function (resolve, reject) {
-      //       resolve(dados.reduce(function (
-      //         acc,
-      //         element,
-      //         index
-      //       ) {
-      //         acc = acc || [];
-      //         if (index != indexEx) {
-      //           acc.push(element);
-      //         }
-      //         return acc;
-      //       }, []));
-      //     }
-      //   )
-
-      // }
+      let tamanhoDados = this.dadosQtd.length
 
       // VALORES TOTAIS
-      function reduceArray(dados, indexEx) {
-        return Object.values(dados).reduce(
+      function reduceArray(dados) {
+        return dados.reduce(
           (acc, index) => {
             acc = acc || 0.0
-            if (index > 0 && index !== indexEx) {
+            if (index > 0) {
               acc = parseFloat(acc) + parseFloat(index)
             }
             return acc
@@ -625,19 +648,20 @@ export default {
         )
       }
 
-      this.totProdEfet = reduceArray(this.respostaBD[`dadosQtd${this.unidade}`])
 
-      this.totCapDisponivel = reduceArray(this.respostaBD[`prodDisp${this.unidade}`])
+      this.totProdEfet = reduceArray(this.dadosQtd)
+
+      this.totCapDisponivel = reduceArray(this.prodDisp)
 
       if (this.periodo === "total") {
 
-        this.totMeta = reduceArray(this.respostaBD[`prodMeta${this.unidade}`]);
+        this.totMeta = reduceArray(this.prodMeta);
 
         this.totDifProd = this.totProdEfet - this.totMeta
 
         this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
-        this.ultMeta = Object.values(this.respostaBD[`prodMeta${this.unidade}`])[tamanhoDados - 1]
+        this.ultMeta = this.prodMeta[tamanhoDados - 1]
       }
 
 
@@ -648,12 +672,11 @@ export default {
         this.totProdEfet / parseInt(tamanhoDados)
       ).toFixed(1));
 
-
       // VALORES ULTIMA BARRA
 
-      this.ultCapDisponivel = Object.values(this.respostaBD[`prodDisp${this.unidade}`])[tamanhoDados - 1]
+      this.ultCapDisponivel = this.prodDisp[tamanhoDados - 1]
 
-      this.ultProdEfet = Object.values(this.respostaBD[`dadosQtd${this.unidade}`])[tamanhoDados - 1]
+      this.ultProdEfet = this.dadosQtd[tamanhoDados - 1]
 
 
       this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
@@ -719,9 +742,9 @@ export default {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
       } else {
 
-        
-      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
-      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+        this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+        this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
         coletaMeta(this.selecCC, this.metas).then((res) => {
 

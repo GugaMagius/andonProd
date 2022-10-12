@@ -191,7 +191,7 @@ export default {
       }, 250)
       //})
 
-      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      this.verifFDS(this.basicData.labels);
 
 
       this.$emit('calculaTotal')
@@ -258,17 +258,13 @@ export default {
 
 
 
-    verifFDS(dados, labels) {
-
-      //for (const [index, label] of labels.entries()) {
+    verifFDS(labels) {
 
       labels.forEach((label, index) => {
         if (this.diaSemana(label) === 6) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
           this.basicData.datasets[0].backgroundColor[index] = "yellow"
           this.basicData.datasets[0].borderWidth[index] = 5
         } else if (this.diaSemana(label) === 0) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
           this.basicData.datasets[0].backgroundColor[index] = "coral"
           this.basicData.datasets[0].borderWidth[index] = 5
         } else {
