@@ -204,7 +204,7 @@ export default {
       this.verifFDS(this.basicData.labels);
 
 
-      this.$emit('calculaTotal', this.basicData)
+      this.$emit('calculaTotal')
 
 
     },
@@ -222,19 +222,24 @@ export default {
 
         this.basicData.datasets[1].data.forEach((element, index) => {
 
-
           this.basicData.datasets[0].data[index] = this.metas.metaD
 
           if (!parseFloat(this.basicData.datasets[0].data[index]) > 0) {
+
             this.basicData.datasets[1].backgroundColor[index] = "#42A5F5";
             this.basicData.datasets[1].borderColor[index] = "#42A5F5";
+
           } else {
             if (parseFloat(element) >= parseFloat(this.basicData.datasets[0].data[index])) {
+
               this.basicData.datasets[1].backgroundColor[index] = this.corOK;
               this.basicData.datasets[1].borderColor[index] = this.corOK;
+
             } else {
+
               this.basicData.datasets[1].backgroundColor[index] = this.corNOK;
               this.basicData.datasets[1].borderColor[index] = this.corNOK;
+
             }
 
           }
@@ -243,6 +248,7 @@ export default {
 
     },
     diaSemana(data) {
+      console.log("Iniciando substract: ", data)
       if (data.substr(6, 2) > 0) {
         let aa = data.substr(2, 2);
         let mm = data.substr(4, 2);
@@ -291,9 +297,7 @@ export default {
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
 
-
-
-      function excluiItem(dados) {
+     function excluiItem(dados) {
         return dados.reduce(function (
           acc,
           element,
@@ -313,9 +317,9 @@ export default {
 
       this.verificaMeta();
 
-      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      this.verifFDS(this.basicData.labels);
 
-      this.$emit('calculaTotal', this.basicData)
+      this.$emit('calculaTotal', e.element.index)
 
     },
 

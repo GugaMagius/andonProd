@@ -194,7 +194,7 @@ export default {
       this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
 
 
-      this.$emit('calculaTotal', this.basicData)
+      this.$emit('calculaTotal')
 
 
     },
@@ -306,9 +306,9 @@ export default {
 
       this.verificaMeta();
 
-      this.verifFDS(this.basicData.datasets[0].data, this.basicData.labels);
+      this.verifFDS(this.basicData.labels);
 
-      this.$emit('calculaTotal', this.basicData)
+      this.$emit('calculaTotal', e.element.index)
 
     },
 
