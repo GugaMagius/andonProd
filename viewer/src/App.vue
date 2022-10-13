@@ -120,7 +120,9 @@ export default {
         return acc
 
       }, { selecionados: {}, completa: {} }))
+      
         .then(
+
           console.log(this.listaCTsGeral),
           //this.listaRecReceb = true,
         )

@@ -11,6 +11,10 @@ import Metas from "@/panels/metas.vue";
 import SelecaoCTs from "@/panels/selecaocts.vue";
 import Logs from "@/panels/logs.vue";
 import Testes from "@/panels/testes.vue";
+import grafPeriodo from "@/components/grafPeriodo.vue"
+import grafMedia from "@/components/grafMedia.vue"
+import grafDisp from "@/components/grafDisp.vue"
+import grafDispHrs from "@/components/grafDispHrs.vue"
 //import Andon from "@/components/telaAndon";
 
 
@@ -55,7 +59,33 @@ const routes = [
         path: "/graficos",
         name: "- Produtividade",
         component: Graficos,
-        props: true
+        props: true,
+        children: [
+            {
+              path: 'periodo',
+              components: {
+                grafico: grafPeriodo,
+              }
+            },
+            {
+              path: 'media',
+              components: {
+                grafico: grafMedia,
+              }
+            },
+            {
+              path: 'disp',
+              components: {
+                grafico: grafDisp,
+              },
+            },
+            {
+              path: 'disphrs',
+              components: {
+                grafico: grafDispHrs,
+              },
+            }
+          ],
     },
     {
         path: "/service",

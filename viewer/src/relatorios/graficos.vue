@@ -2,7 +2,6 @@
   <div class="painel">
     <div class="grid">
       <div class="col-10">
-
         <div class="p-grid menu">
           <div class="col-12 inline">
             <div class="p-fluid seletores grid">
@@ -89,14 +88,15 @@
                 <div class="selectTurno col-3">
                   <!-- ******* Seleção de turnos *********** -->
                   <div class="checkbox inline">
-                    Turnos:
                     <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
                     <label for="turno1">Turno1</label>
                   </div>
+                  <br>
                   <div class="checkbox inline">
                     <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
                     <label for="turno2">Turno2</label>
                   </div>
+                  <br>
                   <div class="checkbox inline">
                     <Checkbox id="turno3" name="turno" value="t3" v-model="selecTurno" />
                     <label for="turno3">Turno3</label>
@@ -104,21 +104,28 @@
                 </div>
 
                 <!-- ******* Seletores Unidade/período *********  -->
-                <div class="selectTurno col-3">
+                <div class="selectTurno col-5">
                   <!-- Seleção de Unidade  -->
-                  <div v-if="!selectEcoat">
-                    <div class="checkbox inline">
-                      Unidade:
+                  <div>
+                    Unidade:
+                    <div v-if="periodo!=='Disp' && !selectEcoat" class="checkbox inline">
                       <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
                       <label for="m2">m2</label>
                     </div>
-                    <div class="checkbox inline">
+                    <div v-if="periodo!=='Disp' && !selectEcoat" class="checkbox inline">
                       <RadioButton id="kg" name="unid" value="kg" v-model="unidade" />
                       <label for="kg">kg</label>
                     </div>
                     <div class="checkbox inline">
                       <RadioButton id="ro" name="unid" value="RO" v-model="unidade" />
                       <label for="ro">R.O.</label>
+                    <div v-if="periodo==='Disp'" class="checkbox inline">
+                      <RadioButton id="perc" name="perc" value="perc" v-model="unidadeDisp" />
+                      <label for="perc">%</label>
+                    </div>
+                    <div v-if="periodo==='Disp'" class="checkbox inline">
+                      <RadioButton id="horas" name="horas" value="horas" v-model="unidadeDisp" />
+                      <label for="horas">horas</label>
                     </div>
                   </div>
 
@@ -131,20 +138,19 @@
                   </div>
                   <div class="checkbox inline">
                     <RadioButton id="media" name="unid" value="media" v-model="periodo" />
-                    <label for="media">Hora-máquina</label>
+                    <label for="media">hora-maq.</label>
+                  </div>
+                  <div class="checkbox inline">
+                    <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
+                    <label for="disp">Disp.</label>
                   </div>
 
                 </div>
 
                 <!-- ********** Botão de validação ************ -->
-                <div class="inline col-2">
+                <div class="inline col-1">
                   <Button label="Atualizar" @click="consultaDados" />
                 </div>
-                <!-- <div v-if="metaGraf !== 0 && dadosRecebidos === true" class="inline vertical col-2"> Meta: {{
-                metaGraf
-                }} {{ sufixo }}</div> -->
-                Tempo Disp: {{tempoCarga}}
-                Tempo Trab: {{tempoTrabalhado}}
 
               </div>
             </div>
@@ -159,10 +165,18 @@
 
         <table v-if="dadosRecebidos && mostraTotal">
           <tr>
-            <th colspan="4"> Totalizador </th>
+            <th colspan="5"> Totalizador </th>
           </tr>
+
           <tr>
             <th></th>
+            <th>
+              <label class="label" for="metaPeriodo" v-if="periodo!=='Disp'"> Média (hora): </label>
+              <label class="label" for="metaPeriodo" v-if="periodo==='Disp'"> Média (%): </label>
+            </th>
+            <th>
+              <label class="label" for="metaPeriodo"> Média ({{selecPeriodo.code}}): </label>
+            </th>
             <th>
               <label class="label" for="metaPeriodo"> Total Grafico: </label>
             </th>
@@ -170,28 +184,44 @@
               <label class="label" for="metaPeriodo"> Último período: </label>
             </th>
           </tr>
+
           <tr>
             <td class="labelLinha"> Capacidade Disponível </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medCapDisponivel" readonly="true"
+                :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
                 :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
                 :suffix="sufixoTot" />
             </td>
           </tr>
 
           <tr>
-            <td class="labelLinha"> Meta R.O. </td>
+            <td class="labelLinha"> Meta Prod. </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true"
-                :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medHmeta" readonly="true"
+                :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="metaGraf.metaD" readonly="true" :suffix="'%'"
+                v-if="periodo==='Disp'" />
             </td>
 
             <td>
-              <InputNumber id="total" :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true"
-                :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
+                :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true" :suffix="sufixoTot" />
+            </td>
+
+            <td>
+              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
 
@@ -199,25 +229,45 @@
             <td class="labelLinha"> Produção Efetiva </td>
 
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totProdEfet>=totMeta? 'black' : 'red')"
-                v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(medHprodEfet)>=parseFloat(medHmeta)? 'green' : 'red')" v-model="medHprodEfet"
+                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDisp)>=parseFloat(metaGraf.metaD)? 'green' : 'red')" v-model="medDisp"
+                readonly="true" :suffix="'%'" v-if="periodo==='Disp'" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(medProdEfet)>=parseFloat(medMeta)? 'green' : 'red')" v-model="medProdEfet"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(totProdEfet)>=parseFloat(totMeta)? 'green' : 'red')" v-model="totProdEfet"
+                readonly="true" :suffix="sufixoTot" />
             </td>
 
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultProdEfet>=ultMeta? 'black' : 'red')"
-                v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(ultProdEfet)>=parseFloat(ultMeta)? 'green' : 'red')" v-model="ultProdEfet"
+                readonly="true" :suffix="sufixoTot" />
             </td>
 
           </tr>
 
           <tr>
-            <td class="labelLinha"> Dif. p/ Meta R.O. </td>
+            <td class="labelLinha"> Dif. p/ Meta Prod. </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totDifProd >= 0 ? 'blue' : 'red')" v-model="totDifProd"
+              <InputNumber :inputStyle="confTable(parseFloat(medHdifProd)/0 >= 0 ? 'blue' : 'red')" v-model="medHdifProd"
+                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDifDisp) >= 0 ? 'blue' : 'red')" v-model="medDifDisp"
+                readonly="true" :suffix="'% '" v-if="periodo==='Disp'" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(medDifProd) >= 0 ? 'blue' : 'red')" v-model="medDifProd"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(totDifProd) >= 0 ? 'blue' : 'red')" v-model="totDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultDifProd >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
+              <InputNumber :inputStyle="confTable(parseFloat(ultDifProd) >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
                 readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
@@ -225,12 +275,18 @@
           <tr>
             <td class="labelLinha"> Dif. p/ Cap. disponível </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(totDifProdDisp >= 0 ? 'blue' : 'red')"
-                v-model="totDifProdDisp" readonly="true" :suffix="sufixoTot" />
             </td>
             <td>
-              <InputNumber id="total" :inputStyle="confTable(ultDifProdDisp >= 0 ? 'blue' : 'red')"
-                v-model="ultDifProdDisp" readonly="true" :suffix="sufixoTot" />
+              <InputNumber :inputStyle="confTable(parseFloat(medDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="medDifProdDisp"
+                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(totDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="totDifProdDisp"
+                readonly="true" :suffix="sufixoTot" />
+            </td>
+            <td>
+              <InputNumber :inputStyle="confTable(parseFloat(ultDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="ultDifProdDisp"
+                readonly="true" :suffix="sufixoTot" />
             </td>
           </tr>
 
@@ -241,11 +297,6 @@
 
     <!-- ************************************ área do gráfico ****************************************************-->
     <div id="graficoRel" class="grafico">
-      <div v-if="dadosRecebidos">
-        <!-- GRÁFICO -->
-        <Chart v-if="!aguarde" id="grafGeral" type="bar" ref="graficoProd" :height="alturaGraf" :width="larguraGraf"
-          :data="basicData" :options="options" @select="excluiBarra($event)" />
-      </div>
 
       <!-- Aguardando... -->
       <div v-if="!dadosRecebidos">
@@ -260,6 +311,16 @@
         " strokeWidth="6" animationDuration=".8s" />
         </span>
       </div>
+
+      <div>
+
+        <!-- GRÁFICO -->
+        <router-view name="grafico" :id="id" @calculaTotal="calculaTotal" @fDadosRecebidos="fDadosRecebidos"
+          @fAguarde="fAguarde" :metas="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
+          :sufixo="sufixo" :unidade="unidade"></router-view>
+
+      </div>
+
     </div>
 
   </div>
@@ -271,16 +332,13 @@ import moment from 'moment'
 export default {
 
   mounted() {
+    this.$router.push("/graficos/periodo");
+
     this.dataInicio = new Date();
     this.dataFim = new Date();
     this.selecTurno = ["t1", "t2", "t3"];
 
-    setTimeout(this.ajustaAltura(), 250)
-
-
     setTimeout(this.inicializaMenu, 800);
-
-    this.listaDatasets = this.basicData.datasets.map((el) => el.label);
 
 
 
@@ -293,31 +351,41 @@ export default {
 
     },
 
-    unidade() {
+    periodo(valor) {
 
-      if (this.respostaBD != {} && this.respostaBD != undefined && this.respostaBD != null) {
+      valor === "media" ? this.$router.push("/graficos/media") : valor === "total" ? this.$router.push("/graficos/periodo") : this.unidadeDisp === 'perc' ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
 
-        // this.compilaDadosGraf(this.respostaBD)
-
+      if (valor === "media" && this.unidade === "Disp") {
+        this.unidade = "m2"
       }
+
+      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+      this.inicializaArrays();
 
     },
 
-    medProdEfet() {
+    unidade() {
 
-      if (this.medProdEfet >= this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
-        this.statusMedia = this.corOK
-        this.basicData.datasets[1].borderWidth = 3;
-      } else if (this.medProdEfet < this.metaGraf && this.metaGraf > 0 && this.periodo === "media") {
-        this.statusMedia = this.corNOK
-        this.basicData.datasets[1].borderWidth = 3;
-      } /*else {
-        this.statusMedia = ''
-        this.basicData.datasets[1].borderWidth = 0;
-        this.basicData.datasets[1].data = []
+      this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+      this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
 
-      } */
+      this.inicializaArrays();
+
+      this.respostaBD.dadosQtdkg ? this.calculaTotal() : null;
+
+    },
+
+    unidadeDisp(valor) {
+
+      valor === "perc" ? this.$router.push("/graficos/disp") : this.$router.push("/graficos/disphrs")
+
+      this.inicializaArrays();
+
     }
+
+
 
   },
 
@@ -338,8 +406,16 @@ export default {
 
   data() {
     return {
-      tempoCarga: 0.0,
+      metaGraf: {},
+      tempoDisponivel: 0.0,
       tempoTrabalhado: 0.0,
+
+      dadosQtd: [], // Dados temporários para o totalizador
+      prodDisp: [], // Dados temporários para o totalizador
+      prodMeta: [], // Dados temporários para o totalizador
+      mediaGraf: [], // Dados temporários para o totalizador
+      tempoTrab: [], // Dados temporários para o totalizador
+      tempoDisp: [], // Dados temporários para o totalizador
 
       respostaBD: {}, // Resposta do Banco de dados para consulta
 
@@ -367,11 +443,18 @@ export default {
       cargaTotal: 0.0,
 
       metaPeriodo: 0.0,
+      medHcapDisponivel: 0.0,
+      medHmeta: 0.0,
+      medHprodEfet: 0.0,
+      medHdifProd: 0.0,
+      medHdifProdDisp: 0.0,
       medCapDisponivel: 0.0,
       medMeta: 0.0,
       medProdEfet: 0.0,
       medDifProd: 0.0,
       medDifProdDisp: 0.0,
+      medDisp: 0.0,
+      medDifDisp: 0.0,
       totCapDisponivel: 0.0,
       totMeta: 0.0,
       totProdEfet: 0.0,
@@ -384,9 +467,10 @@ export default {
       ultDifProdDisp: 0.0,
 
       periodo: 'total',
-      unidade: "m2",
-      sufixo: "m2",
-      sufixoTot: "m2",
+      unidade: "m2", // Unidade para os gráficos de m2 ou kg
+      unidadeDisp: "perc", // Unidade para o gráfico de Disponibilidade
+      sufixo: "",
+      sufixoTot: "",
       dadosRecebidos: false,
       dataInicio: "",
       dataFim: "",
@@ -410,222 +494,28 @@ export default {
       media: 0,
       total: 0,
 
-
-      //       const chart = new Chart(ctx, {
-      //   type: 'line',
-      //   data: {
-      //     labels: ['Friday', 'Saturday', 'Sunday', 'Monday'],
-      //     datasets: [
-      //       {
-      //         yAxisID: 'A', // <-- the Y axis to use for this data set
-      //         label: 'Page Views',
-      //         data: [13500, 5700, 6300, 8200],
-      //         borderWidth: 1,
-      //         backgroundColor: 'blue',
-      //         borderColor: 'blue'
-      //       },
-      //       {
-      //         yAxisID: 'B', // <-- the Y axis to use for this data set
-      //         label: 'Revenue',
-      //         data: [11, 3.6, 7.3, 8.1],
-      //         backgroundColor: 'green',
-      //         borderColor: 'green'
-      //       }
-      //     ]
-      //   },
-      //   options: {
-      //     responsive: true,
-      //     scales: {
-      //       A: {
-      //         type: 'linear',
-      //         position: 'left',
-      //         ticks: { beginAtZero: true, color: 'blue' },
-      //         // Hide grid lines, otherwise you have separate grid lines for the 2 y axes
-      //         grid: { display: false }
-      //       },
-      //       B: {
-      //         type: 'linear',
-      //         position: 'right',
-      //         ticks: { beginAtZero: true, color: 'green' },
-      //         grid: { display: false }
-      //       },
-      //       x: { ticks: { beginAtZero: true } }
-      //     }
-      //   }
-      // });
-
-      // stackedOptions: {
-      //                 plugins: {
-      //                     tooltip: {
-      //                         mode: 'index',
-      //                         intersect: false
-      //                     },
-      //                     legend: {
-      //                         labels: {
-      //                             color: '#495057'
-      //                         }
-      //                     }
-      //                 },
-      //                 scales: {
-      //                     x: {
-      //                         stacked: true,
-      //                         ticks: {
-      //                             color: '#495057'
-      //                         },
-      //                         grid: {
-      //                             color: '#ebedef'
-      //                         }
-      //                     },
-      //                     y: {
-      //                         stacked: true,
-      //                         ticks: {
-      //                             color: '#495057'
-      //                         },
-      //                         grid: {
-      //                             color: '#ebedef'
-      //                         }
-      //                     }
-
-      basicData: {
-        labels: ["1"],
-        datasets: [
-          {
-            type: "bar",
-            label: "Produção",
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: [],
-            data: [0],
-            order: 4
-          },
-          {
-            type: "line",
-            label: "Meta",
-            borderColor: "rgb(47, 103, 255)",
-            borderWidth: 2,
-            radius: 0,
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 1
-          },
-          {
-            type: "line",
-            label: "Carga Total",
-            borderColor: "rgb(255, 103, 47)",
-            borderWidth: 3,
-            radius: 2,
-            pointStyle: 'line',
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 2
-          },
-          {
-            type: "line",
-            label: "Meta Período",
-            borderColor: "rgb(47, 103, 255)",
-            borderWidth: 3,
-            radius: 2,
-            pointStyle: 'line',
-            data: [0],
-            datalabels: {
-              display: false,
-            },
-            order: 3,
-          },
-        ],
-      },
-
-      options: {
-        responsive: false,
-        hoverMode: "index",
-        stacked: false,
-
-        scales: {
-          x: {
-            stacked: true,
-            ticks: {
-              // Include a dollar sign in the ticks
-              callback: function (value) {
-                let label = this.getLabelForValue(value);
-                let aa = label.substr(2, 2) + " ";
-                let mm = label.substr(4, 2) + "/";
-                let dd = label.substr(6, 2) > 0 ? label.substr(6, 2) + "/" : "";
-                let hh =
-                  label.substr(8, 2) !== "" ? label.substr(8, 2) + ":00" : "";
-                return `${dd}${mm}${aa}${hh}`;
-              },
-            },
-            title: {
-              display: true,
-              text: "data",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          },
-          y: {
-            stacked: true,
-            title: {
-              display: true,
-              text: "produção",
-              font: {
-                weight: "bold",
-                size: 14,
-              },
-            },
-          },
-        },
-
-        plugins: {
-          datalabels: {
-            anchor: "end",
-            clamp: true,
-            offset: -1,
-            align: "end",
-            display: "auto",
-            color: "#606075",
-            font: {
-              weight: "bold",
-              size: 16,
-            },
-            formatter: Math.round(),
-            padding: 1,
-          },
-
-          annotation: {
-            annotations: {
-              line1: {
-                type: 'line',
-                yMin: 15000,
-                yMax: 15000,
-                borderColor: 'rgb(23, 50, 217)',
-                borderWidth: 3,
-              }
-            }
-          },
-
-          title: {
-            display: false,
-          },
-          legend: {
-            display: false,
-          },
-        },
-      },
     };
   },
 
   sockets: {
     resConsDB(data) {
 
-      this.respostaBD = data
 
-      this.compilaDadosGraf(this.respostaBD)
+      if (!data.dadosQtdkg) {
+
+        this.aguarde = false
+        this.dadosRecebidos = true
+        alert("Nenhum dado retornado!")
+
+      } else if (data.parametros.id === this.id) {
+
+        this.respostaBD = data
+
+        this.mostraTotal = true
+
+      }
+
+      this.inicializaArrays();
 
     },
 
@@ -634,142 +524,34 @@ export default {
 
   methods: {
 
-    compilaDadosGraf(data) {
+    inicializaArrays() {
 
-      this.tempoTrabalhado = Object.values(data.horaMaquina).reduce(
-        (acc, el) => {
-          acc = acc + parseFloat(el);
-          return acc
-        }, 0.0)
+      if (this.respostaBD.dadosQtdkg) {
 
-      this.tempoCarga = Object.values(data.tempoCarga).reduce(
-        (acc, el) => {
-          acc = acc + parseFloat(el);
-          return acc
-        }, 0.0)
+        this.dadosQtd = Object.values(this.respostaBD[`dadosQtd${this.unidade}`])
+        this.prodDisp = Object.values(this.respostaBD[`prodDisp${this.unidade}`])
+        this.prodMeta = Object.values(this.respostaBD[`prodMeta${this.unidade}`])
+        this.mediaGraf = Object.values(this.respostaBD[`media${this.unidade}`])
+        this.tempoTrab = Object.values(this.respostaBD[`tempoTrab`])
+        this.tempoDisp = Object.values(this.respostaBD[`tempoDisp`])
 
-      if (data.dadosQtd === []) {
-
-        this.aguarde = false;
-        this.dadosRecebidos = true;
-        alert("Nenhum dado retornado!")
-
-      } else if (data.parametros.id === this.id) {
-
-        this.dadosRecebidos = true;
-
-
-        let unidGrafico;
-
-        if (this.periodo === "media") {
-          unidGrafico = "media";
-          this.mostraTotal = false;
-        } else {
-          this.mostraTotal = true;
-          unidGrafico = "dadosQtd";
-          this.basicData.datasets[2].data = Object.values(data["cargaTotal"]);
-          this.basicData.datasets[3].data = Object.values(data["meta"]);
-        }
-
-
-        this.basicData.labels = Object.keys(data[unidGrafico]);
-
-        if (this.unidade === 'RO') {
-
-          this.basicData.datasets[0].data = Object.values(data['RO']);
-
-          this.basicData.datasets[1].data = []
-          this.basicData.datasets[2].data = []
-          this.basicData.datasets[3].data = []
-
-
-        } else {
-
-          this.basicData.datasets[0].data = Object.values(data[unidGrafico]);
-
-        }
-
-
-        setTimeout(this.infoGraf, 3000);
-
-        this.verificaMeta();
-
-        setTimeout(() => {
-
-          // Ajusta altura do gráfico
-          this.ajustaAltura();
-
-          this.aguarde = false;
-
-        }, 250)
-        //})
-
-        this.calculaTotal(this.basicData.datasets[0].data, this.basicData.labels);
       }
 
+
+    },
+
+    fDadosRecebidos(valor) {
+      this.dadosRecebidos = valor
+    },
+
+    fAguarde(valor) {
+      this.aguarde = valor
     },
 
     confTable(variavel) {
       return { 'text-align': 'center', 'font-size': '0.8vw ', color: variavel, height: '0.3vh', width: '8vw' }
     },
 
-
-
-    verificaMeta() {
-      let indexMeta = 0
-
-      if (this.periodo !== "media" || !this.metaGraf > 0) {
-        this.basicData.datasets[1].data = []
-        indexMeta = 3
-
-      } else {
-        this.basicData.datasets[2].data = []
-        this.basicData.datasets[3].data = []
-        indexMeta = 1
-      }
-
-
-      return Promise.resolve(
-
-        //Object.values(data["media"]).forEach((element, index) => {
-
-        this.basicData.datasets[0].data.forEach((element, index) => {
-
-
-          this.periodo === "media" ? this.basicData.datasets[1].data[index] = this.metaGraf : this.basicData.datasets[1].data[index] = []
-
-          if (!parseFloat(this.basicData.datasets[indexMeta].data[index]) > 0) {
-            this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-            this.basicData.datasets[0].borderColor[index] = "#42A5F5";
-            //this.basicData.datasets[1].data = []
-          } else {
-            //this.basicData.datasets[2].data = []
-            //this.basicData.datasets[3].data = []
-            if (parseFloat(element) >= parseFloat(this.basicData.datasets[indexMeta].data[index])) {
-              this.basicData.datasets[0].backgroundColor[index] = this.corOK;
-              this.basicData.datasets[0].borderColor[index] = this.corOK;
-            } else {
-              this.basicData.datasets[0].backgroundColor[index] = this.corNOK;
-              this.basicData.datasets[0].borderColor[index] = this.corNOK;
-            }
-
-          }
-        })
-      )
-
-    },
-    diaSemana(data) {
-      if (data.substr(6, 2) > 0) {
-        let aa = data.substr(2, 2);
-        let mm = data.substr(4, 2);
-        let dd = data.substr(6, 2);
-        let hh = data.substr(8, 2) !== "" ? data.substr(8, 2) + ":00" : "00:00:00";
-        //console.log("valor: ", this.getLabelForValue(value), " - index: ", this.getLabelForValue(index), " - ticks: ", this.getLabelForValue(ticks))
-        return new Date(`${mm}-${dd}-${aa} ${hh}`).getDay();
-      } else {
-        return "";
-      }
-    },
 
     inicializaMenu() {
 
@@ -782,27 +564,15 @@ export default {
       // Filtra Centros de Custo (Setores) e elimina duplicados
       this.listaCCs = Object.values(this.listaCTs).reduce((acc, index) => { acc[index.idsector] = index; return acc }, {})
 
-
-
       this.listaFDeptos = this.listaDeptos
       this.listaFCCs = this.listaCCs
 
     },
-
-    ajustaAltura() {
-
-      // Ajusta altura do gráfico
-      this.larguraGraf = document.getElementById("graficoRel").clientWidth;
-      this.alturaGraf = (document.getElementById("graficoRel").clientHeight - 70) * 1;
-    },
-
-
     atualizaFCTs() {
 
       try {
 
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
-
 
           if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
             (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
@@ -822,7 +592,7 @@ export default {
     atualizaMenu(seletor) {
 
 
-      this.metaGraf = 0 // Zera a meta atual
+      this.metaGraf = {} // Zera a meta atual
 
       if (seletor === "Depto") {
 
@@ -908,77 +678,118 @@ export default {
     },
 
 
-    calculaTotal(dados, labels) {
-      let tamanhoDados = this.basicData.datasets[0].data.length
+    calculaTotal(indexExcluido) { //dadosGraf
 
-      //for (const [index, label] of labels.entries()) {
 
-      labels.forEach((label, index) => {
-        if (this.diaSemana(label) === 6) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].backgroundColor[index] = "yellow"
-          this.basicData.datasets[0].borderWidth[index] = 5
-        } else if (this.diaSemana(label) === 0) {
-          //this.basicData.datasets[0].backgroundColor[index] = "#42A5F5";
-          this.basicData.datasets[0].backgroundColor[index] = "coral"
-          this.basicData.datasets[0].borderWidth[index] = 5
-        } else {
-          this.basicData.datasets[0].borderWidth[index] = 0
+
+        function excluiItem(dados, indexEx) {
+          return dados.reduce(function (
+            acc,
+            element,
+            index
+          ) {
+            acc = acc || [];
+            if (index != indexEx) {
+              acc.push(element);
+            }
+            return acc;
+          }, []);
+        }
+
+        if (indexExcluido >= 0) {
+
+          console.log("INDEX A SER EXCLUÍDO: ", indexExcluido)
+
+          this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
+          this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
+          this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
+          this.mediaGraf = excluiItem(this.mediaGraf, indexExcluido)
+          this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
+          this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
+
+        }
+
+        let tamanhoDados = this.dadosQtd.length
+
+        // VALORES TOTAIS
+        function reduceArray(dados) {
+          return dados.reduce(
+            (acc, index) => {
+              acc = acc || 0.0
+              if (index > 0) {
+                acc = parseFloat(acc) + parseFloat(index)
+              }
+              return acc
+            },
+            0.0
+          )
         }
 
 
-        // VALORES TOTAIS
+        this.totProdEfet = reduceArray(this.dadosQtd).toFixed(0)
 
-        this.totProdEfet = this.basicData.datasets[0].data.reduce(
-          (acc, index) => {
-            acc = acc || 0.0
-            if (index > 0) {
-              acc = parseFloat(acc) + parseFloat(index)
-            }
-            return acc
-          },
-          0.0
-        )
+        this.totCapDisponivel = reduceArray(this.prodDisp).toFixed(0)
 
-        this.totCapDisponivel = this.basicData.datasets[2].data.reduce(
-          (acc, index) => acc = acc + index,
-          0.0
-        )
 
-        this.totMeta = this.basicData.datasets[3].data.reduce(
-          (acc, index) => acc = acc + index,
-          0.0
-        )
+        this.totMeta = reduceArray(this.prodMeta).toFixed(0);
 
         this.totDifProd = this.totProdEfet - this.totMeta
 
         this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
+        this.ultMeta = this.prodMeta[tamanhoDados - 1]
 
-        // VALORES MÉDIOS
+
+        // VALORES MÉDIOS HORA
+
+        this.medHprodEfet = (reduceArray(this.mediaGraf) / tamanhoDados).toFixed(1)
+
+        this.medHmeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS']).toFixed(1)
+
+        this.medHdifProd = this.medHprodEfet - this.medHmeta
+
+
+        // VALORES MÉDIOS PERÍODO
 
         this.medProdEfet = parseFloat((
           this.totProdEfet / parseInt(tamanhoDados)
-        ).toFixed(1));
+        ).toFixed(0));
+
+        this.medMeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados).toFixed(0)
+
+        this.medCapDisponivel = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados).toFixed(0)
+
+        this.medDifProd = this.medProdEfet - this.medMeta
+
+        this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
+
+        this.medDisp = (reduceArray(this.tempoTrab) / reduceArray(this.tempoDisp) * 100).toFixed(1)
+
+        this.medDifDisp = this.medDisp - this.metaGraf.metaD
 
 
         // VALORES ULTIMA BARRA
 
-        this.ultCapDisponivel = this.basicData.datasets[2].data[tamanhoDados - 1]
+        this.ultCapDisponivel = (this.prodDisp[tamanhoDados - 1]).toFixed(0)
 
-        this.ultProdEfet = this.basicData.datasets[0].data[tamanhoDados - 1]
+        this.ultProdEfet = parseFloat(this.dadosQtd[tamanhoDados - 1]).toFixed(0)
 
-        this.ultMeta = this.basicData.datasets[3].data[tamanhoDados - 1]
 
         this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
 
         this.ultDifProd = this.ultProdEfet - this.ultMeta
 
-      }
 
-      )
-
+        // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+        //   this.statusMedia = this.corOK
+        // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+        //   this.statusMedia = this.corNOK
+        // }
+      
     },
+
+
+
 
     excluiBarra(e) {
       console.log("Evento do clique no gráfico", e);
@@ -1016,7 +827,7 @@ export default {
     consultaDados() {
       // Prepara configuração pra enviar para o servidor consultar o BD
 
-      this.metaGraf = 0 // Zera a meta atual
+      this.metaGraf = {} // Zera a meta atual
 
       //this.dadosRecebidos = false
 
@@ -1026,20 +837,17 @@ export default {
         alert("Selecionar pelo menos 1 Centro de Trabalho para o Gráfico")
       } else {
 
-        coletaMeta(this.selecCC, this.unidade, this.metas).then((res) => {
+
+        this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
+        this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
+
+        coletaMeta(this.selecCC, this.metas).then((res) => {
 
           this.metaGraf = res
 
           this.dadosRecebidos = false;
           this.aguarde = true;
 
-          this.sufixo = this.fSufixo()[1]; //Verifica o sufixo correto para os dados solicitados da Média
-          this.sufixoTot = this.fSufixo()[0]; //Verifica o sufixo correto para os dados solicitados do Total
-
-          this.options.scales.y.title.text = this.sufixo;
-
-          this.basicData.labels = []; // Apaga labels atuais
-          this.basicData.datasets[0].data = []; // Apaga datasets atuais
           this.msg =
             "Solicitando atualização dos dados para os CTs selecionados... "
           this.$socket.emit("solicitaDados", {
@@ -1059,23 +867,33 @@ export default {
 
       }
 
-      function coletaMeta(selecao, unidade, metas) {
+      function coletaMeta(selecao, metas) {
         return new Promise(
           function (resolve) {
-            //let metasSelec = {}
-            //let metaGraf = 0;
-
             // Verifica e calcula metas
             if (selecao.length === 1) {
-              resolve(metas["metaCC"][selecao[0]][`meta${unidade === 'kg' ? 'P' : 'S'}`])
-              //metasSelec = {}
-            } else if (selecao.length > 1) {
+
+              resolve(metas["metaCC"][selecao[0]])
+
+            } else {
               resolve(selecao.reduce((acc, elemento, index) => {
-                acc = acc || { soma: 0, media: 0 }
-                acc["soma"] = acc["soma"] + metas["metaCC"][elemento][`meta${unidade === 'kg' ? 'P' : 'S'}`]
-                acc["media"] = acc["media"] = acc["soma"] / (index + 1)
+                //let campos = { soma: 0, media: 0 }
+                //acc["mediaP"] = acc["mediaP"] || campos
+                //acc["mediaS"] = acc["mediaS"] || campos
+                //acc["mediaD"] = acc["mediaD"] || campos
+
+                acc["somaP"] = acc["somaP"] + metas["metaCC"][elemento][`metaP`]
+                acc["metaP"] = acc["somaP"] / (index + 1)
+
+                acc["somaS"] = acc["somaS"] + metas["metaCC"][elemento][`metaS`]
+                acc["metaS"] = acc["somaS"] / (index + 1)
+
+                acc["somaD"] = acc["somaD"] + metas["metaCC"][elemento][`metaD`]
+                acc["metaD"] = acc["somaD"] / (index + 1)
+
                 return acc
-              }, 0).media)
+
+              }, { "metaP": 0, "metaS": 0, "metaD": 0, "somaP": 0, "somaS": 0, "somaD": 0 }))
               //resolve(this.metaGraf = this.metasSelec.media)
 
             }
@@ -1117,7 +935,7 @@ export default {
       return [" " + unidTotaliz, " " + unidTotaliz + "/" + perTotaliz]
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -1127,9 +945,6 @@ export default {
   overflow-y: hidden;
 }
 
-.linha {
-  height: 0.3vh;
-}
 
 
 .selectCT {
@@ -1171,12 +986,9 @@ export default {
 }
 
 .totalizador {
-  margin-left: -4vw;
+  margin-left: -20vw;
 }
 
-.vertical {
-  padding-top: 2vh
-}
 
 .p-float-label {
   margin-top: 0px;
@@ -1189,10 +1001,5 @@ export default {
 
 .labelLinha {
   font-size: x-small;
-}
-
-.streched {
-  height: 100%;
-
 }
 </style>

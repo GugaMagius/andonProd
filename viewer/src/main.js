@@ -5,7 +5,6 @@ import SocketIO from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io';
 import VueRouter from 'vue-router';
 import router from './router'
-//import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 
 import 'primevue/resources/themes/lara-light-blue/theme.css' // Theme
@@ -63,7 +62,6 @@ app.use(PrimeVue);
 app.use(VueRouter);
 app.use(router);
 app.use(ref);
-//app.use(ChartDataLabels);
 
 
 app.component('AutoComplete', AutoComplete);
@@ -93,7 +91,6 @@ app.component('RadioButton', RadioButton);
 app.component('Checkbox', Checkbox);
 app.component('ScrollPanel', ScrollPanel);
 app.component('Chart', Chart);
-//app.component(ChartDataLabels)
 
 
 app.mount('#app');
