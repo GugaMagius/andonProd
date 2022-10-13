@@ -119,210 +119,211 @@
                     <div class="checkbox inline">
                       <RadioButton id="ro" name="unid" value="RO" v-model="unidade" />
                       <label for="ro">R.O.</label>
-                    <div v-if="periodo==='Disp'" class="checkbox inline">
-                      <RadioButton id="perc" name="perc" value="perc" v-model="unidadeDisp" />
-                      <label for="perc">%</label>
+                      <div v-if="periodo==='Disp'" class="checkbox inline">
+                        <RadioButton id="perc" name="perc" value="perc" v-model="unidadeDisp" />
+                        <label for="perc">%</label>
+                      </div>
+                      <div v-if="periodo==='Disp'" class="checkbox inline">
+                        <RadioButton id="horas" name="horas" value="horas" v-model="unidadeDisp" />
+                        <label for="horas">horas</label>
+                      </div>
                     </div>
-                    <div v-if="periodo==='Disp'" class="checkbox inline">
-                      <RadioButton id="horas" name="horas" value="horas" v-model="unidadeDisp" />
-                      <label for="horas">horas</label>
+
+                    <br>
+                    <!-- Seleção do período  -->
+                    Totalizador:
+                    <div class="checkbox inline">
+                      <RadioButton id="total" name="unid" value="total" v-model="periodo" />
+                      <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
                     </div>
+                    <div class="checkbox inline">
+                      <RadioButton id="media" name="unid" value="media" v-model="periodo" />
+                      <label for="media">hora-maq.</label>
+                    </div>
+                    <div class="checkbox inline">
+                      <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
+                      <label for="disp">Disp.</label>
+                    </div>
+
                   </div>
 
-                  <br>
-                  <!-- Seleção do período  -->
-                  Totalizador:
-                  <div class="checkbox inline">
-                    <RadioButton id="total" name="unid" value="total" v-model="periodo" />
-                    <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
-                  </div>
-                  <div class="checkbox inline">
-                    <RadioButton id="media" name="unid" value="media" v-model="periodo" />
-                    <label for="media">hora-maq.</label>
-                  </div>
-                  <div class="checkbox inline">
-                    <RadioButton id="disp" name="unid" value="Disp" v-model="periodo" />
-                    <label for="disp">Disp.</label>
+                  <!-- ********** Botão de validação ************ -->
+                  <div class="inline col-1">
+                    <Button label="Atualizar" @click="consultaDados" />
                   </div>
 
                 </div>
-
-                <!-- ********** Botão de validação ************ -->
-                <div class="inline col-1">
-                  <Button label="Atualizar" @click="consultaDados" />
-                </div>
-
               </div>
             </div>
-          </div>
 
+          </div>
+        </div>
+
+
+        <!-- Tabela com valores e metas -->
+        <div class="col-1 totalizador">
+
+          <table v-if="dadosRecebidos && mostraTotal">
+            <tr>
+              <th colspan="5"> Totalizador </th>
+            </tr>
+
+            <tr>
+              <th></th>
+              <th>
+                <label class="label" for="metaPeriodo" v-if="periodo!=='Disp'"> Média (hora): </label>
+                <label class="label" for="metaPeriodo" v-if="periodo==='Disp'"> Média (%): </label>
+              </th>
+              <th>
+                <label class="label" for="metaPeriodo"> Média ({{selecPeriodo.code}}): </label>
+              </th>
+              <th>
+                <label class="label" for="metaPeriodo"> Total Grafico: </label>
+              </th>
+              <th>
+                <label class="label" for="metaPeriodo"> Último período: </label>
+              </th>
+            </tr>
+
+            <tr>
+              <td class="labelLinha"> Capacidade Disponível </td>
+              <td>
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="medCapDisponivel" readonly="true"
+                  :suffix="sufixoTot+'/'+selecPeriodo.code" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
+                  :suffix="sufixoTot" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
+                  :suffix="sufixoTot" />
+              </td>
+            </tr>
+
+            <tr>
+              <td class="labelLinha"> Meta Prod. </td>
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="medHmeta" readonly="true"
+                  :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="metaGraf.metaD" readonly="true" :suffix="'%'"
+                  v-if="periodo==='Disp'" />
+              </td>
+
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
+                  :suffix="sufixoTot+'/'+selecPeriodo.code" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true" :suffix="sufixoTot" />
+              </td>
+
+              <td>
+                <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true" :suffix="sufixoTot" />
+              </td>
+            </tr>
+
+            <tr>
+              <td class="labelLinha"> Produção Efetiva </td>
+
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(medHprodEfet)>=parseFloat(medHmeta)? 'green' : 'red')"
+                  v-model="medHprodEfet" readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+                <InputNumber :inputStyle="confTable(parseFloat(medDisp)>=parseFloat(metaGraf.metaD)? 'green' : 'red')"
+                  v-model="medDisp" readonly="true" :suffix="'%'" v-if="periodo==='Disp'" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(medProdEfet)>=parseFloat(medMeta)? 'green' : 'red')"
+                  v-model="medProdEfet" readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(totProdEfet)>=parseFloat(totMeta)? 'green' : 'red')"
+                  v-model="totProdEfet" readonly="true" :suffix="sufixoTot" />
+              </td>
+
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(ultProdEfet)>=parseFloat(ultMeta)? 'green' : 'red')"
+                  v-model="ultProdEfet" readonly="true" :suffix="sufixoTot" />
+              </td>
+
+            </tr>
+
+            <tr>
+              <td class="labelLinha"> Dif. p/ Meta Prod. </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(medHdifProd)/0 >= 0 ? 'blue' : 'red')"
+                  v-model="medHdifProd" readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
+                <InputNumber :inputStyle="confTable(parseFloat(medDifDisp) >= 0 ? 'blue' : 'red')" v-model="medDifDisp"
+                  readonly="true" :suffix="'% '" v-if="periodo==='Disp'" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(medDifProd) >= 0 ? 'blue' : 'red')" v-model="medDifProd"
+                  readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(totDifProd) >= 0 ? 'blue' : 'red')" v-model="totDifProd"
+                  readonly="true" :suffix="sufixoTot" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(ultDifProd) >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
+                  readonly="true" :suffix="sufixoTot" />
+              </td>
+            </tr>
+
+            <tr>
+              <td class="labelLinha"> Dif. p/ Cap. disponível </td>
+              <td>
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(medDifProdDisp) >= 0 ? 'blue' : 'red')"
+                  v-model="medDifProdDisp" readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(totDifProdDisp) >= 0 ? 'blue' : 'red')"
+                  v-model="totDifProdDisp" readonly="true" :suffix="sufixoTot" />
+              </td>
+              <td>
+                <InputNumber :inputStyle="confTable(parseFloat(ultDifProdDisp) >= 0 ? 'blue' : 'red')"
+                  v-model="ultDifProdDisp" readonly="true" :suffix="sufixoTot" />
+              </td>
+            </tr>
+
+          </table>
         </div>
       </div>
 
 
-      <!-- Tabela com valores e metas -->
-      <div class="col-1 totalizador">
+      <!-- ************************************ área do gráfico ****************************************************-->
+      <div id="graficoRel" class="grafico">
 
-        <table v-if="dadosRecebidos && mostraTotal">
-          <tr>
-            <th colspan="5"> Totalizador </th>
-          </tr>
+        <!-- Aguardando... -->
+        <div v-if="!dadosRecebidos">
+          <p>{{ msg }}</p>
 
-          <tr>
-            <th></th>
-            <th>
-              <label class="label" for="metaPeriodo" v-if="periodo!=='Disp'"> Média (hora): </label>
-              <label class="label" for="metaPeriodo" v-if="periodo==='Disp'"> Média (%): </label>
-            </th>
-            <th>
-              <label class="label" for="metaPeriodo"> Média ({{selecPeriodo.code}}): </label>
-            </th>
-            <th>
-              <label class="label" for="metaPeriodo"> Total Grafico: </label>
-            </th>
-            <th>
-              <label class="label" for="metaPeriodo"> Último período: </label>
-            </th>
-          </tr>
-
-          <tr>
-            <td class="labelLinha"> Capacidade Disponível </td>
-            <td>
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="medCapDisponivel" readonly="true"
-                :suffix="sufixoTot+'/'+selecPeriodo.code" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="totCapDisponivel" readonly="true"
-                :suffix="sufixoTot" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultCapDisponivel" readonly="true"
-                :suffix="sufixoTot" />
-            </td>
-          </tr>
-
-          <tr>
-            <td class="labelLinha"> Meta Prod. </td>
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="medHmeta" readonly="true"
-                :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="metaGraf.metaD" readonly="true" :suffix="'%'"
-                v-if="periodo==='Disp'" />
-            </td>
-
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="medMeta" readonly="true"
-                :suffix="sufixoTot+'/'+selecPeriodo.code" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="totMeta" readonly="true" :suffix="sufixoTot" />
-            </td>
-
-            <td>
-              <InputNumber :inputStyle="confTable(fontTable)" v-model="ultMeta" readonly="true" :suffix="sufixoTot" />
-            </td>
-          </tr>
-
-          <tr>
-            <td class="labelLinha"> Produção Efetiva </td>
-
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(medHprodEfet)>=parseFloat(medHmeta)? 'green' : 'red')" v-model="medHprodEfet"
-                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
-              <InputNumber :inputStyle="confTable(parseFloat(medDisp)>=parseFloat(metaGraf.metaD)? 'green' : 'red')" v-model="medDisp"
-                readonly="true" :suffix="'%'" v-if="periodo==='Disp'" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(medProdEfet)>=parseFloat(medMeta)? 'green' : 'red')" v-model="medProdEfet"
-                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(totProdEfet)>=parseFloat(totMeta)? 'green' : 'red')" v-model="totProdEfet"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(ultProdEfet)>=parseFloat(ultMeta)? 'green' : 'red')" v-model="ultProdEfet"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-
-          </tr>
-
-          <tr>
-            <td class="labelLinha"> Dif. p/ Meta Prod. </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(medHdifProd)/0 >= 0 ? 'blue' : 'red')" v-model="medHdifProd"
-                readonly="true" :suffix="sufixoTot+'/h'" v-if="periodo!=='Disp'" />
-              <InputNumber :inputStyle="confTable(parseFloat(medDifDisp) >= 0 ? 'blue' : 'red')" v-model="medDifDisp"
-                readonly="true" :suffix="'% '" v-if="periodo==='Disp'" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(medDifProd) >= 0 ? 'blue' : 'red')" v-model="medDifProd"
-                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(totDifProd) >= 0 ? 'blue' : 'red')" v-model="totDifProd"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(ultDifProd) >= 0 ? 'blue' : 'red')" v-model="ultDifProd"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-          </tr>
-
-          <tr>
-            <td class="labelLinha"> Dif. p/ Cap. disponível </td>
-            <td>
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(medDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="medDifProdDisp"
-                readonly="true" :suffix="sufixoTot+'/'+selecPeriodo.code" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(totDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="totDifProdDisp"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-            <td>
-              <InputNumber :inputStyle="confTable(parseFloat(ultDifProdDisp) >= 0 ? 'blue' : 'red')" v-model="ultDifProdDisp"
-                readonly="true" :suffix="sufixoTot" />
-            </td>
-          </tr>
-
-        </table>
-      </div>
-    </div>
-
-
-    <!-- ************************************ área do gráfico ****************************************************-->
-    <div id="graficoRel" class="grafico">
-
-      <!-- Aguardando... -->
-      <div v-if="!dadosRecebidos">
-        <p>{{ msg }}</p>
-
-        <span>
-          <ProgressSpinner v-if="aguarde" style="
+          <span>
+            <ProgressSpinner v-if="aguarde" style="
           :width: larguraGraf;
           :height: alturaGraf;
           position: relative;
           top: 15vh;
         " strokeWidth="6" animationDuration=".8s" />
-        </span>
-      </div>
+          </span>
+        </div>
 
-      <div>
+        <div>
 
-        <!-- GRÁFICO -->
-        <router-view name="grafico" :id="id" @calculaTotal="calculaTotal" @fDadosRecebidos="fDadosRecebidos"
-          @fAguarde="fAguarde" :metas="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
-          :sufixo="sufixo" :unidade="unidade"></router-view>
+          <!-- GRÁFICO -->
+          <router-view name="grafico" :id="id" @calculaTotal="calculaTotal" @fDadosRecebidos="fDadosRecebidos"
+            @fAguarde="fAguarde" :metas="metaGraf" :dadosGraf="respostaBD" :dadosRecebidos="dadosRecebidos"
+            :sufixo="sufixo" :unidade="unidade"></router-view>
+
+        </div>
 
       </div>
 
     </div>
-
   </div>
 </template>
 
@@ -682,110 +683,110 @@ export default {
 
 
 
-        function excluiItem(dados, indexEx) {
-          return dados.reduce(function (
-            acc,
-            element,
-            index
-          ) {
-            acc = acc || [];
-            if (index != indexEx) {
-              acc.push(element);
+      function excluiItem(dados, indexEx) {
+        return dados.reduce(function (
+          acc,
+          element,
+          index
+        ) {
+          acc = acc || [];
+          if (index != indexEx) {
+            acc.push(element);
+          }
+          return acc;
+        }, []);
+      }
+
+      if (indexExcluido >= 0) {
+
+        console.log("INDEX A SER EXCLUÍDO: ", indexExcluido)
+
+        this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
+        this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
+        this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
+        this.mediaGraf = excluiItem(this.mediaGraf, indexExcluido)
+        this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
+        this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
+
+      }
+
+      let tamanhoDados = this.dadosQtd.length
+
+      // VALORES TOTAIS
+      function reduceArray(dados) {
+        return dados.reduce(
+          (acc, index) => {
+            acc = acc || 0.0
+            if (index > 0) {
+              acc = parseFloat(acc) + parseFloat(index)
             }
-            return acc;
-          }, []);
-        }
-
-        if (indexExcluido >= 0) {
-
-          console.log("INDEX A SER EXCLUÍDO: ", indexExcluido)
-
-          this.dadosQtd = excluiItem(this.dadosQtd, indexExcluido)
-          this.prodDisp = excluiItem(this.prodDisp, indexExcluido)
-          this.prodMeta = excluiItem(this.prodMeta, indexExcluido)
-          this.mediaGraf = excluiItem(this.mediaGraf, indexExcluido)
-          this.tempoTrab = excluiItem(this.tempoTrab, indexExcluido)
-          this.tempoDisp = excluiItem(this.tempoDisp, indexExcluido)
-
-        }
-
-        let tamanhoDados = this.dadosQtd.length
-
-        // VALORES TOTAIS
-        function reduceArray(dados) {
-          return dados.reduce(
-            (acc, index) => {
-              acc = acc || 0.0
-              if (index > 0) {
-                acc = parseFloat(acc) + parseFloat(index)
-              }
-              return acc
-            },
-            0.0
-          )
-        }
+            return acc
+          },
+          0.0
+        )
+      }
 
 
-        this.totProdEfet = reduceArray(this.dadosQtd).toFixed(0)
+      this.totProdEfet = reduceArray(this.dadosQtd).toFixed(0)
 
-        this.totCapDisponivel = reduceArray(this.prodDisp).toFixed(0)
-
-
-        this.totMeta = reduceArray(this.prodMeta).toFixed(0);
-
-        this.totDifProd = this.totProdEfet - this.totMeta
-
-        this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
-
-        this.ultMeta = this.prodMeta[tamanhoDados - 1]
+      this.totCapDisponivel = reduceArray(this.prodDisp).toFixed(0)
 
 
-        // VALORES MÉDIOS HORA
+      this.totMeta = reduceArray(this.prodMeta).toFixed(0);
 
-        this.medHprodEfet = (reduceArray(this.mediaGraf) / tamanhoDados).toFixed(1)
+      this.totDifProd = this.totProdEfet - this.totMeta
 
-        this.medHmeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS']).toFixed(1)
+      this.totDifProdDisp = this.totProdEfet - this.totCapDisponivel
 
-        this.medHdifProd = this.medHprodEfet - this.medHmeta
-
-
-        // VALORES MÉDIOS PERÍODO
-
-        this.medProdEfet = parseFloat((
-          this.totProdEfet / parseInt(tamanhoDados)
-        ).toFixed(0));
-
-        this.medMeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados).toFixed(0)
-
-        this.medCapDisponivel = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados).toFixed(0)
-
-        this.medDifProd = this.medProdEfet - this.medMeta
-
-        this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
-
-        this.medDisp = (reduceArray(this.tempoTrab) / reduceArray(this.tempoDisp) * 100).toFixed(1)
-
-        this.medDifDisp = this.medDisp - this.metaGraf.metaD
+      this.ultMeta = this.prodMeta[tamanhoDados - 1]
 
 
-        // VALORES ULTIMA BARRA
+      // VALORES MÉDIOS HORA
 
-        this.ultCapDisponivel = (this.prodDisp[tamanhoDados - 1]).toFixed(0)
+      this.medHprodEfet = (reduceArray(this.mediaGraf) / tamanhoDados).toFixed(1)
 
-        this.ultProdEfet = parseFloat(this.dadosQtd[tamanhoDados - 1]).toFixed(0)
+      this.medHmeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS']).toFixed(1)
 
-
-        this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
-
-        this.ultDifProd = this.ultProdEfet - this.ultMeta
+      this.medHdifProd = this.medHprodEfet - this.medHmeta
 
 
-        // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-        //   this.statusMedia = this.corOK
-        // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
-        //   this.statusMedia = this.corNOK
-        // }
-      
+      // VALORES MÉDIOS PERÍODO
+
+      this.medProdEfet = parseFloat((
+        this.totProdEfet / parseInt(tamanhoDados)
+      ).toFixed(0));
+
+      this.medMeta = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoTrab) / tamanhoDados).toFixed(0)
+
+      this.medCapDisponivel = (this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] * reduceArray(this.tempoDisp) / tamanhoDados).toFixed(0)
+
+      this.medDifProd = this.medProdEfet - this.medMeta
+
+      this.medDifProdDisp = this.medProdEfet - this.medCapDisponivel
+
+      this.medDisp = (reduceArray(this.tempoTrab) / reduceArray(this.tempoDisp) * 100).toFixed(1)
+
+      this.medDifDisp = this.medDisp - this.metaGraf.metaD
+
+
+      // VALORES ULTIMA BARRA
+
+      this.ultCapDisponivel = (this.prodDisp[tamanhoDados - 1]).toFixed(0)
+
+      this.ultProdEfet = parseFloat(this.dadosQtd[tamanhoDados - 1]).toFixed(0)
+
+
+      this.ultDifProdDisp = this.ultProdEfet - this.ultCapDisponivel
+
+      this.ultDifProd = this.ultProdEfet - this.ultMeta
+
+
+      // if (this.medProdEfet >= this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+      //   this.statusMedia = this.corOK
+      // } else if (this.medProdEfet < this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] && this.metaGraf[this.unidade === 'kg' ? 'metaP' : 'metaS'] > 0 && this.periodo === "media") {
+      //   this.statusMedia = this.corNOK
+      // }
+
     },
 
 
