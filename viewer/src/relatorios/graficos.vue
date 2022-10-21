@@ -145,7 +145,7 @@
                 </div>
 
                 <!-- ********** Botão de validação ************ -->
-                <div class="inline col-1">
+                <div class="inline col-2">
                   <Button label="Atualizar" @click="consultaDados" />
                 </div>
 

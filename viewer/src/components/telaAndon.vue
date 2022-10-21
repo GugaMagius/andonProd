@@ -895,6 +895,7 @@ export default {
     Graficos,
     Display,
   },
+
   props: {
     dadosServer: Object,
     ecoat: Boolean,
@@ -908,9 +909,9 @@ export default {
     condS: String, // Condição da meta secundária
     setor: String,
     listaCTs: Object
-
   },
 
+  
   mounted() {
 
     this.$socket.emit("dadosSolicitados", "Solicitando atualização de dados");

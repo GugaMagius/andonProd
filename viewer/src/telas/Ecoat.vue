@@ -42,6 +42,12 @@ export default {
 
     }
   },
+  watch: {
+    dadosServer() {
+      this.calcPerformance();
+    }
+
+  },
   methods: {
     verificaDados() {
       try {
