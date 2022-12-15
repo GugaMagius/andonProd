@@ -45,14 +45,21 @@ function fEnviaEmailSemCad(lista) {
 
 
          //#Teste desativar quando estiver em teste 
-        // enviaEmail("Itens não cadastrados",
-        //     "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
+        //  enviaEmail("Itens não cadastrados",
+        //      "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
         //     "Diones",
         //     'diones.nascimento@magius.com.br'
         // )
         // emailSemCadEnviado = true;
         // semCadastro = []
         
+        enviaEmail("Itens não cadastrados",
+        "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
+       "Gustavo",
+       'gustavo@magius.com.br'
+   )
+   emailSemCadEnviado = true;
+   semCadastro = []
 
     }
 }

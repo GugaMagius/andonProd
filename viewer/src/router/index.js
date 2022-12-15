@@ -15,6 +15,7 @@ import grafPeriodo from "@/components/grafPeriodo.vue"
 import grafMedia from "@/components/grafMedia.vue"
 import grafDisp from "@/components/grafDisp.vue"
 import grafDispHrs from "@/components/grafDispHrs.vue"
+import AndonGeral from "@/components/telaAndonGeral.vue"
 //import Andon from "@/components/telaAndon";
 
 
@@ -53,6 +54,12 @@ const routes = [
         path: "/formacaokit",
         name: "- Formação Kits",
         component: FormacaoKit,
+        props: true
+    },
+    {
+        path: "/andongeral",
+        name: "- Teste Andon",
+        component: AndonGeral,
         props: true
     },
     {
