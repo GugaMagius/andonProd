@@ -98,9 +98,12 @@ function itemsListUpdate(dados) {
 
     vItemsList = Functions.reduceDatasul(dados)
     //Functions.fItemsList(vItemsList);
+    storage.setLS("listaPc", dados)
 
 }
 module.exports.itemsListUpdate = itemsListUpdate
+
+setInterval(itemsListUpdate, 1800000 )
 
 
 
@@ -292,8 +295,7 @@ function respostaBD(string, destino, BD) {
 
                     respostaED["Ontem"]["Turno3"]["media"] = respostaED["Ontem"]["Turno3"]["soma"] / tempoT3
 
-
-
+                    
                     let tempoT1Hoje
                     let tempoT2Hoje
                     let tempoT3Hoje
@@ -309,10 +311,10 @@ function respostaBD(string, destino, BD) {
 
                     respostaED["Hoje"]["Turno3"]["media"] = respostaED["Hoje"]["Turno3"]["soma"] / tempoT3Hoje
 
-
                     respostaED["Hoje"]["somaDia"] = parseFloat(respostaED["Hoje"]["Turno1"]["soma"]) + parseFloat(respostaED["Hoje"]["Turno2"]["soma"]) + parseFloat(respostaED["Hoje"]["Turno3"]["soma"])
 
                     respostaED["Ontem"]["somaDia"] = parseFloat(respostaED["Ontem"]["Turno1"]["soma"]) + parseFloat(respostaED["Ontem"]["Turno2"]["soma"]) + parseFloat(respostaED["Ontem"]["Turno3"]["soma"])
+
 
                     let tempoT1h = !parseFloat(respostaED.Hoje.Turno1.media) > 0 ? 0 : respostaED.Hoje.Turno1.soma / respostaED.Hoje.Turno1.media
                     let tempoT2h = !parseFloat(respostaED.Hoje.Turno2.media) > 0 ? 0 : respostaED.Hoje.Turno2.soma / respostaED.Hoje.Turno2.media

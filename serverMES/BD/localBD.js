@@ -31,13 +31,9 @@ module.exports.db = db
 
 function gravaBD(dados) {
 
-
-
-
-    db.insert(dados, function (err, newDoc) {
+   db.insert(dados, function (err, newDoc) {
         console.log("dados gravados no BD: ", dados, " - Mensagem: ", newDoc)
     })
-
 
 };
 
@@ -55,6 +51,5 @@ function leBD() {
         }
 
     )
-
 }
 module.exports.leBD = leBD
