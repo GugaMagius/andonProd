@@ -167,7 +167,7 @@ async function solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, paramet
 module.exports.solicitaBD = solicitaBD
 
 
-// Função para calcular a média
+// Função para calcular a média para o relatório gráfico
 async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, tempoCarga, tempoTotal, parametros) {
     let mediaM2 = {}
     let mediaKg = {}
@@ -221,6 +221,50 @@ async function calculaMedia(QtdM2, QtdKg, tempoTrab, tempoDisp, tempoCarga, temp
 }
 
 module.exports.calculaMedia = calculaMedia
+
+
+// Função para calcular a média para o relatório gráfico
+async function mediaAndon(QtdM2, QtdKg, tempoTrab, parametros) {
+    let mediaM2 = {}
+    let mediaKg = {}
+    let Disp = {}
+
+    for (const [index, data] of Object.keys(QtdKg).entries()) {
+        //console.log("valor: ", Qtd[data], " - tempoTrab: ", tempoTrab[data])
+        mediaM2[data] = mediaM2[data] || 0
+        mediaKg[data] = mediaKg[data] || 0
+        Disp[data] = Disp[data] || 0
+
+
+        mediaM2[data] = parseFloat((QtdM2[data] / tempoTrab[data]).toFixed(1))
+        mediaKg[data] = parseFloat((QtdKg[data] / tempoTrab[data]).toFixed(1))
+        Disp[data] = parseFloat((tempoTrab[data] / tempoDisp[data] * 100)).toFixed(1)
+        //tempoDisp = 
+
+        if (index >= Object.keys(QtdKg).length - 1) {
+            ioSocket.enviarResposta({
+                'dadosQtdm2': QtdM2,
+                'dadosQtdkg': QtdKg,
+                'mediam2': mediaM2, 
+                'mediakg': mediaKg, 
+                'prodDispm2': prodDispM2, 
+                'prodDispkg': prodDispKg, 
+                'prodMetam2': prodMetaM2, 
+                'prodMetakg': prodMetaKg, 
+                'tempoTrab': tempoTrab,
+                'tempoDisp': tempoDisp, 
+                'tempoCarga': tempoCarga, 
+                'tempoTotal': tempoTotal, 
+                'Disp': Disp,  
+                'parametros': parametros
+            })
+        }
+
+    }
+
+}
+
+module.exports.mediaAndon = mediaAndon
 
 
 function lerFS() {

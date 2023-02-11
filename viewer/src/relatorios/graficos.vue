@@ -83,31 +83,37 @@
           <!-- ************************************ linha de opções ****************************************************-->
 
           <div class="grid">
-            <div class="col-12 inline">
+            <div class="col-9 inline">
               <div class="p-fluid opcoes grid">
-                <div class="selectTurno col-1">
+                <div class="col-4">
+                  
+                  <grafParadas/>
+                  
+                </div>
+                <div class="selectTurno col-2">
                   <!-- ******* Seleção de turnos *********** -->
-                  <div class="checkbox inline">
+                  <div class="checkbox labelLinha">
                     <Checkbox id="turno1" name="turno" value="t1" v-model="selecTurno" />
                     <label for="turno1">Turno1</label>
                   </div>
                   <br>
-                  <div class="checkbox inline">
+                  <div class="checkbox labelLinha">
                     <Checkbox id="turno2" name="turno" value="t2" v-model="selecTurno" />
                     <label for="turno2">Turno2</label>
                   </div>
                   <br>
-                  <div class="checkbox inline">
+                  <div class="checkbox labelLinha">
                     <Checkbox id="turno3" name="turno" value="t3" v-model="selecTurno" />
                     <label for="turno3">Turno3</label>
                   </div>
                 </div>
 
                 <!-- ******* Seletores Unidade/período *********  -->
-                <div class="selectTurno col-5">
+                <div class="selectTurno col-4  label">
                   <!-- Seleção de Unidade  -->
-                  <div>
-                    Unidade:
+                  <div v-if="periodo==='Disp' || !selectEcoat">
+                    
+                  <span class="labelLinha"> Unidade: </span><br>
                     <div v-if="periodo!=='Disp' && !selectEcoat" class="checkbox inline">
                       <RadioButton id="m2" name="unid" value="m2" v-model="unidade" />
                       <label for="m2">m2</label>
@@ -128,7 +134,7 @@
 
                   <br>
                   <!-- Seleção do período  -->
-                  Totalizador:
+                  <span class="labelLinha rbTotalizador"> Totalizador: </span><br>
                   <div class="checkbox inline">
                     <RadioButton id="total" name="unid" value="total" v-model="periodo" />
                     <label for="total">{{ selecPeriodo.periodo || "Gráfico" }}</label>
@@ -322,6 +328,7 @@
 
 <script>
 import moment from 'moment'
+import grafParadas from '@/components/graficoParadas.vue'
 
 export default {
 
@@ -334,9 +341,13 @@ export default {
 
     setTimeout(this.inicializaMenu, 800);
 
-
-
   },
+
+  components: {
+    grafParadas
+},
+
+
   watch: {
 
     listaCTsReceb() {
@@ -958,6 +969,7 @@ export default {
 .opcoes {
   margin-top: -2vh;
   padding-top: 0px;
+  height: 12vh;
 }
 
 .grafico {
@@ -969,7 +981,8 @@ export default {
 }
 
 .checkbox {
-  margin: 1%;
+  margin-bottom: -1.4vh;
+  margin-left: 0.5vw;
 }
 
 .inline {
@@ -977,7 +990,8 @@ export default {
 }
 
 .selectTurno {
-  margin: 1%;
+  margin-bottom: 0vh;
+
 }
 
 .totalizador {
@@ -997,4 +1011,9 @@ export default {
 .labelLinha {
   font-size: x-small;
 }
+
+.rbTotalizador {
+  margin-top: -10vh;
+}
+
 </style>

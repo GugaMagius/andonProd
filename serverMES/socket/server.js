@@ -13,6 +13,7 @@ const Functions = require('../Services/functions')
 const versaoMES = require('../package.json').version
 const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
+const configBD = require('../configBD') //??? Testar método, modificado dia 11/02/2023
 
 var dadosServer = {}
 module.exports.dadosServer = dadosServer
@@ -52,13 +53,12 @@ module.exports.verifConexao = verifConexao
 var listaCT = [] // Centro de trabalho
 
 
-const connMES = "Data Source=srvmes;Initial Catalog=PCF4;User ID=supervisorio;Password=magius"
 const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code, st.Name as CC, st.IDSector, ar.Name as Depto, ar.IDArea from TBLResource ct inner join TBLManagerGrp mg on (ct.IDManagerGrp = mg.IDManagerGrp) inner join TBLSector st on (mg.IDSector = st.IDSector) inner join TBLArea ar on (st.IDArea = ar.IDArea) WHERE ar.Code LIKE '11%' OR ct.Code LIKE '1014001'`
 //const queryCTs = `select * from TBLResource`
 
 
 
-apiZeno.getDataSQL(queryCTs, connMES).then(
+apiZeno.getDataSQL(queryCTs, configBD.connMES).then(
     res => {
         listaCT = res[0]
     }
@@ -240,6 +240,24 @@ try {
             }
             sectorSelect(msg);
 
+        })
+
+
+        socket.on("atualizaAndonGP", parametros=>{
+
+
+//             Declare @JSON varchar(max)
+// SELECT @JSON=BulkColumn
+// FROM OPENROWSET (BULK 'C:\ProjetosNode\testeJsonSQL\teste.json', SINGLE_CLOB) import
+// SELECT * FROM OPENJSON (@JSON)
+// WITH  (
+//    [Firstname] varchar(20),  
+//    [Lastname] varchar(20),  
+//    [Gender] varchar(20),  
+//    [AGE] int );
+
+            queryHt = "set dateformat ymd select convert(float,SUM(DATEDIFF (SECOND, rsev.ShiftDtStart, rsev.ShiftDtEnd)))/3600 as Horas, format(rsev.ShiftDtStart, 'yyyyMM') AS MES from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
+            Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)
         })
 
     })

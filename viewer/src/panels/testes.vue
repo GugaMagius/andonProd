@@ -1,43 +1,35 @@
 <template>
-    <div>
-        <h1>Tela de Testes</h1>
-        Metas: {{ meta }}
-        <br>
-        <div style="{'margin-top': '5%'}">
-            Seleção CTs: {{ selecaoCTs }}
-        </div>
-        <div style="{'margin-top': '5%'}">
-            Lista CTs: {{ listaCTs }}
-        </div>
-
-    </div>
-
-</template>
-<script>
-
-export default {
+    Teste drag and drop
+    <span
+      @dragover="handleOnDragOver"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+    >
+    <div v-for="item in lista" :key="item">{{item}}</div>
+    </span>
+  </template>
+  
+  <script>
+  export default {
+    name: 'DroppableItem',
+    props: [
+      'onDragOver',
+      'onDragLeave',
+      'onDrop'
+    ],
     data() {
         return {
-            meta: '',
-            selecaoCTs: '',
-            listaCTs: ''
+            lista: ['primeiro Item', 'segundo item', 'terceiro item']
 
         }
     },
-    sockets: {
-
-        teste([meta, selecaoCTs, listaCTs]) {
-            listaCTs.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
-            listaCTs.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
-
-            this.meta = meta
-            this.selecaoCTs = selecaoCTs
-            this.listaCTs = listaCTs
-
-        }
+    setup(props) {
+      const handleOnDragOver = event => {
+        event.preventDefault()
+        props.onDragOver && props.onDragOver(event)
+      }
+  
+      return { handleOnDragOver }
     }
-
-}
-
-
-</script>
+  }
+  </script>
