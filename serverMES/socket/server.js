@@ -237,6 +237,15 @@ try {
                     await Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)
                 }
 
+//                 SELECT top 10 
+// *
+// FROM ems2mov.pub."ord-prod" op 
+// INNER JOIN ems2mov.pub."rep-oper" rop ON (rop."nr-ord-produ" = op."nr-ord-produ")
+// INNER JOIN ems2mov.pub."rep-oper-ctrab" ropc ON (ropc."nr-reporte" = rop."nr-reporte")
+// WHERE 1=1 
+// AND op."nr-ord-produ" = 1095
+
+
             }
             sectorSelect(msg);
 
