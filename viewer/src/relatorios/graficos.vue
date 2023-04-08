@@ -87,7 +87,7 @@
               <div class="p-fluid opcoes grid">
                 <div class="col-4">
                   
-                  <grafParadas/>
+                  <!-- <grafParadas/> -->
                   
                 </div>
                 <div class="selectTurno col-2">
@@ -328,7 +328,7 @@
 
 <script>
 import moment from 'moment'
-import grafParadas from '@/components/graficoParadas.vue'
+// import grafParadas from '@/components/graficoParadas.vue'
 
 export default {
 
@@ -344,7 +344,7 @@ export default {
   },
 
   components: {
-    grafParadas
+    // grafParadas
 },
 
 

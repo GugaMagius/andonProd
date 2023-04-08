@@ -91,7 +91,7 @@ function itemsListUpdate(dados) {
 
     vItemsList = Functions.reduceDatasul(dados)
     //Functions.fItemsList(vItemsList);
-    storage.setLS("listaPc", dados)
+    //storage.setLS("listaPc", dados)
 
 }
 module.exports.itemsListUpdate = itemsListUpdate
