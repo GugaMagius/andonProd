@@ -2,48 +2,52 @@
   <div class="principal">
 
 
-    <!-- Seletores de departamento/CC/CT -->
-    <div class="p-fluid seletores grid">
-      <!-- Seleção do Departamento -->
-      <div class="selectDepto col-3 field">
-        <span class="p-float-label">
-          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecDepto"
-            @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)" optionValue="idarea" optionLabel="depto"
-            :filter="true" />
-          <label for="selDepto"> Departamento: </label>
-        </span>
-      </div>
-
-
-      <!-- Seleção do MGrp (Setor - Centro de Custo) -->
-      <div class="selectMGrp col-3 field">
-        <span class="p-float-label">
-          <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecCC"
-            @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
-            :filter="true" />
-          <label for="selCC"> Centro de Custo: </label>
-        </span>
-      </div>
-
-
-      <!-- Seleção do CT -->
-      <div class="selectCT col-5 field">
-        <span class="p-float-label">
-          <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)" optionValue="idresource"
-            optionLabel="ct" :filter="true" />
-          <label for="selCT"> Centro de Trabalho: </label>
-        </span>
-      </div>
-    </div>
-
 
 
     <div class="grid">
 
+
+
       <!-- Data Table com checkbox -->
       <div class="col-6">
         CT´s disponíveis
+
+        <!-- Seletores de departamento/CC/CT -->
+        <div class="p-fluid seletores grid">
+          <!-- Seleção do Departamento -->
+          <div class="selectDepto col-3 field">
+            <span class="p-float-label">
+              <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.6vw ' }"
+                v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
+                optionValue="idarea" optionLabel="depto" :filter="true" />
+              <label for="selDepto"> Departamento: </label>
+            </span>
+          </div>
+
+
+          <!-- Seleção do MGrp (Setor - Centro de Custo) -->
+          <div class="selectMGrp col-3 field">
+            <span class="p-float-label">
+              <MultiSelect id="selCC" :inputStyle="{ 'text-align': 'center', 'font-size': '0.6vw ' }" v-model="selecCC"
+                @change="atualizaMenu('CC')" :options="Object.values(listaFCCs)" optionValue="idsector" optionLabel="cc"
+                :filter="true" />
+              <label for="selCC"> Centro de Custo: </label>
+            </span>
+          </div>
+
+
+          <!-- Seleção do CT -->
+          <div class="selectCT col-5 field">
+            <span class="p-float-label">
+              <MultiSelect id="selCT" ref="selectCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.6vw ' }"
+                v-model="selecCT" @change="atualizaMenu('CT')" :options="Object.values(listaFCTsM)"
+                optionValue="idresource" optionLabel="ct" :filter="true" />
+              <label for="selCT"> Centro de Trabalho: </label>
+            </span>
+          </div>
+        </div>
+
+
         <ScrollPanel style="width: 100%; height: 70vh" class="custom">
           <!-- Se meta por Centro de Trabalho -->
           <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" scrollable="true"
@@ -66,6 +70,22 @@
       <!-- Data Table com checkbox -->
       <div class="col-6">
         CT´s selecionados
+        {{ grupoCT }}
+        <!-- Seleção do Grupo de CT -->
+        <div class="selectGrupoCT field">
+          <span class="p-float-label">
+            <Dropdown id="selGrpCT" ref="grupoCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.6vw ' }"
+              v-model="grupoSelecionado" :editable="true" :editableInput="edicaoGrupo" @input="onInputChange" :options="grupoCT"
+              :filter="true"/>
+
+              <!-- <template #editor="{ grupo }">
+                <InputText type="text" v-model="grupoCT"  />
+              </template> -->
+              <!-- </Dropdown> -->
+
+            <label for="selCT"> Grupo de CT: </label>
+          </span>
+        </div>
         <ScrollPanel style="width: 100%; height: 70vh" class="custom">
           <!-- Se meta por Centro de Trabalho -->
           <DataTable :value="Object.values(selecionados)" :rowClass="selecionado" scrollable="true"
@@ -110,7 +130,11 @@ export default {
       valorGravar: '',
       respConfig: '',
       ctsSelecEnv: [], // Arquivo de CTs Selecionados para enviar ao server
-      selecionados: {}
+      selecionados: {}, // CT´s selecionados conforme grupos
+      grupoCT: ['Pintura','Solda Robô 1', 'CorteDobraEstamparia'], // Grupos de CT´s disponíveis
+      grupoSelecionado: '', // Grupo de CT selecionado
+      edicaoGrupo: '', // Variavel temporaria para edição
+
     }
   },
 
@@ -137,6 +161,12 @@ export default {
 
 
   methods: {
+    onInputChange(valor) {
+      console.log(valor)
+
+    },
+
+
     selecionado(data) {
 
       return this.ctsSelecEnv.includes(data.idresource) ? '' : 'selecionado'
