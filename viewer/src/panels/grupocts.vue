@@ -7,9 +7,9 @@
       <!-- Seleção do Departamento -->
       <div class="selectDepto col-3 field">
         <span class="p-float-label">
-          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
-            optionValue="idarea" optionLabel="depto" :filter="true" />
+          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecDepto"
+            @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)" optionValue="idarea" optionLabel="depto"
+            :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -38,27 +38,56 @@
     </div>
 
 
-    <!-- Data Table com checkbox -->
-    <div>
-      <ScrollPanel style="width: 100%; height: 70vh" class="custom">
-        <!-- Se meta por Centro de Trabalho -->
-        <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" scrollable="true"
-          class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
-          :sortOrder="dynamicSortOrder">
-          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
-          <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
-          <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-          <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
-            <template #body="{ data }">
-              <Checkbox @change="valorAlterado" v-model="ctsSelecEnv" :value="data['idresource']" />
-            </template>
-          </Column>
-        </DataTable>
-      </ScrollPanel>
-    </div>
-  </div>
 
+    <div class="grid">
+
+      <!-- Data Table com checkbox -->
+      <div class="col-6">
+        CT´s disponíveis
+        <ScrollPanel style="width: 100%; height: 70vh" class="custom">
+          <!-- Se meta por Centro de Trabalho -->
+          <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" scrollable="true"
+            class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
+            :sortOrder="dynamicSortOrder">
+            <Column field="depto" header="Departamento" style="min-width:10%" :sortable="true"></Column>
+            <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
+            <Column field="ct" header="Centro de Trabalho" style="min-width:35%" :sortable="true"></Column>
+            <Column field="check" header="Selecionar?" style="min-width:8%" :sortable="false">
+              <template #body="{ data }">
+                <Button @click="CTselecionado(data['idresource'])" icon="pi pi-angle-right" />
+              </template>
+            </Column>
+          </DataTable>
+        </ScrollPanel>
+      </div>
+
+
+
+      <!-- Data Table com checkbox -->
+      <div class="col-6">
+        CT´s selecionados
+        <ScrollPanel style="width: 100%; height: 70vh" class="custom">
+          <!-- Se meta por Centro de Trabalho -->
+          <DataTable :value="Object.values(selecionados)" :rowClass="selecionado" scrollable="true"
+            class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
+            :sortOrder="dynamicSortOrder">
+            <Column field="depto" header="Departamento" style="min-width:10%" :sortable="true"></Column>
+            <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
+            <Column field="ct" header="Centro de Trabalho" style="min-width:35%" :sortable="true"></Column>
+            <Column field="check" header="Selecionar?" style="min-width:8%" :sortable="false">
+              <template #body="{ data }">
+                <Button @click="removerCT(data['idresource'])" icon="pi pi-angle-left" />
+              </template>
+            </Column>
+          </DataTable>
+        </ScrollPanel>
+      </div>
+
+
+    </div>
+    {{ selecionados }}
+
+  </div>
 </template>
 <script>
 
@@ -80,7 +109,8 @@ export default {
       selecDepto: [],  // Departamentos Selecionados
       valorGravar: '',
       respConfig: '',
-      ctsSelecEnv: [] // Arquivo de CTs Selecionados para enviar ao server
+      ctsSelecEnv: [], // Arquivo de CTs Selecionados para enviar ao server
+      selecionados: {}
     }
   },
 
@@ -113,9 +143,18 @@ export default {
 
     },
 
-    valorAlterado() {
+    CTselecionado(IDselecionado) {
 
-      this.$socket.emit("gravarConfig", [this["ctsSelecEnv"], "selecaoCTs"])
+      this.selecionados[IDselecionado] = this.listaFCTs[IDselecionado]
+      delete this.listaFCTs[IDselecionado]
+
+    },
+
+    removerCT(IDselecionado) {
+
+      this.listaFCTs[IDselecionado] = this.selecionados[IDselecionado]
+      delete this.selecionados[IDselecionado]
+
 
 
     },

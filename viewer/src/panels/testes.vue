@@ -1,81 +1,44 @@
 <template>
-  Teste Drag and Drop
   <div>
-    <div class="drop-zone">
 
-      <div v-for="item in listOne" :key="item.title" class="drag-el">
-        {{ item.title }}
-      </div>
-    </div>
-    <div class="drop-zone">
-      <!-- <div v-for="item in listTwo" :key="item.title" class="drag-el">
-        {{ item.title }}
-      </div> -->
-      <div class="drag-el" v-for="item in listTwo" :key="item.title" draggable @dragstart="startDrag($event, item)">
-        {{ item.title }}
-      </div>
-    </div>
+    <p>Drag the W3Schools image into the rectangle:</p>
+
+    <div id="div1" v-on:drop.prevent="drop(event)" v-on:dragover.prevent="allowDrop(event)"></div>
+    <br>
+    <img id="drag1" src="./img_logo.gif" draggable="true"  v-on:dragstart.prevent="drag(event)" width="336" height="69">
+
   </div>
 </template>
+
+<style>
+#div1 {
+  width: 350px;
+  height: 70px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
+</style>
 
 <script>
 export default {
   methods: {
-    startDrag(evt, item) {
-      alert("Iniciado o Drag")
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemID', item.id)
+    allowDrop(ev) {
+      alert("allow drop")
+      ev.preventDefault();
     },
-    onDrop(evt, list) {
-      const itemID = evt.dataTransfer.getData('itemID')
-      const item = this.items.find((item) => item.id == itemID)
-      item.list = list
+
+    drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
     },
-  },
-  computed: {
-    listOne() {
-      return this.items.filter((item) => item.list === 1)
-    },
-    listTwo() {
-      return this.items.filter((item) => item.list === 2)
-    },
-  },
-  data() {
-    return {
-      items: [
-        {
-          id: 0,
-          title: 'Item A',
-          list: 1,
-        },
-        {
-          id: 1,
-          title: 'Item B',
-          list: 1,
-        },
-        {
-          id: 2,
-          title: 'Item C',
-          list: 2,
-        },
-      ],
+
+    drop(ev) {
+      alert("Drop")
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+      ev.target.appendChild(document.getElementById(data));
     }
-  },
+  }
 }
+
 </script>
 
-
-<style scoped>
-.drop-zone {
-  background-color: #eee;
-  margin-bottom: 10px;
-  padding: 10px;
-}
-
-.drag-el {
-  background-color: #fff;
-  margin-bottom: 10px;
-  padding: 5px;
-}
-</style>
