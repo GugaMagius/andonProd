@@ -42,10 +42,12 @@ import Checkbox from 'primevue/checkbox';
 import ScrollPanel from 'primevue/scrollpanel';
 import Chart from 'primevue/chart';
 import {ref} from 'vue';
+import { computed } from 'vue';
 
 
 // teste! - Endereço de Ip para o socket com o servidor backend
-const adressSocket = 'http://10.41.1.155:3006' // ##teste Rodar local - desenvolvimento
+// const adressSocket = 'http://10.41.1.155:3006' // #Teste Rodar local - desenvolvimento
+const adressSocket = 'http://localhost:3006' // Rodar local - desenvolvimento localhost
 //const adressSocket = 'http://10.69.0.6:3006' // Rodar servidor - produção
 
 const SocketInstance  = {
@@ -62,6 +64,7 @@ app.use(PrimeVue);
 app.use(VueRouter);
 app.use(router);
 app.use(ref);
+app.use(computed)
 
 
 app.component('AutoComplete', AutoComplete);

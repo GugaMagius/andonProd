@@ -2,7 +2,7 @@ serverMES/node_modules/
 serverMES/.vscode/
 serverMES/log.txt
 serverMES/servermes.exe
-serverMES/configBD.js
+serverMES/configs.js
 viewer/node_modules/
 viewer/.vscode
 viewer/dist/

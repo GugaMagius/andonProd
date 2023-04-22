@@ -15,6 +15,11 @@
 </template>
 
 <script>
+import Chart from "chart.js/auto";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartAnnotations from "chartjs-plugin-annotation";
+
+Chart.register(ChartDataLabels, ChartAnnotations);
 
 export default {
 
@@ -64,6 +69,8 @@ export default {
 
   data() {
     return {
+
+      dadosIni: [0],
 
       larguraGraf: '',
       alturaGraf: '',
@@ -167,7 +174,11 @@ export default {
               weight: "bold",
               size: 16,
             },
-            formatter: Math.round(),
+            formatter: function (value, context) {
+              console.log("context: ", context)
+              // return context.chart.data.labels[context.dataIndex];
+              return value > 1000? Math.round(value).toLocaleString('pt-BR') : parseFloat(value).toLocaleString('pt-BR', {style: 'decimal', minimumFractionDigits: 1})
+            },
             padding: 1,
           },
 

@@ -24,8 +24,11 @@ export default {
       itemsMenu: [
         { label: 'Metas', icon: 'pi pi-fw pi-chart-line', to: '/service/metas' },
         { label: 'Seleção CTs', icon: 'pi pi-fw pi-list', to: '/service/selecaocts' },
+        { label: 'Grupos Cts', icon: 'pi pi-fw pi-sitemap', to: '/service/grupocts' },
+        { label: 'Alertas', icon: 'pi pi-fw pi-megaphone', to: '/service/alertas' },
         { label: 'Log', icon: 'pi pi-fw pi-exclamation-circle', to: '/service/logs' },
-        { label: 'Testes', icon: 'pi pi-fw pi-cog', to: '/service/testes' }
+        { label: 'Configurações', icon: 'pi pi-fw pi-cog', to: '/service/config' },
+        { label: 'Testes', icon: 'pi pi-fw pi-exclamation-triangle', to: '/service/testes' }
       ]
     }
   }

@@ -20,8 +20,8 @@ const calcHorarios = require('./Services/calcHorarios')
 const storage = require('./Services/storage')
 storage
 
-const connMES = require('./configBD').connMES
-const connSuperv = require('./configBD').connSuperv
+const connMES = require('./configs').connMES
+const connSuperv = require('./configs').connSuperv
 
 function seletorConexaoBD(CTselect) {
 

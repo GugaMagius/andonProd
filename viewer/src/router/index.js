@@ -11,6 +11,9 @@ import Metas from "@/panels/metas.vue";
 import SelecaoCTs from "@/panels/selecaocts.vue";
 import Logs from "@/panels/logs.vue";
 import Testes from "@/panels/testes.vue";
+import Config from "@/panels/config.vue";
+import GrupoCTs from "@/panels/grupocts.vue";
+import Alertas from "@/panels/alertas.vue";
 import grafPeriodo from "@/components/grafPeriodo.vue"
 import grafMedia from "@/components/grafMedia.vue"
 import grafDisp from "@/components/grafDisp.vue"
@@ -122,6 +125,24 @@ const routes = [
               path: 'testes',
               components: {
                 panel: Testes,
+              }
+            },
+            {
+              path: 'config',
+              components: {
+                panel: Config,
+              },
+            },
+            {
+              path: 'grupocts',
+              components: {
+                panel: GrupoCTs,
+              },
+            },
+            {
+              path: 'alertas',
+              components: {
+                panel: Alertas,
               },
             },
           ],

@@ -1,7 +1,6 @@
 <template>
   <div class="Principal">
 
-
     <!-- FAIXA DE TÍTULO (FIXA )-->
     <div class="Titulo">
       <div class="logo">

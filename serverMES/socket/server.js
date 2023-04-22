@@ -13,7 +13,7 @@ const Functions = require('../Services/functions')
 const versaoMES = require('../package.json').version
 const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
-const configBD = require('../configBD') //??? Testar método, modificado dia 11/02/2023
+const configs = require('../configs') //??? Testar método, modificado dia 11/02/2023
 
 var dadosServer = {}
 module.exports.dadosServer = dadosServer
@@ -58,7 +58,7 @@ const queryCTs = `select (ct.Code + ' ' + ct.Name) as CT, ct.IDResource, mg.Code
 
 
 
-apiZeno.getDataSQL(queryCTs, configBD.connMES).then(
+apiZeno.getDataSQL(queryCTs, configs.connMES).then(
     res => {
         listaCT = res[0]
     }
