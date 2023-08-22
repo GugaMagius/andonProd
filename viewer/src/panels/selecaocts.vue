@@ -7,9 +7,9 @@
       <!-- Seleção do Departamento -->
       <div class="selectDepto col-3 field">
         <span class="p-float-label">
-          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }"
-            v-model="selecDepto" @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)"
-            optionValue="idarea" optionLabel="depto" :filter="true" />
+          <MultiSelect id="selDepto" :inputStyle="{ 'text-align': 'center', 'font-size': '0.9vw ' }" v-model="selecDepto"
+            @change="atualizaMenu('Depto')" :options="Object.values(listaDeptos)" optionValue="idarea" optionLabel="depto"
+            :filter="true" />
           <label for="selDepto"> Departamento: </label>
         </span>
       </div>
@@ -58,7 +58,6 @@
       </ScrollPanel>
     </div>
   </div>
-
 </template>
 <script>
 
@@ -107,6 +106,7 @@ export default {
 
 
   methods: {
+
     selecionado(data) {
 
       return this.ctsSelecEnv.includes(data.idresource) ? '' : 'selecionado'
@@ -117,11 +117,10 @@ export default {
 
       this.$socket.emit("gravarConfig", [this["ctsSelecEnv"], "selecaoCTs"])
 
-
     },
 
-    atualizaConfig() {
 
+    atualizaConfig() {
 
       this.ctsSelecEnv = this.ctsSelecRec;
 
@@ -168,11 +167,11 @@ export default {
 
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
-
           if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
             (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
             (this.selecCT.indexOf(index.idresource) != -1 || this.selecCT.length === 0)) {
             acc[index.idresource] = index
+
           }
 
           return acc
@@ -185,11 +184,9 @@ export default {
 
 
 
-
-
     },
-    atualizaMenu(seletor) {
 
+    atualizaMenu(seletor) {
 
       if (seletor === "Depto") {
 

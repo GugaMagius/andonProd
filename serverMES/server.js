@@ -18,15 +18,19 @@ const Functions = require('./Services/functions')
 const calcHorarios = require('./Services/calcHorarios')
 
 const storage = require('./Services/storage')
+
 storage
 
 const connMES = require('./configs').connMES
 const connSuperv = require('./configs').connSuperv
+const connAndon = require('./configs').connAndon
 
 function seletorConexaoBD(CTselect) {
 
     if (CTselect === "ecoat") {
         return connSuperv
+    } else if (CTselect === "andon") {
+        return connAndon
     } else {
         return connMES
     }
@@ -44,15 +48,15 @@ function fEnviaEmailSemCad(lista) {
     if (emailSemCadEnviado === false && turnoAtual === 1 && listaSemCadCompl != undefined) {
 
 
-         //#Teste desativar quando estiver em teste 
-        enviaEmail("Itens não cadastrados",
-            "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
-            "Diones",
-            'diones.nascimento@magius.com.br'
-        )
-        emailSemCadEnviado = true;
-        semCadastro = []
-        
+        //#Teste desativar quando estiver em teste 
+        // enviaEmail("Itens não cadastrados",
+        //     "Favor regularizar o cadastro dos itens abaixo:\n\n" + lista,
+        //     "Diones",
+        //     'diones.nascimento@magius.com.br'
+        // )
+        // emailSemCadEnviado = true;
+        // semCadastro = []
+
 
     }
 }
@@ -89,14 +93,20 @@ module.exports.eItemsList = eItemsList
 
 function itemsListUpdate(dados) {
 
-    vItemsList = Functions.reduceDatasul(dados)
+    try {
+
+        vItemsList = Functions.reduceDatasul(dados)
+
+    } catch (err) {
+        console.log("falha ao compilar lista de itens do Datasul", err)
+    }
     //Functions.fItemsList(vItemsList);
     //storage.setLS("listaPc", dados)
 
 }
 module.exports.itemsListUpdate = itemsListUpdate
 
-setInterval(itemsListUpdate, 1800000 )
+setInterval(itemsListUpdate, 1800000)
 
 
 
@@ -138,21 +148,21 @@ function respostaBD(string, destino, BD) {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 },
                                 Turno2: {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 },
                                 Turno3: {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 }
                             },
@@ -161,25 +171,25 @@ function respostaBD(string, destino, BD) {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 },
                                 Turno2: {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 },
                                 Turno3: {
                                     soma: 0,
                                     media: 0,
                                     horarios: {
-                    
+
                                     }
                                 }
                             },
-                            
+
                         }
 
                         resolve(
@@ -191,7 +201,7 @@ function respostaBD(string, destino, BD) {
                                 let horaReg2d = moment.utc(index.hora, "HH:mm:ss").format("HH")
                                 let diaReg2d = moment.utc(index.dtmov, "DD/MM/AAAA HH:mm:ss").format("DD")
                                 let horaRegCmp = moment.utc(index.hora, "HH:mm:ss").format(formato) // Hora do registro completa
-                                let diaHoje2d = moment(horaAtualCmp, formato).isBefore(moment(inicioDia,formato)) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
+                                let diaHoje2d = moment(horaAtualCmp, formato).isBefore(moment(inicioDia, formato)) ? moment().subtract(1, "days").format("DD") : moment().format("DD")
                                 let diaOntem2d = moment().subtract(1, "days").format("DD")
                                 let turnoReg = calcHorarios.testeTurno(horaRegCmp).turno
 
@@ -288,7 +298,7 @@ function respostaBD(string, destino, BD) {
 
                     respostaED["Ontem"]["Turno3"]["media"] = respostaED["Ontem"]["Turno3"]["soma"] / tempoT3
 
-                    
+
                     let tempoT1Hoje
                     let tempoT2Hoje
                     let tempoT3Hoje

@@ -14,6 +14,8 @@ const versaoMES = require('../package.json').version
 const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
 const configs = require('../configs') //??? Testar método, modificado dia 11/02/2023
+const main = require('../server')
+var sql = require("mssql");
 
 var dadosServer = {}
 module.exports.dadosServer = dadosServer
@@ -138,6 +140,54 @@ try {
 
         })
 
+        socket.on("gravaBD", async function (dados) {
+            dados.forEach(ct => {
+                let query = "insert into recursosSelecionados VALUES('" + ct + "')"
+
+                try {
+
+                    console.log("Conexão com o BD", main.seletorConexaoBD('andon'))
+
+                    // connect to your database
+                    sql.connect(main.seletorConexaoBD('andon'), function (err) {
+                        if (err) console.log(err);
+
+                        // create Request object
+                        var request = new sql.Request();
+
+                        //console.log("INSERINDO VALOR NA TABELA - STRING: ", stringLog)
+
+                        try {
+                            request.query(query), function (err, recordset) {
+                                //console.log("Inserindo valor na tabela! " + JSON.stringify(recordset))
+                                if (err) {
+                                    console.log("Falha ao inserir novo valor: " + err)
+                                    return
+                                }
+                            }
+                        } catch (err) {
+                            console.log("falha ao acessar a tabela para inserir novo valor: " + err)
+                        }
+
+                    })
+                    // apiZeno.getDataSQL(query, main.seletorConexaoBD('andon'), '').then(res => {
+                    //     console.log("Resposta da API do BD: ", res)
+                    // })
+
+                } catch (err) {
+                    let msgErro = 'falha ao conectar ao banco de dados ' + err
+                    enviaEmail( // Chama função e envia e-mail
+                        "Erro BD",
+                        msgErro,
+                        contatos.administrador.nome,
+                        contatos.administrador.email
+                    );
+                    console.log(msgErro)
+                }
+
+            })
+        })
+
 
         // Socket para inserir novo valor no banco de dados NeDB
         socket.on("gravarConfig", function ([dados, arquivo]) {
@@ -145,7 +195,7 @@ try {
             storage.setLS(arquivo, dados)
         })
 
-        
+
         // Leitura das configurações de meta
         function leituraConfig() {
             let respConfig = {}
@@ -172,7 +222,7 @@ try {
         leituraConfig();
 
 
-        Promise.all([storage.getLSpromise("metas"), storage.getLSpromise("selecaoCTs")]).then((valores)=>{
+        Promise.all([storage.getLSpromise("metas"), storage.getLSpromise("selecaoCTs")]).then((valores) => {
 
             //console.log("valor meta: ", valores[0], "- Valor lista: ", valores[1])
             socket.emit('teste', [valores[0], valores[1], listaCT])
@@ -202,9 +252,9 @@ try {
 
             let queryQtd = ''; // Query para solicitar quantidade produzida
             let queryHt = ''; // Query para solicitar horas trabalhadas
-            let queryHd= ''; // Query para solicitar horas Disponíveis
-            let queryHc= ''; // Query para solicitar horas Carga
-            let queryHtt= ''; // Query para solicitar horas Totais
+            let queryHd = ''; // Query para solicitar horas Disponíveis
+            let queryHc = ''; // Query para solicitar horas Carga
+            let queryHtt = ''; // Query para solicitar horas Totais
 
             async function sectorSelect(parametros) {
 
@@ -237,13 +287,13 @@ try {
                     await Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)
                 }
 
-//                 SELECT top 10 
-// *
-// FROM ems2mov.pub."ord-prod" op 
-// INNER JOIN ems2mov.pub."rep-oper" rop ON (rop."nr-ord-produ" = op."nr-ord-produ")
-// INNER JOIN ems2mov.pub."rep-oper-ctrab" ropc ON (ropc."nr-reporte" = rop."nr-reporte")
-// WHERE 1=1 
-// AND op."nr-ord-produ" = 1095
+                //                 SELECT top 10 
+                // *
+                // FROM ems2mov.pub."ord-prod" op 
+                // INNER JOIN ems2mov.pub."rep-oper" rop ON (rop."nr-ord-produ" = op."nr-ord-produ")
+                // INNER JOIN ems2mov.pub."rep-oper-ctrab" ropc ON (ropc."nr-reporte" = rop."nr-reporte")
+                // WHERE 1=1 
+                // AND op."nr-ord-produ" = 1095
 
 
             }
@@ -252,18 +302,18 @@ try {
         })
 
 
-        socket.on("atualizaAndonGP", parametros=>{
+        socket.on("atualizaAndonGP", parametros => {
 
 
-//             Declare @JSON varchar(max)
-// SELECT @JSON=BulkColumn
-// FROM OPENROWSET (BULK 'C:\ProjetosNode\testeJsonSQL\teste.json', SINGLE_CLOB) import
-// SELECT * FROM OPENJSON (@JSON)
-// WITH  (
-//    [Firstname] varchar(20),  
-//    [Lastname] varchar(20),  
-//    [Gender] varchar(20),  
-//    [AGE] int );
+            //             Declare @JSON varchar(max)
+            // SELECT @JSON=BulkColumn
+            // FROM OPENROWSET (BULK 'C:\ProjetosNode\testeJsonSQL\teste.json', SINGLE_CLOB) import
+            // SELECT * FROM OPENJSON (@JSON)
+            // WITH  (
+            //    [Firstname] varchar(20),  
+            //    [Lastname] varchar(20),  
+            //    [Gender] varchar(20),  
+            //    [AGE] int );
 
             queryHt = "set dateformat ymd select convert(float,SUM(DATEDIFF (SECOND, rsev.ShiftDtStart, rsev.ShiftDtEnd)))/3600 as Horas, format(rsev.ShiftDtStart, 'yyyyMM') AS MES from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
             Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)

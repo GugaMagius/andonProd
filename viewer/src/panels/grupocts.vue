@@ -1,19 +1,14 @@
 <template>
   <div class="principal">
 
-
-
-
     <div class="grid">
-
-
 
       <!-- Data Table com checkbox -->
       <div class="col-6">
-        CT´s disponíveis
+        <h3> CT´s disponíveis </h3>
 
         <!-- Seletores de departamento/CC/CT -->
-        <div class="p-fluid seletores grid">
+        <div class="p-fluid seletores grid" style="margin-top: 1.5vh ;">
           <!-- Seleção do Departamento -->
           <div class="selectDepto col-3 field">
             <span class="p-float-label">
@@ -23,7 +18,6 @@
               <label for="selDepto"> Departamento: </label>
             </span>
           </div>
-
 
           <!-- Seleção do MGrp (Setor - Centro de Custo) -->
           <div class="selectMGrp col-3 field">
@@ -48,9 +42,9 @@
         </div>
 
 
-        <ScrollPanel style="width: 100%; height: 70vh" class="custom">
+        <ScrollPanel v-if="listaFCTsTemp != {}" style="width: 100%; height: 63vh" class="custom">
           <!-- Se meta por Centro de Trabalho -->
-          <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" scrollable="true"
+          <DataTable :value="Object.values(listaFCTsTemp)" :rowClass="selecionado" scrollable="true"
             class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
             :sortOrder="dynamicSortOrder">
             <Column field="depto" header="Departamento" style="min-width:10%" :sortable="true"></Column>
@@ -65,32 +59,46 @@
         </ScrollPanel>
       </div>
 
-
-
       <!-- Data Table com checkbox -->
       <div class="col-6">
-        CT´s selecionados
-        {{ grupoCT }}
+        <h3>CT´s selecionados</h3>
+
         <!-- Seleção do Grupo de CT -->
-        <div class="selectGrupoCT field">
-          <span class="p-float-label">
-            <Dropdown id="selGrpCT" ref="grupoCT" :inputStyle="{ 'text-align': 'center', 'font-size': '0.6vw ' }"
-              v-model="grupoSelecionado" :editable="true" :editableInput="edicaoGrupo" @input="onInputChange" :options="grupoCT"
-              :filter="true"/>
+        <div class="grid p-fluid" style="margin-top: 2.6vh;">
+          <div class="col-6">
+            <Button icon="pi pi-plus" @click="addGrupo = true" />
+            <Button v-if="!edicao && grupoSelecionado != ''" icon="pi pi-pencil"
+              @click="edicao = true, valida = false, edicaoGrupo = grupoSelecionado" />
+            <Button v-if="edicao && grupoSelecionado != ''" icon="pi pi-check" @click="validarGrupo" />
+            <Button v-if="grupoSelecionado != ''" icon="pi pi-trash" @click="delete grupoCT[grupoSelecionado]" />
+          </div>
+          <Dialog v-model:visible="addGrupo" modal header="Editar Grupos" :style="{ width: '50vw' }">
+            <div class="p-fluid">
+              <span class="p-float-label" style="margin-top: 5vh; margin-bottom: 2vh;">
+                <InputText id="username" v-model="novoGrupo" />
+                <label for="username">Novo Grupo:</label>
+              </span>
+              <Button label="Incluir" @click="grupoCT[novoGrupo] = {}" />
+            </div>
 
-              <!-- <template #editor="{ grupo }">
-                <InputText type="text" v-model="grupoCT"  />
-              </template> -->
-              <!-- </Dropdown> -->
+          </Dialog>
+          <div class="col-6">
 
-            <label for="selCT"> Grupo de CT: </label>
-          </span>
+            <span class="p-float-label">
+
+              <Dropdown inputId="selGrpCT" v-model="grupoSelecionado" @input="onInputChange" :editable="edicao"
+                @change="alterado" :options="Object.keys(grupoCT)" />
+
+              <label for="selGrpCT"> Grupo de CT: </label>
+            </span>
+          </div>
         </div>
-        <ScrollPanel style="width: 100%; height: 70vh" class="custom">
+
+        <ScrollPanel style="width: 100%; height: 63vh" class="custom">
           <!-- Se meta por Centro de Trabalho -->
-          <DataTable :value="Object.values(selecionados)" :rowClass="selecionado" scrollable="true"
-            class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
-            :sortOrder="dynamicSortOrder">
+          <DataTable v-if="grupoCT[grupoSelecionado] != undefined" :value="Object.values(grupoCT[grupoSelecionado])"
+            :rowClass="selecionado" scrollable="true" class="editable-cells-table" scrollHeight="80vh"
+            responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
             <Column field="depto" header="Departamento" style="min-width:10%" :sortable="true"></Column>
             <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
             <Column field="ct" header="Centro de Trabalho" style="min-width:35%" :sortable="true"></Column>
@@ -101,11 +109,11 @@
             </Column>
           </DataTable>
         </ScrollPanel>
+
       </div>
 
 
     </div>
-    {{ selecionados }}
 
   </div>
 </template>
@@ -118,6 +126,7 @@ export default {
   data: function () {
     return {
       teste: [],
+      listaFCTsTemp: {}, // Lista de Centros de Trabalho Temporaria para criar grupos
       listaFCTs: {}, // Lista de Centros de Trabalho Filtrados para DataTable
       listaFCTsM: [], // Lista de Centros de Trabalho Filtrados para o Menu
       listaCCs: [], // Lista de Centros de Custo
@@ -131,15 +140,21 @@ export default {
       respConfig: '',
       ctsSelecEnv: [], // Arquivo de CTs Selecionados para enviar ao server
       selecionados: {}, // CT´s selecionados conforme grupos
-      grupoCT: ['Pintura','Solda Robô 1', 'CorteDobraEstamparia'], // Grupos de CT´s disponíveis
+      grupoCT: { 'Pintura': {}, 'Montagem2': {}, 'SoldaRobo1': {} }, // Grupos de CT´s disponíveis
       grupoSelecionado: '', // Grupo de CT selecionado
-      edicaoGrupo: '', // Variavel temporaria para edição
+      novoGrupo: '',
+      edicaoGrupo: '', // Variavel temporaria para edição, reserva grupo atual que entrou no modo de edição
+      addGrupo: false, // Torna visivel o modal para adicionar novo grupo
+      edicao: false, // Flag modo edição do grupo de CTs ativa
+      valida: false // Flag do modo validação de grupos de CTs ativa
 
     }
   },
 
   mounted: function () {
     this.toinitVar();
+
+    this.listaFCTsTemp = this.listaFCTs
 
     setTimeout(this.atualizaConfig, 1000)
 
@@ -165,6 +180,20 @@ export default {
       console.log(valor)
 
     },
+    selectAlterado() {
+
+    },
+
+    validarGrupo() {
+
+
+      this.grupoCT[this.grupoSelecionado] = this.grupoCT[this.edicaoGrupo]
+      delete this.grupoCT[this.edicaoGrupo]
+
+      this.edicao = false;
+      this.valida = true
+
+    },
 
 
     selecionado(data) {
@@ -175,17 +204,17 @@ export default {
 
     CTselecionado(IDselecionado) {
 
-      this.selecionados[IDselecionado] = this.listaFCTs[IDselecionado]
-      delete this.listaFCTs[IDselecionado]
+      //this.selecionados[IDselecionado] = this.listaFCTs[IDselecionado]
+      this.grupoCT[this.grupoSelecionado][IDselecionado] = this.listaFCTs[IDselecionado]
+      //delete this.listaFCTs[IDselecionado]
 
     },
 
+
     removerCT(IDselecionado) {
 
-      this.listaFCTs[IDselecionado] = this.selecionados[IDselecionado]
-      delete this.selecionados[IDselecionado]
-
-
+      //this.listaFCTs[IDselecionado] = this.selecionados[IDselecionado]
+      delete this.grupoCT[this.grupoSelecionado][IDselecionado]
 
     },
 
@@ -193,6 +222,8 @@ export default {
 
 
       this.ctsSelecEnv = this.ctsSelecRec;
+
+      this.listaFCTsTemp = this.listaFCTs
 
     },
 
@@ -210,9 +241,11 @@ export default {
     gravar() {
       this.$socket.emit("gravarConfig", this.valorGravar)
     },
+
     ler() {
       this.$socket.emit("leituraConfig", "selecaoCTs")
     },
+
     initVar() {
 
       // Atualiza lista de itens filtrados dos Centros de Trabalho
@@ -237,7 +270,6 @@ export default {
 
         this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
 
-
           if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
             (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
             (this.selecCT.indexOf(index.idresource) != -1 || this.selecCT.length === 0)) {
@@ -249,14 +281,13 @@ export default {
         }, {})
 
       } catch (err) {
+
         console.log("Falha ao filtrar Centros de Trabalho: ", err)
+
       }
 
-
-
-
-
     },
+
     atualizaMenu(seletor) {
 
 

@@ -4,8 +4,7 @@ const SERVERURL = "http://192.168.1.4:7078/SqlQuery/QueryBrowser"
 
 
 async function getDataSQL(stringRec, BD, parametros) {
-    
-    
+
     try {
         const requestBody = {
             q: stringRec,

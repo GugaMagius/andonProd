@@ -46,6 +46,7 @@ export default {
     console.log("Versão do Viewer: ", this.versaoViewer)
 
   },
+
   data: function () {
     return {
       id: '',
@@ -72,6 +73,7 @@ export default {
       selecaoCTs: [],
     };
   },
+
   methods: {
     msgToServer: function () {
       this.$socket.emit("msgFromViewer", [
@@ -105,6 +107,7 @@ export default {
 
     },
 
+
     // Resposta com a lista de Centros de trabalhos
     sListaCTs(lista) {
       lista.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
@@ -112,14 +115,13 @@ export default {
 
       Promise.resolve(this.listaCTsGeral = lista.reduce((acc, el) => {
 
-
         this.selecaoCTs.includes(el.idresource) ? acc["selecionados"][el.idresource] = el : null;
         acc["completa"][el.idresource] = el;
 
         return acc
 
       }, { selecionados: {}, completa: {} }))
-      
+
         .then(
 
           console.log(this.listaCTsGeral),

@@ -1,5 +1,6 @@
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require('node-localstorage').LocalStorage;
+  // #Teste
   localStorage = new LocalStorage('C:/Apps/andon/scratch');
 }
 

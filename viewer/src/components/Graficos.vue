@@ -125,6 +125,7 @@ export default {
 
             datalabels: {
               display: true,
+              
             },
           },
           
