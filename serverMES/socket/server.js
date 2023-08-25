@@ -147,8 +147,6 @@ try {
                 try {
 
                     console.log("Conexão com o BD", main.seletorConexaoBD('andon'))
-
-                    // connect to your database
                     sql.connect(main.seletorConexaoBD('andon'), function (err) {
                         if (err) console.log(err);
 
@@ -170,6 +168,8 @@ try {
                         }
 
                     })
+                    // connect to your database
+
                     // apiZeno.getDataSQL(query, main.seletorConexaoBD('andon'), '').then(res => {
                     //     console.log("Resposta da API do BD: ", res)
                     // })
@@ -195,26 +195,103 @@ try {
             storage.setLS(arquivo, dados)
         })
 
+        socket.on("gravaSelecao", ([id, status]) => {
+            console.log("Dados recebidos para gravar Seleção: ", id, " - Status: ", status)
+
+
+            sql.connect(configs.connAndon, function (err) {
+                if (err) console.log(err);
+
+                // create Request object
+                var request = new sql.Request();
+
+                try {
+
+                    let queryStatCT
+
+                    if (status === 'selecionado') {
+
+                        queryStatCT = `insert into recursosSelecionados values(${id})`
+
+                    } else {
+
+                        queryStatCT = `delete from recursosSelecionados where recurso='${id}'`
+
+                    }
+
+
+                    request.query(queryStatCT, function (err, recordset) {
+
+                        if (err) {
+                            console.log("Falha ao acessar dados do servidor: " + err)
+                            return
+                        }
+
+
+
+                        //recordset.recordset.map(elem => { return Object.values(elem)[0] }).includes()
+                        console.log("Selecionados: ", recordset.recordset)
+
+                    })
+
+                } catch (err) {
+                    console.log("falha ao acessar a tabela para consultar valores: " + err)
+                }
+
+            })
+
+        })
+
 
         // Leitura das configurações de meta
         function leituraConfig() {
             let respConfig = {}
 
+
+            respConfig["metas"] = storage.getLS("metas")
+
             try {
 
-                respConfig["metas"] = storage.getLS("metas")
-                respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
+                sql.connect(configs.connAndon, function (err) {
+                    if (err) console.log(err);
+
+                    // create Request object
+                    var request = new sql.Request();
+
+                    try {
+
+                        let queryCTselect = "select recurso from recursosSelecionados"
+
+                        request.query(queryCTselect, function (err, recordset) {
+
+                            console.log("Resposta: ", recordset)
+
+                            if (err) {
+                                console.log("Falha ao acessar dados do servidor: " + err)
+                                return
+                            }
+
+                            respConfig["selecaoCTs"] = recordset.recordset.map(elem => { return Object.values(elem)[0] })
+                            console.log("Selecionados: ", respConfig["selecaoCTs"])
+
+                            socket.emit("respStorage", respConfig)
+                            // Atualiza lista de CTs no cliente
+                            socket.emit("sListaCTs", listaCT)
+
+                        })
+
+                    } catch (err) {
+                        console.log("falha ao acessar a tabela para consultar valores: " + err)
+                    }
+
+                })
+
+                // respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
 
             } catch (err) {
 
                 let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
                 storage.setLS("log", msg)
-
-            } finally {
-
-                socket.emit("respStorage", respConfig)
-                // Atualiza lista de CTs no cliente
-                socket.emit("sListaCTs", listaCT)
 
             }
 

@@ -37,6 +37,7 @@
       </div>
     </div>
 
+    {{ ctsSelecEnv }}
 
     <!-- Data Table com checkbox -->
     <div>
@@ -51,7 +52,7 @@
           <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
           <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
             <template #body="{ data }">
-              <Checkbox @change="valorAlterado" v-model="ctsSelecEnv" :value="data['idresource']" />
+              <Checkbox @change="valorAlterado(data)" v-model="ctsSelecEnv" :value="data['idresource']" />
             </template>
           </Column>
         </DataTable>
@@ -109,13 +110,14 @@ export default {
 
     selecionado(data) {
 
-      return this.ctsSelecEnv.includes(data.idresource) ? '' : 'selecionado'
+      return this.ctsSelecEnv.includes(data.idresource) ? 'selecionado' : 'nselec'
 
     },
 
-    valorAlterado() {
+    valorAlterado(data) {
 
-      this.$socket.emit("gravarConfig", [this["ctsSelecEnv"], "selecaoCTs"])
+      //this.$socket.emit("gravarConfig", [this["ctsSelecEnv"], "selecaoCTs"])
+      this.$socket.emit("gravaSelecao", [data.idresource, this.selecionado(data)])
 
     },
 
@@ -285,7 +287,7 @@ export default {
   transition: background-color .3s;
 }
 
-::v-deep(.selecionado) {
+::v-deep(.nselec) {
   background-color: rgba(0, 0, 0, .15) !important;
   text-decoration: line-through;
 }

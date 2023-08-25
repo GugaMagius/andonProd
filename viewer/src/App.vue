@@ -110,6 +110,7 @@ export default {
 
     // Resposta com a lista de Centros de trabalhos
     sListaCTs(lista) {
+      console.log("Seleção de CT´s:  ", this.selecaoCTs)
       lista.unshift({ ct: "*Enganchamento E-coat", idresource: "EE", cc: 'ENGANCHAMENTO E-COAT', idsector: 5000, depto: 'ENGANCHAMENTO E-COAT', idarea: 5000 })
       lista.unshift({ ct: "*Linha E-coat (Bastidor)", idresource: "ecoat", cc: 'E-COAT (SUPERVISORIO)', idsector: 5001, depto: 'E-COAT (SUPERVISORIO)', idarea: 5001 })
 
