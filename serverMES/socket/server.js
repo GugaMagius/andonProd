@@ -1,3 +1,8 @@
+// *******************************************************************************************************************************************
+// ******************************************************************** SOCKET ***************************************************************
+// *******************************************************************************************************************************************
+
+
 
 // ***********************
 // Configurações em geral*
@@ -15,7 +20,9 @@ const storage = require('../Services/storage')
 const apiZeno = require('../BD/apiZeno')
 const configs = require('../configs') //??? Testar método, modificado dia 11/02/2023
 const main = require('../server')
-var sql = require("mssql");
+const sqlBD = require('../BD/sqlBD')
+
+var listaCameras = {}
 
 var dadosServer = {}
 module.exports.dadosServer = dadosServer
@@ -132,65 +139,37 @@ try {
         // Envia versão do serverMES
         socket.emit("versao", versaoMES)
 
+        socket.on("listaCameras", () => {
+            // Consulta lista de cameras e envia para o cliente já organizado em uma variável objeto
+            async function orgCameras() {
+                try {
+                    console.log("Iniciando listagem das câmeras")
+                    listaCameras = (await sqlBD.queryBD("select * from cameras")).recordset.reduce((acc, camera) => {
+                        acc[camera.codRecurso] = camera.linkCamera
+                        return acc
+                    }, {})
+                    socket.emit("listaCameras", listaCameras)
+
+                } catch (err) {
+                    console.log(err)
+
+                }
+            }
+
+            orgCameras();
+
+        })
+
 
         /*********************************************************************** */
 
-        socket.on("dadosSolicitados", function () {
+        socket.on("dadosSolicitados", () => {
             socket.emit("AtualizaDados", dadosServer)
 
         })
 
-        socket.on("gravaBD", async function (dados) {
-            dados.forEach(ct => {
-                let query = "insert into recursosSelecionados VALUES('" + ct + "')"
-
-                try {
-
-                    console.log("Conexão com o BD", main.seletorConexaoBD('andon'))
-                    sql.connect(main.seletorConexaoBD('andon'), function (err) {
-                        if (err) console.log(err);
-
-                        // create Request object
-                        var request = new sql.Request();
-
-                        //console.log("INSERINDO VALOR NA TABELA - STRING: ", stringLog)
-
-                        try {
-                            request.query(query), function (err, recordset) {
-                                //console.log("Inserindo valor na tabela! " + JSON.stringify(recordset))
-                                if (err) {
-                                    console.log("Falha ao inserir novo valor: " + err)
-                                    return
-                                }
-                            }
-                        } catch (err) {
-                            console.log("falha ao acessar a tabela para inserir novo valor: " + err)
-                        }
-
-                    })
-                    // connect to your database
-
-                    // apiZeno.getDataSQL(query, main.seletorConexaoBD('andon'), '').then(res => {
-                    //     console.log("Resposta da API do BD: ", res)
-                    // })
-
-                } catch (err) {
-                    let msgErro = 'falha ao conectar ao banco de dados ' + err
-                    enviaEmail( // Chama função e envia e-mail
-                        "Erro BD",
-                        msgErro,
-                        contatos.administrador.nome,
-                        contatos.administrador.email
-                    );
-                    console.log(msgErro)
-                }
-
-            })
-        })
-
-
         // Socket para inserir novo valor no banco de dados NeDB
-        socket.on("gravarConfig", function ([dados, arquivo]) {
+        socket.on("gravarConfig", ([dados, arquivo]) => {
             console.log(`Gravando os dados no banco de Dados: ${JSON.stringify(dados)} no arquivo: ${arquivo}`)
             storage.setLS(arquivo, dados)
         })
@@ -198,50 +177,38 @@ try {
         socket.on("gravaSelecao", ([id, status]) => {
             console.log("Dados recebidos para gravar Seleção: ", id, " - Status: ", status)
 
+            if (status === 'selecionado') {
 
-            sql.connect(configs.connAndon, function (err) {
-                if (err) console.log(err);
+                sqlBD.queryBD(`insert into recursosSelecionados values(${id})`)
+                    .catch(err => console.log(err))
 
-                // create Request object
-                var request = new sql.Request();
+            } else {
 
-                try {
-
-                    let queryStatCT
-
-                    if (status === 'selecionado') {
-
-                        queryStatCT = `insert into recursosSelecionados values(${id})`
-
-                    } else {
-
-                        queryStatCT = `delete from recursosSelecionados where recurso='${id}'`
-
-                    }
-
-
-                    request.query(queryStatCT, function (err, recordset) {
-
-                        if (err) {
-                            console.log("Falha ao acessar dados do servidor: " + err)
-                            return
-                        }
-
-
-
-                        //recordset.recordset.map(elem => { return Object.values(elem)[0] }).includes()
-                        console.log("Selecionados: ", recordset.recordset)
-
-                    })
-
-                } catch (err) {
-                    console.log("falha ao acessar a tabela para consultar valores: " + err)
-                }
-
-            })
+                sqlBD.queryBD(`delete from recursosSelecionados where recurso='${id}'`)
+                    .catch(err => console.log(err))
+            }
 
         })
 
+
+        socket.on("gravaCamera", ([codigo, link]) => {
+            console.log("Dados recebidos para gravar Câmera: ", codigo, " - Link: ", link)
+            console.log("Lista cameras: ", listaCameras)
+
+            if (listaCameras[String(codigo)] === undefined) {
+
+                console.log("Camera não existe")
+                sqlBD.queryBD(`insert into cameras values(${codigo},'${link}')`)
+                    .catch(err => console.log(err))
+
+            } else {
+
+                console.log("Camera existente")
+                sqlBD.queryBD(`update cameras set linkCamera = '${link}' where codRecurso = ${codigo}`)
+                    .catch(err => console.log(err))
+            }
+
+        })
 
         // Leitura das configurações de meta
         function leituraConfig() {
@@ -250,50 +217,19 @@ try {
 
             respConfig["metas"] = storage.getLS("metas")
 
-            try {
+            sqlBD.queryBD(`select recurso from recursosSelecionados`)
+                .then(resp => {
 
-                sql.connect(configs.connAndon, function (err) {
-                    if (err) console.log(err);
+                    respConfig["selecaoCTs"] = resp.recordset.map(elem => { return Object.values(elem)[0] })
+                    console.log("Selecionados: ", respConfig["selecaoCTs"])
 
-                    // create Request object
-                    var request = new sql.Request();
-
-                    try {
-
-                        let queryCTselect = "select recurso from recursosSelecionados"
-
-                        request.query(queryCTselect, function (err, recordset) {
-
-                            console.log("Resposta: ", recordset)
-
-                            if (err) {
-                                console.log("Falha ao acessar dados do servidor: " + err)
-                                return
-                            }
-
-                            respConfig["selecaoCTs"] = recordset.recordset.map(elem => { return Object.values(elem)[0] })
-                            console.log("Selecionados: ", respConfig["selecaoCTs"])
-
-                            socket.emit("respStorage", respConfig)
-                            // Atualiza lista de CTs no cliente
-                            socket.emit("sListaCTs", listaCT)
-
-                        })
-
-                    } catch (err) {
-                        console.log("falha ao acessar a tabela para consultar valores: " + err)
-                    }
+                    socket.emit("respStorage", respConfig)
+                    // Atualiza lista de CTs no cliente
+                    socket.emit("sListaCTs", listaCT)
 
                 })
+                .catch(err => console.log(err))
 
-                // respConfig["selecaoCTs"] = storage.getLS("selecaoCTs")
-
-            } catch (err) {
-
-                let msg = "Falha ao gravar arquivo de configuração. Erro: " + err
-                storage.setLS("log", msg)
-
-            }
 
         }
         leituraConfig();
@@ -323,7 +259,7 @@ try {
 
 
         // Solicitação de dados pelo cliente
-        socket.on("solicitaDados", function (msg) {
+        socket.on("solicitaDados", (msg) => {
 
             // Para criar para outros MGrps, consultar a tabela [TBLResource], montar grupos conforme o campo [IDManagerGrp] e nome do grupo na tabela [TBLManagerGrp]
 
@@ -380,17 +316,6 @@ try {
 
 
         socket.on("atualizaAndonGP", parametros => {
-
-
-            //             Declare @JSON varchar(max)
-            // SELECT @JSON=BulkColumn
-            // FROM OPENROWSET (BULK 'C:\ProjetosNode\testeJsonSQL\teste.json', SINGLE_CLOB) import
-            // SELECT * FROM OPENJSON (@JSON)
-            // WITH  (
-            //    [Firstname] varchar(20),  
-            //    [Lastname] varchar(20),  
-            //    [Gender] varchar(20),  
-            //    [AGE] int );
 
             queryHt = "set dateformat ymd select convert(float,SUM(DATEDIFF (SECOND, rsev.ShiftDtStart, rsev.ShiftDtEnd)))/3600 as Horas, format(rsev.ShiftDtStart, 'yyyyMM') AS MES from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.RSClassification=5 and rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
             Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)

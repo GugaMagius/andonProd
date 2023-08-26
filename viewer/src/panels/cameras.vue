@@ -36,22 +36,28 @@
         </span>
       </div>
     </div>
+    <div v-if="listaCTsRecebC">
 
+      <!-- {{ listaFCTsCam }} -->
 
+    </div>
     <!-- Data Table com checkbox -->
-    <div>
+    <div v-if="listaCTsRecebC">
       <ScrollPanel style="width: 100%; height: 70vh" class="custom">
         <!-- Se meta por Centro de Trabalho -->
-        <DataTable :value="Object.values(listaFCTs)" :rowClass="selecionado" scrollable="true"
+        <DataTable v-model:editingRows="editingRows" :value="Object.values(listaFCTsCam)" scrollable="true"
           class="editable-cells-table" scrollHeight="80vh" responsiveLayout="scroll" sortField="dynamicSortField"
-          :sortOrder="dynamicSortOrder">
-          <Column field="depto" header="Departamento" style="min-width:15%" :sortable="true"></Column>
-          <Column field="idresource" header="idresource" style="min-width:15%" :sortable="true"></Column>
-          <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
-          <Column field="ct" header="Centro de Trabalho" style="min-width:15%" :sortable="true"></Column>
-          <Column field="check" header="Listar?" style="min-width:15%" :sortable="false">
-            <template #body="{ data }">
-              <Checkbox @change="valorAlterado(data)" v-model="ctsSelecEnv" :value="data['idresource']" />
+          sortOrder="dynamicSortOrder" editMode="cell" dataKey="codigo" @cell-edit-complete="onCellEditComplete">
+          <Column field="depto" header="Departamento" style="max-width:16%;text-align:center" :sortable="true"></Column>
+          <Column field="codigo" header="Codigo" style="max-width:7%" :sortable="true"></Column>
+          <Column field="cc" header="Centro de Custo" style="max-width:15%" :sortable="true"></Column>
+          <Column field="ct" header="Centro de Trabalho" style="max-width:20%" :sortable="true"></Column>
+          <Column field="link" header="Link" style="max-width:40%" :sortable="true">
+            <template #body="{ data, field }">
+              {{ data[field] }}
+            </template>
+            <template #editor="{ data, field }">
+              <InputText v-model="data[field]" style="width: 100%" />
             </template>
           </Column>
         </DataTable>
@@ -73,18 +79,23 @@ export default {
       listaCCs: [], // Lista de Centros de Custo
       listaFCCs: [], // Lista de Centros de Custo Filtrados
       listaDeptos: [], // Lista de Departamentos
+      editingRows: [], // Linha em edição para Processo de produção
       listaFDeptos: {}, // Lista de Departamentos Filtrados
       selecCT: [], // Centros de Trabalho Selecionados
       selecCC: [], // Centros de Custos Selecionados
       selecDepto: [],  // Departamentos Selecionados
       valorGravar: '',
       respConfig: '',
-      ctsSelecEnv: [] // Arquivo de CTs Selecionados para enviar ao server
+      ctsSelecEnv: [], // Arquivo de CTs Selecionados para enviar ao server
+      listaCameras: [], // Lista de câmeras recebida do server
+      listaFCTsCam: {} // Lista de Centros de Trabalho com link da câmera
     }
   },
 
   mounted: function () {
     this.toinitVar();
+
+    this.$socket.emit("listaCameras")
 
     setTimeout(this.atualizaConfig, 1000)
 
@@ -96,16 +107,55 @@ export default {
     }
 
   },
+  computed: {
 
+  },
 
   props: {
     listaCTsRecebC: Boolean, // Sinaliza se os dados dos Centros de Trabalhos foram recebidos para mostrar o formulário
     listaCTs: Object, // Lista completa de Centros de trabalho consultadas no BD do MES
     ctsSelecRec: Array // Variável com os valores dos CTs selecionados (Storage)
   },
-
+  sockets: {
+    listaCameras(lista) {
+      this.listaCameras = lista
+      this.listaFCTsCam = this.flistaFCTsCam()
+    }
+  },
 
   methods: {
+
+    flistaFCTsCam() {
+      return Object.values(this.listaCTs).reduce((acc, ct) => {
+        let newCT = {}
+        let codigo = ct.ct.split(' ')[0]
+        newCT['depto'] = ct.depto
+        newCT['codigo'] = codigo
+        newCT['cc'] = ct.cc
+        newCT['ct'] = ct.ct
+        newCT['link'] = this.listaCameras[codigo]
+        acc[codigo] = newCT
+
+        return acc
+
+      }, {})
+    },
+
+    onCellEditComplete(data) {
+
+      if (data.data.link === data.newData.link) {
+        console.log("igual")
+      } else {
+
+        console.log("Campo editado: ", data)
+
+        this.listaFCTsCam[data.newData.codigo]['link'] = data.newData.link
+
+        this.$socket.emit("gravaCamera", [data.newData.codigo, data.newData.link])
+      }
+
+
+    },
 
     selecionado(data) {
 
