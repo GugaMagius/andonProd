@@ -126,7 +126,8 @@ export default {
   methods: {
 
     flistaFCTsCam() {
-      return Object.values(this.listaCTs).reduce((acc, ct) => {
+      console.log("Atualizando listaFCTsCam")
+      return Object.values(this.listaFCTs).reduce((acc, ct) => {
         let newCT = {}
         let codigo = ct.ct.split(' ')[0]
         newCT['depto'] = ct.depto
@@ -199,6 +200,7 @@ export default {
       // Atualiza lista de itens filtrados dos Centros de Trabalho
       this.listaFCTs = this.listaCTs
 
+
       this.listaFCTsM = this.listaFCTs
 
       // Filtra Departamentos disponíveis e elimina duplicados
@@ -210,13 +212,17 @@ export default {
       this.listaFDeptos = this.listaDeptos
       this.listaFCCs = this.listaCCs
 
+
+      this.listaFCTsCam = this.flistaFCTsCam()
+
     },
 
-    atualizaFCTs() {
+    async atualizaFCTs() {
+      console.log("Atualizando listaFCTs")
 
       try {
 
-        this.listaFCTs = Object.values(this.listaCTs).reduce((acc, index) => {
+        this.listaFCTs = await Object.values(this.listaCTs).reduce((acc, index) => {
 
           if ((this.selecDepto.indexOf(index.idarea) != -1 || this.selecDepto.length === 0) &&
             (this.selecCC.indexOf(index.idsector) != -1 || this.selecCC.length === 0) &&
@@ -231,13 +237,17 @@ export default {
 
       } catch (err) {
         console.log("Falha ao filtrar Centros de Trabalho: ", err)
+      } finally {
+
+        console.log("listaFCTsCam atualizado")
+        this.listaFCTsCam = this.flistaFCTsCam()
       }
 
 
 
     },
 
-    atualizaMenu(seletor) {
+    async atualizaMenu(seletor) {
 
       if (seletor === "Depto") {
 
@@ -259,7 +269,7 @@ export default {
           this.selecCC = []
 
 
-          this.atualizaFCTs()
+          await this.atualizaFCTs()
 
           this.listaFCTsM = this.listaFCTs
 
@@ -270,11 +280,14 @@ export default {
 
           this.selecCC = this.listaFCCs.reduce((acc, index) => { acc.push(index.idsector); return acc }, [])
 
-          this.atualizaFCTs()
+          await this.atualizaFCTs()
+
 
           this.listaFCTsM = this.listaFCTs
 
           this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
+
+
 
         }
 
@@ -282,25 +295,31 @@ export default {
 
         this.$refs.selectCT.filterValue = null;
 
-        this.selecDepto = [] // Zera marcação do seletor de departamentos
+        // this.selecDepto = [] // Zera marcação do seletor de departamentos
 
         this.selecCT = []
 
         if (this.selecCC.length === 0) {
 
-          this.atualizaFCTs()
+          this.atualizaMenu("Depto");
 
-          this.listaFCTsM = this.listaFCTs
+          this.atualizaFCTs().then(
 
-          this.selecCT = []
+            this.listaFCTsM = this.listaFCTs,
+
+            this.selecCT = []
+
+          )
 
         } else {
 
-          this.atualizaFCTs()
+          this.atualizaFCTs().then(
 
-          this.listaFCTsM = this.listaFCTs
+            this.listaFCTsM = this.listaFCTs,
 
-          this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
+            this.selecCT = Object.values(this.listaFCTs).reduce((acc, index) => { acc.push(index.idresource); return acc }, [])
+
+          )
 
         }
 

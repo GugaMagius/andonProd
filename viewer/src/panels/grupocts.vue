@@ -70,7 +70,7 @@
             <Button v-if="!edicao && grupoSelecionado != ''" icon="pi pi-pencil"
               @click="edicao = true, valida = false, edicaoGrupo = grupoSelecionado" />
             <Button v-if="edicao && grupoSelecionado != ''" icon="pi pi-check" @click="validarGrupo" />
-            <Button v-if="grupoSelecionado != ''" icon="pi pi-trash" @click="delete grupoCT[grupoSelecionado]" />
+            <Button v-if="grupoSelecionado != ''" icon="pi pi-trash" @click="excluirGrupo(grupoSelecionado)" />
           </div>
           <Dialog v-model:visible="addGrupo" modal header="Editar Grupos" :style="{ width: '50vw' }">
             <div class="p-fluid">
@@ -78,7 +78,7 @@
                 <InputText id="username" v-model="novoGrupo" />
                 <label for="username">Novo Grupo:</label>
               </span>
-              <Button label="Incluir" @click="grupoCT[novoGrupo] = {}" />
+              <Button label="Incluir" @click="incluirNovoGrupo(novoGrupo)" />
             </div>
 
           </Dialog>
@@ -94,17 +94,36 @@
           </div>
         </div>
 
+        {{ grupoCT }}
+
         <ScrollPanel style="width: 100%; height: 63vh" class="custom">
           <!-- Se meta por Centro de Trabalho -->
-          <DataTable v-if="grupoCT[grupoSelecionado] != undefined" :value="Object.values(grupoCT[grupoSelecionado])"
+          <DataTable v-if="grupoCT[grupoSelecionado] != undefined" :value="Object.keys(grupoCT[grupoSelecionado])"
             :rowClass="selecionado" scrollable="true" class="editable-cells-table" scrollHeight="80vh"
             responsiveLayout="scroll" sortField="dynamicSortField" :sortOrder="dynamicSortOrder">
-            <Column field="depto" header="Departamento" style="min-width:10%" :sortable="true"></Column>
-            <Column field="cc" header="Centro de Custo" style="min-width:15%" :sortable="true"></Column>
-            <Column field="ct" header="Centro de Trabalho" style="min-width:35%" :sortable="true"></Column>
-            <Column field="check" header="Selecionar?" style="min-width:8%" :sortable="false">
-              <template #body="{ data }">
-                <Button @click="removerCT(data['idresource'])" icon="pi pi-angle-left" />
+            <Column header="ID" style="min-width:10%" :sortable="true">
+              <template #body="slotProps">
+                {{ slotProps.data }}
+              </template>
+            </Column>
+            <Column header="Departamento" style="min-width:10%" :sortable="true">
+              <template #body="slotProps">
+                {{ listaCTs[slotProps.data].depto }}
+              </template>
+            </Column>
+            <Column header="Centro de Custo" style="min-width:15%" :sortable="true">
+              <template #body="slotProps">
+                {{ listaCTs[slotProps.data].cc }}
+              </template>
+            </Column>
+            <Column header="Centro de Trabalho" style="min-width:35%" :sortable="true">
+              <template #body="slotProps">
+                {{ listaCTs[slotProps.data].ct }}
+              </template>
+            </Column>
+            <Column header="Selecionar?" style="min-width:8%" :sortable="false">
+              <template #body="slotProps">
+                <Button @click="removerCT(slotProps.data)" icon="pi pi-angle-left" />
               </template>
             </Column>
           </DataTable>
@@ -140,7 +159,7 @@ export default {
       respConfig: '',
       ctsSelecEnv: [], // Arquivo de CTs Selecionados para enviar ao server
       selecionados: {}, // CT´s selecionados conforme grupos
-      grupoCT: { 'Pintura': {}, 'Montagem2': {}, 'SoldaRobo1': {} }, // Grupos de CT´s disponíveis
+      grupoCT: {}, // Grupos de CT´s disponíveis
       grupoSelecionado: '', // Grupo de CT selecionado
       novoGrupo: '',
       edicaoGrupo: '', // Variavel temporaria para edição, reserva grupo atual que entrou no modo de edição
@@ -152,17 +171,34 @@ export default {
   },
 
   mounted: function () {
+
     this.toinitVar();
 
-    this.listaFCTsTemp = this.listaFCTs
-
-    setTimeout(this.atualizaConfig, 1000)
+    this.atualizaListaGrupos();
 
   },
 
   watch: {
     ctsSelecRec() {
       this.atualizaConfig();
+    }
+
+  },
+  sockets: {
+
+    respGrupoCTs(resposta) {
+      console.log("Resposta do BD ", resposta)
+      this.grupoCT = resposta.recordset.reduce((acc, grupo) => {
+        console.log(grupo.ctsGrupo)
+        try {
+          acc[grupo.nomeGrupo] = JSON.parse(grupo.ctsGrupo)
+        } catch (err) {
+
+          acc[grupo.nomeGrupo] = {}
+
+        }
+        return acc
+      }, {})
     }
 
   },
@@ -176,6 +212,20 @@ export default {
 
 
   methods: {
+    incluirNovoGrupo(nomeGrupo) {
+      this.$socket.emit('incluirGrupoCTs', nomeGrupo);
+      this.addGrupo = false;
+      setTimeout(this.atualizaListaGrupos, 100);
+    },
+    excluirGrupo(nomeGrupo) {
+      this.$socket.emit('solicitaBD', [`delete from grupoCTs where nomeGrupo = '${nomeGrupo}'`, 'respGrupoCTs'])
+      setTimeout(this.atualizaListaGrupos, 100);
+    },
+    atualizaListaGrupos() {
+
+      this.$socket.emit('solicitaBD', ['select * from grupoCTs', 'respGrupoCTs'])
+
+    },
     onInputChange(valor) {
       console.log(valor)
 
@@ -205,16 +255,22 @@ export default {
     CTselecionado(IDselecionado) {
 
       //this.selecionados[IDselecionado] = this.listaFCTs[IDselecionado]
-      this.grupoCT[this.grupoSelecionado][IDselecionado] = this.listaFCTs[IDselecionado]
+      this.grupoCT[this.grupoSelecionado][IDselecionado] = IDselecionado;
+      this.$socket.emit('solicitaBD', [`update grupoCTs set ctsGrupo = '${JSON.stringify(this.grupoCT[this.grupoSelecionado])}' where nomeGrupo = '${this.grupoSelecionado}'`, '']);
+      this.atualizaListaGrupos();
       //delete this.listaFCTs[IDselecionado]
 
     },
 
 
+
+
     removerCT(IDselecionado) {
 
       //this.listaFCTs[IDselecionado] = this.selecionados[IDselecionado]
-      delete this.grupoCT[this.grupoSelecionado][IDselecionado]
+      delete this.grupoCT[this.grupoSelecionado][IDselecionado];
+      this.$socket.emit('solicitaBD', [`update grupoCTs set ctsGrupo = '${JSON.stringify(this.grupoCT[this.grupoSelecionado])}' where nomeGrupo = '${this.grupoSelecionado}'`, '']);
+      this.atualizaListaGrupos();
 
     },
 
@@ -227,10 +283,12 @@ export default {
 
     },
 
-    toinitVar() { // TimeOut para inicializar variáveis
+    async toinitVar() { // TimeOut para inicializar variáveis
 
       if (this.listaCTsRecebC === true) {
-        this.initVar();
+        await this.initVar().then(
+          this.atualizaConfig()
+        );
       } else {
         // Caso não recebido a lista ainda, faz nova tentativa em 10 segundos
         setTimeout(this.toinitVar, 2000)
@@ -246,7 +304,7 @@ export default {
       this.$socket.emit("leituraConfig", "selecaoCTs")
     },
 
-    initVar() {
+    async initVar() {
 
       // Atualiza lista de itens filtrados dos Centros de Trabalho
       this.listaFCTs = this.listaCTs

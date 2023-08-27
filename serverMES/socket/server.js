@@ -190,6 +190,23 @@ try {
 
         })
 
+        socket.on("incluirGrupoCTs", (nome) => {
+            console.log("Dados recebidos para incluir grupo: ", nome)
+
+            sqlBD.queryBD(`insert into grupoCTs values('${nome}','{}')`)
+                .catch(err => console.log(err))
+
+        })
+
+        socket.on('solicitaBD', ([query, socketResp]) => {
+            console.log("Solicitado consulta ao BD com a query: ", query, " - Para o socket: ", socketResp)
+
+            sqlBD.queryBD(query).then(
+                resposta => socket.emit(socketResp, resposta)
+            )
+                .catch(err => console.log(err))
+        })
+
 
         socket.on("gravaCamera", ([codigo, link]) => {
             console.log("Dados recebidos para gravar Câmera: ", codigo, " - Link: ", link)
@@ -299,14 +316,6 @@ try {
                     queryHtt = "set dateformat ymd select pev.DtProd as DtMov, rsev.ShiftDtStart as hora, rsev.ShiftDtStart, pev.IDResource,TBLResource.Code,TBLResource.Nickname, rsev.ShiftDtEnd,pev.Shift from TBLProductionEv pev inner join TBLResourceStatusEv rsev on (rsev.IDProdEv = pev.IDProdEv) inner join TBLResource on (TBLResource.IDResource = pev.IDResource) where rsev.FlgDeleted=0 and pev.IDResource IN(" + parametros.CT + ") and DtProd >='" + parametros.dtInicio + "' and DtProd <= '" + parametros.dtFim + "'"
                     await Functions.solicitaBD(queryQtd, queryHt, queryHd, queryHc, queryHtt, parametros)
                 }
-
-                //                 SELECT top 10 
-                // *
-                // FROM ems2mov.pub."ord-prod" op 
-                // INNER JOIN ems2mov.pub."rep-oper" rop ON (rop."nr-ord-produ" = op."nr-ord-produ")
-                // INNER JOIN ems2mov.pub."rep-oper-ctrab" ropc ON (ropc."nr-reporte" = rop."nr-reporte")
-                // WHERE 1=1 
-                // AND op."nr-ord-produ" = 1095
 
 
             }
